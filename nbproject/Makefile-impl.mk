@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=GlobalCurrent.X
+PROJECTNAME=GlobalCircuit
 
 # Active Configuration
 DEFAULTCONF=default
