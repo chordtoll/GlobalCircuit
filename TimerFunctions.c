@@ -1,7 +1,7 @@
 /*********************************************************************
  * Functions to read the core timer of the pic
  ********************************************************************/
-/* This module is built for the generic library in addition to the 
+/* This module is built for the generic library in addition to the
    device-specific libraries. */
 #ifndef __32MXGENERIC__
 #define __32MXGENERIC__

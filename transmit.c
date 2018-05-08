@@ -19,7 +19,7 @@ void UARTInit()
     U1STAbits.UTXEN = 1;    //UART1 transmitter enabled
 
     //Setting up UART1 Receive with Interrupts
-    
+
     IEC0bits.U1RXIE = 1;     //Interrupt is enabled for UART1 receive
     IPC6bits.U1IP = 7;       //UART1 interrupt priority is 1
     IPC6bits.U1IS = 3;       //UART1 subpriority is 0
@@ -27,7 +27,7 @@ void UARTInit()
     U1STAbits.URXEN = 1;     //Enable UART1 Receiver
     U1MODEbits.BRGH = 0;
     U1MODEbits.ON = 1;       // UART is enabled
-    
+
 }
 
 void InterruptInit()

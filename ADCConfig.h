@@ -1,7 +1,7 @@
 /*******************************************************************************
- * 
+ *
  * Functions to initialize the on board ADC
- * 
+ *
  ******************************************************************************/
 
 #ifndef _ADCConfig_H_
@@ -13,10 +13,10 @@ void initADC(void)
     AD1PCFGbits.PCFG1 = 0;
     TRISBbits.TRISB0 = 1;           // Pin set as input
     TRISBbits.TRISB1 = 1;
-     
+
     AD1CHSbits.CH0NA = 0;           // Channel 0 negative input is VR-
     AD1CHSbits.CH0SA = 0;           // Channel 0 positive input is AN0
-    AD1CON1bits.FORM = 0;           // Integer 16-bit output    
+    AD1CON1bits.FORM = 0;           // Integer 16-bit output
     AD1CON1bits.SSRC = 0b111;       // Internal counter ends sampling and starts conversion
     AD1CSSL = 0;                    // No scanning required
     AD1CON2bits.VCFG = 0;           // Internal voltage references

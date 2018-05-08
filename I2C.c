@@ -92,3 +92,4 @@ void I2cAck(void)
     I2C1CONbits.ACKEN = 1;
     while(I2C1CONbits.ACKEN == 1);
 }
+

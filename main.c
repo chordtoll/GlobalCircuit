@@ -6,7 +6,7 @@
 #pragma config FPBDIV = DIV_1
 
 // pragma directives for the pic32mx460
-//#pragma config FNOSC = PRIPLL 
+//#pragma config FNOSC = PRIPLL
 //#pragma config POSCMOD = EC
 //#pragma config FPLLIDIV = DIV_2
 //#pragma config FPLLMUL = MUL_20
@@ -32,7 +32,7 @@
 #define CS LATDbits.LATD9
 
 // Used for ADC calculations with ADS1118
-#define FS (2.048) // Full Scale 
+#define FS (2.048) // Full Scale
 #define bit15 (32767U) //2^15 -1
 #define bit16 (65535U)
 #define Mul_Factor (FS * 2 / bit16)
@@ -47,7 +47,7 @@ double read_timer(void);    // Function to read core timer
 // character arrays and then concatenate them into a character array that will
 // be the packet
 
-// Note: We have to use character arrays becuase of how the transmission of the 
+// Note: We have to use character arrays becuase of how the transmission of the
 // rockblock is set up
 char* TIME = "aaaaaaaaa";        // Time from GPS UPDATED, size 10
 char* LATI = "aaaaaaaaa";      // Latitude from GPS UPDATED size 10
@@ -128,7 +128,7 @@ int main(void)
     while (U1STAbits.TRMT == 0);
     U1TXREG = (0x0A);
     while (U1STAbits.TRMT == 0);
-    
+
     while(1)
     {
         // time (GMT), day, latitude, longitude, altitude
@@ -140,7 +140,7 @@ int main(void)
         {
             receivedChar = U1RXREG; // Read the receive line of the PIC from the GPS
             while (U1STAbits.RIDLE == 0); // Waiting to receive all the characters
-            
+
             if (receivedChar == '$') // If the char is $, it is the beginning of a new line
             {
                 if (first == 0)      // If this is the first time going through
@@ -188,25 +188,25 @@ int main(void)
                 GPScount = 0; // Reset the GPS count
                 first = 0;    // It is no longer the first time we are going through the function
             }
-            
+
             if (GPScount < 80) // If it is not the end of the NMEA string
             {
                 GPSdata[GPScount] = receivedChar; // Add the character to the buffer
                 GPScount++;                       // Increment the barray count
             }
-           
+
         }
     }
     ////////////////////////////End GPS Testing/////////////////////////////////
-    
+
     /////////////////////////On board ADC Testing///////////////////////////////
     x = ReadADC(0);
     v = x / (1024) * 3.3;
-    printf("%f  \n\r",v);  
+    printf("%f  \n\r",v);
     ///////////////////////End on Board ADC Testing/////////////////////////////
 
     ////////////////////SPI Testing with External ADC///////////////////////////
-    WriteSPI(0x8480);  
+    WriteSPI(0x8480);
     while(!SPI1STATbits.SPIRBF);
     unsigned int result = ReadSPI();
 
@@ -218,13 +218,13 @@ int main(void)
     printf("%f   \n\r", result2);
     printf("%f   \n\r", result2 * Mul_Factor);
     //////////////////////////End SPI Testing///////////////////////////////////
-   
+
     // Might need a small delay here
     for (count = 0; count1 < 2; count1++)
     {
         coretimer = read_timer();
         sprintf(RUN, "%.1f", coretimer);  // Putting the number read from the core timer into the character array RUN
-        
+
         // Concatenating each character array into the 340 byte character array, SBDnormal, that will hold all of them
         // Carriage return at the end is necessary to add, this gives the command to send the message in the array
         strncat(SBDnormal, RUN, 3);
@@ -243,7 +243,7 @@ int main(void)
         strncat(SBDnormal, Bb, 120);
         strncat(SBDnormal, Cc, 120);
         strncat(SBDnormal, "\r", 1); // Gives command to send
-        
+
         for (i = 0; i < strlen(SBDnormal); ++i) // Put the character array into the packet
             packet[i] = SBDnormal[i];
 
@@ -254,7 +254,7 @@ int main(void)
         if (checkService() == 0);               // If there is service, send the message
             SendSMS(packet);
     }
- 
+
     return 0;
 }
 
@@ -326,7 +326,7 @@ char CheckString(char* message)
 
 double read_timer(void) // Reads the core timer to get the time since power on
 {
-    unsigned int core;         
+    unsigned int core;
     core = ReadCoreTimer();   // Get the core timer count
     return (core * 2.0 / FSYS);
 }

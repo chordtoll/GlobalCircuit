@@ -1,13 +1,13 @@
 /*******************************************************************************
- * 
+ *
  * Functions to initialize SPI
- * 
+ *
  ******************************************************************************/
 #ifndef _SPIConfig_H_
 #define	_SPIConfig_H_
 
 // Chip select for SPI will need to be changed for pic32mx360
-#define CS LATDbits.LATD9  
+#define CS LATDbits.LATD9
 void initSPI(void)
 {
     //CS = 1;                     // Set CS high (idle state)
@@ -18,8 +18,8 @@ void initSPI(void)
     SPI1BUF = 0;                // Clear the receive buffer
     SPI1BRG = 3;                // FSCK = 2.5MHz
     SPI1STATbits.SPIROV = 0;    // Clear overflow flag
-     
-     
+
+
     /* SPI1CON settings */
     SPI1CONbits.FRMEN = 0;      // Framed SPI support is disabled
     SPI1CONbits.SIDL = 0;       // Continue operation in IDLE mode
@@ -44,12 +44,12 @@ double WriteReadSPI(unsigned short i)
 }
 
 unsigned int ReadSPI()
-{ 
+{
     /* Check for Receive buffer full status bit of status register*/
     if (SPI1STATbits.SPIRBF)
     {
         SPI1STATbits.SPIROV = 0;
-                
+
         if (SPI1CONbits.MODE32)
             return ( SPI1BUF ); /* return word read */
         else
@@ -59,12 +59,12 @@ unsigned int ReadSPI()
 }
 
 void WriteSPI(unsigned int data_out)
-{ 
+{
 
-   if (SPI1CONbits.MODE32) // word write 
+   if (SPI1CONbits.MODE32) // word write
         SPI1BUF = data_out;
-    else 
-        SPI1BUF = data_out & 0xff; // byte write 
+    else
+        SPI1BUF = data_out & 0xff; // byte write
 
 }
 

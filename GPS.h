@@ -1,15 +1,15 @@
 /* *****************************************************************************
- * 
+ *
  * Author: Lauren Turnbow
- * Functions to read the altitude, time, longitude, and latitude of the GPS 
+ * Functions to read the altitude, time, longitude, and latitude of the GPS
  * NMEA string, $GPGGA
- * 
+ *
 ***************************************************************************** */
 
 #ifndef _GPS_H    /* Guard against multiple inclusion */
 #define _GPS_H
 
-// time (GMT), day (given by rockblock message), latitude, longitude, altitude 
+// time (GMT), day (given by rockblock message), latitude, longitude, altitude
 // To get the longitude out of the GPGGA string
 char* longitude(char* NMEA, int length)
 {
@@ -93,12 +93,12 @@ char* GMTTime(char* NMEA, int length)
         returnedArray[7] = NMEA[15];
         returnedArray[8] = NMEA[16];
         returnedArray[9] = '\0';
-        return returnedArray; 
+        return returnedArray;
     }
     returnedArray[0] = 'A';
     return returnedArray;
-      
+
 }
 
-#endif 
+#endif
 

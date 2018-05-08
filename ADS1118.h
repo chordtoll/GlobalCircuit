@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ADS1118.h
  * Author: ctheriau
  *
@@ -42,7 +42,7 @@ extern "C" {
 // Operating mode
 #define     CONTINUOUS      (0b000 << 0x08)   // Bit 8
 #define     SINGLE_SHOT     (0b001 << 0x08)   // Bit 8 (default)
-    
+
 // Data rate
 #define     SPS_8           (0b000 << 0x05)   // Bit 5
 #define     SPS_16          (0b001 << 0x05)   // Bit 5
@@ -64,7 +64,7 @@ extern "C" {
 // Write configuration settings
 #define     WRITE_CONFIG    (0b001 << 0x01)   // Bit 2:1
 
- 
+
 typedef struct ads_config_data {
     unsigned int  result;
     unsigned char mux_config;
@@ -77,7 +77,7 @@ typedef struct ads_config_data {
 
 //ads_config_data ADSConfigToStruct(unsigned int configReg);
 
- 
+
 #ifdef	__cplusplus
 }
 #endif
