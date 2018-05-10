@@ -96,35 +96,35 @@ int main(void)
     ///////////////////////////////GPS//////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Transmits to the GPS to tell it to only print two NMEA strings instead of four
-    U1TXREG = (0xA0); //send 0xA0 to the GPS
+    U1TXREG = (0xA0); //skytraq start of sequence: 0xA0A1
     while (U1STAbits.TRMT == 0); // Waiting for transmission to complete
-    U1TXREG = (0xA1); //send next character
+    U1TXREG = (0xA1);
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //payload len: 0x0009
     while (U1STAbits.TRMT == 0);
     U1TXREG = (0x09);
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x08);
+    U1TXREG = (0x08); //message id: 0x08
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x01);
+    U1TXREG = (0x01); //GGA interval: 0x01
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //GSA interval: 0x00
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //GSV interval: 0x00
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //GLL interval: 0x00
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //RMC interval: 0x00
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x01);
+    U1TXREG = (0x01); //VTG interval: 0x01
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //ZDA interval: 0x00
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00);
+    U1TXREG = (0x00); //update ram only: 0x00
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x08);
+    U1TXREG = (0x08); //checksum: 0x08
     while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x0D);
+    U1TXREG = (0x0D); //skytraq end of sequence: 0x0D0A
     while (U1STAbits.TRMT == 0);
     U1TXREG = (0x0A);
     while (U1STAbits.TRMT == 0);
