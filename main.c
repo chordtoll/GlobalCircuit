@@ -26,6 +26,7 @@
 #include "SPIConfig.h"
 #include "ADS1118.h"
 #include "GPS.h"
+#include "conversion.h"
 
 #define ADC_ADDRESS 0b1001000
 #define MAG_ADDRESS 0x1E
@@ -64,7 +65,12 @@ char dt[2] = "Z";           // sigma plus/minus (last) (langmuir)
 char Aa[66] = {"a"};        // Bearing, magnetometer
 char Bb[120] = {"b"};       // langmuir vertical
 char Cc[120] = {"c"};       // langmuir horizontal
-char SBDnormal[360] = {0};
+char SBDnormal[512] = {0};
+
+char nTime[20];
+char nLati[20];
+char nLong[20];
+char nAlti[20];
 
 int main(void)
 {
@@ -94,6 +100,7 @@ int main(void)
     //RockInit();      // Initializes the rockblock modem
     char receivedChar;
     char n[50];
+
     ///////////////////////////////GPS//////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Transmits to the GPS to tell it to only print two NMEA strings instead of four
@@ -129,7 +136,7 @@ int main(void)
     while (U2STAbits.TRMT == 0);
     U2TXREG = (0x0A);
     while (U2STAbits.TRMT == 0);
-    
+    SendString("Init'd\n",0);
     while(1) {  //Main loop
         //if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
         //    U1STAbits.OERR = 0;
@@ -144,8 +151,17 @@ int main(void)
             if (receivedChar==0x0A) {
                 GPSdata[GPScount]=0;
                 if (strncmp(GPSdata,"$GPGGA",6)==0) {
-                    ParseNMEA(GPSdata,TIME,LATI,LONG,ALT);
-                        sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
+                    ParseNMEA(GPSdata,nTime,nLati,nLong,nAlti);
+                    double dTime=atof(nTime);
+                    double dLati=atof(nLati);
+                    double dLong=atof(nLong);
+                    double dAlti=atof(nAlti);
+                    itob64(dTime,TIME);
+                    itob64(dLati*10000,LATI);
+                    itob64(dLong*10000,LONG);
+                    itob64(dAlti*10,ALT);
+                    //sprintf(SBDnormal,"%10f%5s",dAlti,ALT);
+                    sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
                     SendString(SBDnormal,0);
                     SendString("\n",0);
                 }
