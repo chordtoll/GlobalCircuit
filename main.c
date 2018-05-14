@@ -4,6 +4,7 @@
 #pragma config FNOSC = PRIPLL
 #pragma config POSCMOD = XT
 #pragma config FPBDIV = DIV_1
+#pragma config DEBUG = ON
 
 // pragma directives for the pic32mx460
 //#pragma config FNOSC = PRIPLL
@@ -49,10 +50,10 @@ double read_timer(void);    // Function to read core timer
 
 // Note: We have to use character arrays becuase of how the transmission of the
 // rockblock is set up
-char* TIME = "aaaaaaaaa";        // Time from GPS UPDATED, size 10
-char* LATI = "aaaaaaaaa";      // Latitude from GPS UPDATED size 10
-char* LONG = "aaaaaaaaaa";     // Longitude from GPS UPDATED size 11
-char* ALT = "aaaaa";        // Altitude from GPS UPDATED size 6
+char TIME[10];// = "aaaaaaaaa";        // Time from GPS UPDATED, size 10
+char LATI[10];// = "aaaaaaaaa";      // Latitude from GPS UPDATED size 10
+char LONG[11];// = "aaaaaaaaaa";     // Longitude from GPS UPDATED size 11
+char ALT[6];// = "aaaaa";        // Altitude from GPS UPDATED size 6
 char pr[2] = "RS";          // Pressure from pressure sensor
 char AT[2] = "TU";          // Air temperature
 char t[1] = "V";            // Internal temperature of PIC
@@ -63,7 +64,7 @@ char dt[2] = "Z";           // sigma plus/minus (last) (langmuir)
 char Aa[66] = {"a"};        // Bearing, magnetometer
 char Bb[120] = {"b"};       // langmuir vertical
 char Cc[120] = {"c"};       // langmuir horizontal
-char SBDnormal[340] = {0};
+char SBDnormal[360] = {0};
 
 int main(void)
 {
@@ -84,52 +85,76 @@ int main(void)
     int count = 0;
     int count1 = 0;
     int GPScount = 0;
-    char GPSdata[80];
+    char GPSdata[80]={0};
     int first = 1;
     int loopCounter = 0;
     float x, v;
     InterruptInit(); // Initializes interrupts
     UARTInit();      // Initializes UART
-    RockInit();      // Initializes the rockblock modem
+    //RockInit();      // Initializes the rockblock modem
     char receivedChar;
     char n[50];
     ///////////////////////////////GPS//////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Transmits to the GPS to tell it to only print two NMEA strings instead of four
-    U1TXREG = (0xA0); //skytraq start of sequence: 0xA0A1
-    while (U1STAbits.TRMT == 0); // Waiting for transmission to complete
-    U1TXREG = (0xA1);
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //payload len: 0x0009
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x09);
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x08); //message id: 0x08
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x01); //GGA interval: 0x01
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //GSA interval: 0x00
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //GSV interval: 0x00
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //GLL interval: 0x00
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //RMC interval: 0x00
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x01); //VTG interval: 0x01
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //ZDA interval: 0x00
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x00); //update ram only: 0x00
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x08); //checksum: 0x08
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x0D); //skytraq end of sequence: 0x0D0A
-    while (U1STAbits.TRMT == 0);
-    U1TXREG = (0x0A);
-    while (U1STAbits.TRMT == 0);
+    U2TXREG = (0xA0); //skytraq start of sequence: 0xA0A1
+    while (U2STAbits.TRMT == 0); // Waiting for transmission to complete
+    U2TXREG = (0xA1);
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //payload len: 0x0009
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x09);
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x08); //message id: 0x08
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x01); //GGA interval: 0x01
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //GSA interval: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //GSV interval: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //GLL interval: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //RMC interval: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //VTG interval: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //ZDA interval: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x00); //update ram only: 0x00
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x09); //checksum: 0x08
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x0D); //skytraq end of sequence: 0x0D0A
+    while (U2STAbits.TRMT == 0);
+    U2TXREG = (0x0A);
+    while (U2STAbits.TRMT == 0);
+    
+    while(1) {  //Main loop
+        //if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
+        //    U1STAbits.OERR = 0;
+        if (U2STAbits.OERR) // If there is an overflow, do not read, and reset
+            U2STAbits.OERR = 0;
+        if (U2STAbits.URXDA) {  //If data available from GPS
+            receivedChar = U2RXREG; // Read the receive line of the PIC from the GPS
+            if (GPScount<75) {
+                GPSdata[GPScount]=receivedChar;
+                GPScount++;
+            }
+            if (receivedChar==0x0A) {
+                GPSdata[GPScount]=0;
+                if (strncmp(GPSdata,"$GPGGA",6)==0) {
+                    ParseNMEA(GPSdata,TIME,LATI,LONG,ALT);
+                        sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
+                    SendString(SBDnormal,0);
+                    SendString("\n",0);
+                }
+                GPScount=0;
+            }
+        }
+    }
 
-    while(1)
+    /*while(1)
     {
         // time (GMT), day, latitude, longitude, altitude
         if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
@@ -253,8 +278,8 @@ int main(void)
 
         if (checkService() == 0);               // If there is service, send the message
             SendSMS(packet);
-    }
-
+    }*/
+    
     return 0;
 }
 

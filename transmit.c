@@ -12,11 +12,24 @@ volatile int bufferflag = 0;
 void UARTInit()
 {
     //Setting up UART1 Transmit
-    U1BRG = 258;           //Initialize U1BRG for 19200 baud rate
-    U2BRG = 258;
+    U1BRG = 520;           //Initialize U1BRG for 19200 baud rate
+    U2BRG = 520;
+
     U1MODEbits.PDSEL = 0;   //8 bit no parity
+    U2MODEbits.PDSEL = 0;   //8 bit no parity
+
     U1MODEbits.STSEL = 0;   //1 stop bit
-    U1STAbits.UTXEN = 1;    //UART1 transmitter enabled
+    U2MODEbits.STSEL = 0;   //1 stop bit
+
+    U1MODEbits.UARTEN=1;
+    U2MODEbits.UARTEN=1;
+
+    U1STAbits.UTXEN=1;
+    U2STAbits.UTXEN=1;
+
+    U1STAbits.URXEN=1;
+    U2STAbits.URXEN=1;
+    /*
 
     //Setting up UART1 Receive with Interrupts
 
@@ -26,7 +39,8 @@ void UARTInit()
     U1STAbits.URXISEL = 0;   //Receive interrupt mode flag is set when character is received
     U1STAbits.URXEN = 1;     //Enable UART1 Receiver
     U1MODEbits.BRGH = 0;
-    U1MODEbits.ON = 1;       // UART is enabled
+
+    */
 
 }
 

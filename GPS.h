@@ -100,5 +100,47 @@ char* GMTTime(char* NMEA, int length)
 
 }
 
+void ParseNMEA(char *data, char* time, char *lati, char *llon, char *alti) {
+    int field=0;
+    int fieldstart=0;
+    int idx;
+    while (data[idx]) {
+        if (data[idx]==',') {
+            switch(field) {
+                case 1:
+                    time[idx-fieldstart]=0;
+                    break;
+                case 2:
+                    lati[idx-fieldstart]=0;
+                    break;
+                case 4:
+                    llon[idx-fieldstart]=0;
+                    break;
+                case 9:
+                    alti[idx-fieldstart]=0;
+                    break;
+            }
+            field++;
+            fieldstart=idx+1;
+        } else {
+            switch(field) {
+                case 1:
+                    time[idx-fieldstart]=data[idx];
+                    break;
+                case 2:
+                    lati[idx-fieldstart]=data[idx];
+                    break;
+                case 4:
+                    llon[idx-fieldstart]=data[idx];
+                    break;
+                case 9:
+                    alti[idx-fieldstart]=data[idx];
+                    break;
+            }
+        }
+        idx++;
+    }
+}
+
 #endif
 
