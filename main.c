@@ -160,10 +160,23 @@ int main(void)
                     itob64(dLati*10000,LATI);
                     itob64(dLong*10000,LONG);
                     itob64(dAlti*10,ALT);
-                    //sprintf(SBDnormal,"%10f%5s",dAlti,ALT);
-                    sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
-                    SendString(SBDnormal,0);
-                    SendString("\n",0);
+
+                    /*
+                     *
+                     * ADC code here- Store value into Bb
+                     *
+                     */
+
+                    //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
+                    sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
+                    //SendString(SBDnormal,0);
+                    //SendString("\n",0);
+
+                    /*
+                     *
+                     * RockBlock code here- transmit SBDnormal
+                     *
+                     */
                 }
                 GPScount=0;
             }
