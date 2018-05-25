@@ -27,6 +27,7 @@
 #include "ADS1118.h"
 #include "GPS.h"
 #include "conversion.h"
+#include "MS5607.h"
 
 #define ADC_ADDRESS 0b1001000
 #define MAG_ADDRESS 0x1E
@@ -167,8 +168,13 @@ int main(void)
                      *
                      */
 
+                    alt_start_pressure(0x77);
+                    int pres=alt_read_adc(0x77);
+                    sprintf(SBDnormal,"%d\n",pres);
+                    SendString(SBDnormal,0);
+
                     //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
-                    sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
+                    //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
                     //SendString(SBDnormal,0);
                     //SendString("\n",0);
 

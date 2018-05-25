@@ -89,6 +89,13 @@ void I2cRestart(void)
 
 void I2cAck(void)
 {
+    I2C1CONbits.ACKDT = 0;
+    I2C1CONbits.ACKEN = 1;
+    while(I2C1CONbits.ACKEN == 1);
+}
+void I2cNAck(void)
+{
+    I2C1CONbits.ACKDT = 1;
     I2C1CONbits.ACKEN = 1;
     while(I2C1CONbits.ACKEN == 1);
 }
