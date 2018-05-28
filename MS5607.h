@@ -8,6 +8,7 @@
 #ifndef MS5607_H
 #define	MS5607_H
 
+#define ALT_ADDR      0x77
 #define ALT_CMD_RESET 0x1E
 #define ALT_CMD_D1    0x40
 #define ALT_CMD_D2    0x50

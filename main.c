@@ -28,6 +28,7 @@
 #include "GPS.h"
 #include "conversion.h"
 #include "MS5607.h"
+#include "MAG3310.h"
 
 #define ADC_ADDRESS 0b1001000
 #define MAG_ADDRESS 0x1E
@@ -72,6 +73,10 @@ char nTime[20];
 char nLati[20];
 char nLong[20];
 char nAlti[20];
+
+short mx;
+short my;
+short mz;
 
 int main(void)
 {
@@ -168,9 +173,13 @@ int main(void)
                      *
                      */
 
-                    alt_start_pressure(0x77);
-                    int pres=alt_read_adc(0x77);
-                    sprintf(SBDnormal,"%d\n",pres);
+                    alt_start_pressure(ALT_ADDR);
+                    int pres=alt_read_adc(ALT_ADDR);
+                    sprintf(SBDnormal,"P:%d\n",pres);
+                    SendString(SBDnormal,0);
+                    mag_start(MAG_ADDR);
+                    mag_read(MAG_ADDR,&mx,&my,&mz);
+                    sprintf(SBDnormal,"P:%d,%d,%d\n",mx,my,mz);
                     SendString(SBDnormal,0);
 
                     //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
