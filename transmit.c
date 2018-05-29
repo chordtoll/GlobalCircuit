@@ -12,8 +12,8 @@ volatile int bufferflag = 0;
 void UARTInit()
 {
     //Setting up UART1 Transmit
-    U1BRG = 520;           //Initialize U1BRG for 19200 baud rate
-    U2BRG = 520;
+    U1BRG = 260;           //Initialize U1BRG for 19200 baud rate
+    U2BRG = 520;           //Initialize U2BRG for 9600 baud rate
 
     U1MODEbits.PDSEL = 0;   //8 bit no parity
     U2MODEbits.PDSEL = 0;   //8 bit no parity
@@ -141,6 +141,99 @@ int RockInit()
 
     } while (strcmp(OK, reply) != 0);
 
+
+    return 0;
+}
+
+int HackBusyWait(unsigned char time)
+{
+    unsigned char i = 0;
+    unsigned char j = 0;
+    unsigned char k = 0;
+    unsigned char l = 0;
+    unsigned char m = 0;
+
+    for(i = 0; i < time; ++i)
+    {
+        for(j = 0; j < time; ++j)
+        {
+            for(k = 0; k < time; ++k)
+            {
+                for(l = 0; l < time; ++l)
+                {
+                    m = l;
+                }
+            }
+        }
+    }
+    return m;
+}
+
+int HackRockSend(unsigned char * message)
+{
+    char oldestReceivedChar = 255;
+    char olderReceivedChar = 255;
+    char oldReceivedChar = 255;
+    char receivedChar = 255;
+    char timeToGo = 0;
+    int i = 0;
+
+    //static char sentYet = 0;
+    //static char prevHour = 0;
+    //static char prevMin = 0;
+
+    //if((sentYet == 0) || (message[7] != prevMin) || (message[8] != prevHour) )
+    {
+    //    sentYet = 1;
+    //    prevMin = message[7];
+    //    prevHour = message[8];
+
+        SendString("AT\r", 0);
+
+        for(i = 0; i < 4; ++i)
+        {
+            timeToGo = 0;
+
+            while(timeToGo == 0) //Wait for us to get the go ahead to continue
+            {
+                //Wait for response to be over
+                if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
+                {
+                    U1STAbits.OERR = 0;
+                }
+                if (U1STAbits.URXDA)  //If data available from Rockblock
+                {
+                    oldestReceivedChar = olderReceivedChar;
+                    olderReceivedChar = oldReceivedChar;
+                    oldReceivedChar = receivedChar;
+                    receivedChar = U1RXREG; // Read the receive line of the PIC from the GPS
+
+                    if(oldestReceivedChar == 'O' && olderReceivedChar == 'K' && oldReceivedChar == '\r' && receivedChar == '\n' )
+                    {
+                        timeToGo = 1;
+                    }
+
+                }
+            }
+
+
+            if(i == 0)
+            {
+                SendString("AT&K0\r", 0);
+            }
+            else if(i == 1)
+            {
+                //SendString("AT+SBDWT=This message was successfully sent from PIC32MX360\r", 0);
+                SendString("AT+SBDWT=", 0);
+                SendString(message, 0);
+                SendString("\r", 0);
+            }
+            else if(i == 2)
+            {
+                SendString("AT+SBDIX\r", 0);
+            }
+        }
+    }
 
     return 0;
 }

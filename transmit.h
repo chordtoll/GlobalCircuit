@@ -11,6 +11,8 @@
 void InterruptInit();
 void UARTInit();
 int RockInit();
+int HackBusyWait(unsigned char time);
+int HackRockSend(unsigned char * message);
 int checkService();
 char ReceivedLine(void);
 void SendString(unsigned char* string, char checksum);

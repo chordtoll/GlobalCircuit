@@ -65,7 +65,7 @@ char dt[2] = "Z";           // sigma plus/minus (last) (langmuir)
 char Aa[66] = {"a"};        // Bearing, magnetometer
 char Bb[120] = {"b"};       // langmuir vertical
 char Cc[120] = {"c"};       // langmuir horizontal
-char SBDnormal[512] = {0};
+unsigned char SBDnormal[512] = {0};
 
 char nTime[20];
 char nLati[20];
@@ -74,6 +74,9 @@ char nAlti[20];
 
 int main(void)
 {
+
+    HackBusyWait(100);
+
     AD1PCFG = 0x0000;      // Analog
     // These are the SPI pins on the PIC. The current are for the PIC32MX460 and
     // will have to be changed to the spins used for the PIC32MX360
@@ -98,6 +101,9 @@ int main(void)
     InterruptInit(); // Initializes interrupts
     UARTInit();      // Initializes UART
     //RockInit();      // Initializes the rockblock modem
+
+
+
     char receivedChar;
     char n[50];
 
@@ -136,7 +142,7 @@ int main(void)
     while (U2STAbits.TRMT == 0);
     U2TXREG = (0x0A);
     while (U2STAbits.TRMT == 0);
-    SendString("Init'd\n",0);
+    SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
     while(1) {  //Main loop
         //if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
         //    U1STAbits.OERR = 0;
@@ -152,10 +158,10 @@ int main(void)
                 GPSdata[GPScount]=0;
                 if (strncmp(GPSdata,"$GPGGA",6)==0) {
                     ParseNMEA(GPSdata,nTime,nLati,nLong,nAlti);
-                    double dTime=atof(nTime);
-                    double dLati=atof(nLati);
-                    double dLong=atof(nLong);
-                    double dAlti=atof(nAlti);
+                    double dTime = atof(nTime);
+                    double dLati = atof(nLati);
+                    double dLong = atof(nLong);
+                    double dAlti = atof(nAlti);
                     itob64(dTime,TIME);
                     itob64(dLati*10000,LATI);
                     itob64(dLong*10000,LONG);
@@ -168,7 +174,8 @@ int main(void)
                      */
 
                     //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
-                    sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
+                    //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
+                    sprintf(SBDnormal,"%9s%9s%10s%5s",TIME,LATI,LONG,ALT); //Partial packet for Moses Lake
                     //SendString(SBDnormal,0);
                     //SendString("\n",0);
 
@@ -177,6 +184,8 @@ int main(void)
                      * RockBlock code here- transmit SBDnormal
                      *
                      */
+                    HackRockSend(SBDnormal);
+                    //HackBusyWait(100);
                 }
                 GPScount=0;
             }
