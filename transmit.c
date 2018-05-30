@@ -1,13 +1,6 @@
 #include "transmit.h"
 #include "proc\p32mx360f512l.h"
 #define MAX_LINE 50
-volatile char receive1 [MAX_LINE];
-volatile char receive2 [MAX_LINE];
-volatile char string1 [MAX_LINE];
-volatile char string2 [MAX_LINE];
-volatile char intIndex = 0;
-volatile char receivedLine = 0;
-volatile int bufferflag = 0;
 
 void UARTInit()
 {
@@ -71,38 +64,38 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
 
 }
 
-int RockInit()
-{
-    char transmit[] = "AT+CIER=1,0,1\r";
-    char OK[] = "OK\r";
-    char* reply = 0;
-
-    while(ReceivedLine()) // clears the buffer
-        GetString();
-
-    do
-    {
-       SendString(transmit, 0);
-
-        while(ReceivedLine() == 0);
-        reply = GetString();
-
-
-
-        if (strcmp(transmit, reply) == 0)
-        {
-            //SendString("Got the init string\r\n");
-        }
-
-
-        while(ReceivedLine() == 0);
-        reply = GetString();
-
-    } while (strcmp(OK, reply) != 0);
-
-
-    return 0;
-}
+//int RockInit()
+//{
+//    char transmit[] = "AT+CIER=1,0,1\r";
+//    char OK[] = "OK\r";
+//    char* reply = 0;
+//
+//    while(ReceivedLine()) // clears the buffer
+//        GetString();
+//
+//    do
+//    {
+//       SendString(transmit, 0);
+//
+//        while(ReceivedLine() == 0);
+//        reply = GetString();
+//
+//
+//
+//        if (strcmp(transmit, reply) == 0)
+//        {
+//            //SendString("Got the init string\r\n");
+//        }
+//
+//
+//        while(ReceivedLine() == 0);
+//        reply = GetString();
+//
+//    } while (strcmp(OK, reply) != 0);
+//
+//
+//    return 0;
+//}
 
 int HackBusyWait(unsigned char time)
 {
@@ -197,21 +190,21 @@ int HackRockSend(unsigned char * message)
     return 0;
 }
 
-int checkService()
-{
-    char service[] = "+CIEV:1,1\r";//network service available
-    char noservice[] = "+CIEV:1,0\r";//network service unavailable
-    char* reply = 0;
-
-    do
-    {
-        while(ReceivedLine() == 0);
-        reply = GetString();
-
-    } while (strcmp(service, reply) != 0);
-
-    return 0;
-}
+//int checkService()
+//{
+//    char service[] = "+CIEV:1,1\r";//network service available
+//    char noservice[] = "+CIEV:1,0\r";//network service unavailable
+//    char* reply = 0;
+//
+//    do
+//    {
+//        while(ReceivedLine() == 0);
+//        reply = GetString();
+//
+//    } while (strcmp(service, reply) != 0);
+//
+//    return 0;
+//}
 
 void SendString(unsigned char* string, char checksum)
 {
@@ -242,24 +235,6 @@ void SendChar(char letter)
 {
     while(U1STAbits.TRMT == 0){} //while transmitting don't do anything
     U1TXREG = letter;            //transmit first char
-}
-
-char ReceivedLine(void)
-{
-    return receivedLine;
-}
-
-volatile char* GetString(void)
-{
-    --receivedLine;
-
-    if (bufferflag != 0)
-    {
-
-        return receive1;
-    }
-
-    return receive2;
 }
 
 //int strlen(char* string)

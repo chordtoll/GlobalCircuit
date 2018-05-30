@@ -10,13 +10,9 @@
 
 void InterruptInit();
 void UARTInit();
-int RockInit();
 int HackBusyWait(unsigned char time);
 int HackRockSend(unsigned char * message);
-int checkService();
-char ReceivedLine(void);
 void SendString(unsigned char* string, char checksum);
-volatile char* GetString(void);
 void SendChar(char letter);
 //int strlen(char* string);
 int strcmp(const char* s1, const char* s2);
