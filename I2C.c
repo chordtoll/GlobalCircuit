@@ -27,6 +27,16 @@ char I2cSend(char addr, char* data, int size)
     return ack;
 }
 
+char I2cEnum(char addr)
+{
+    char ack = 0;
+    I2cStart();
+    ack |= I2cWrite(addr << 1);
+    ack &= I2cWrite(0);
+    ack &= I2cWrite(0);
+    I2cStop();
+    return ack;
+}
 
 char I2cReceive(char addr, char* data, int size)
 {
@@ -57,9 +67,8 @@ char I2cReceive(char addr, char* data, int size)
 
 char I2cRead(void)
 {
-    int i = 0;
-    while(I2C1STATbits.RBF == 0 && i < 1000)
-        ++i;
+    I2C1CONbits.RCEN = 1;
+    while(I2C1CONbits.RCEN == 1);
     return I2C1RCV;
 }
 char I2cWrite(char data)
@@ -83,12 +92,19 @@ void I2cStop(void)
 
 void I2cRestart(void)
 {
-    I2C1CONbits.RCEN = 1;
-    while(I2C1CONbits.RCEN == 1);
+    I2C1CONbits.RSEN = 1;
+    while(I2C1CONbits.RSEN == 1);
 }
 
 void I2cAck(void)
 {
+    I2C1CONbits.ACKDT = 0;
+    I2C1CONbits.ACKEN = 1;
+    while(I2C1CONbits.ACKEN == 1);
+}
+void I2cNAck(void)
+{
+    I2C1CONbits.ACKDT = 1;
     I2C1CONbits.ACKEN = 1;
     while(I2C1CONbits.ACKEN == 1);
 }

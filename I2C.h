@@ -14,6 +14,7 @@ void I2cStart(void);
 void I2cStop(void);
 void I2cRestart(void);
 void I2cAck(void);
+void I2cNAck(void);
 
 
 

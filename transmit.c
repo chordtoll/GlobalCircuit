@@ -29,6 +29,10 @@ void UARTInit()
 
     U1STAbits.URXEN=1;
     U2STAbits.URXEN=1;
+    
+    U1MODEbits.ON=1;
+    U2MODEbits.ON=1;
+
     /*
 
     //Setting up UART1 Receive with Interrupts

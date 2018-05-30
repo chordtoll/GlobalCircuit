@@ -27,6 +27,8 @@
 #include "ADS1118.h"
 #include "GPS.h"
 #include "conversion.h"
+#include "MS5607.h"
+#include "MAG3310.h"
 
 #define ADC_ADDRESS 0b1001000
 #define MAG_ADDRESS 0x1E
@@ -72,6 +74,10 @@ char nLati[20];
 char nLong[20];
 char nAlti[20];
 
+signed short mx;
+signed short my;
+signed short mz;
+unsigned int pres;
 int main(void)
 {
 
@@ -106,7 +112,8 @@ int main(void)
 
     char receivedChar;
     char n[50];
-
+    I2cConfig();
+    mag_reset(MAG_ADDR);
     ///////////////////////////////GPS//////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Transmits to the GPS to tell it to only print two NMEA strings instead of four
@@ -143,6 +150,22 @@ int main(void)
     U2TXREG = (0x0A);
     while (U2STAbits.TRMT == 0);
     SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
+
+    //while(1) {
+    //    mag_reset(MAG_ADDR);
+    //    SendString("Init'd\n",0);
+    //    for (i=0;i<10000;i++);
+    //}
+    //while(1);
+    //for(i=0;i<0x80;i++) {
+    //    sprintf(SBDnormal,"%x",i);
+    //    SendString(SBDnormal,0);
+    //    if (I2cEnum(i))
+    //        SendString("A\n",0);
+    //    else
+    //        SendString("NAK\n",0);
+    //}
+        //while(1);
     while(1) {  //Main loop
         //if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
         //    U1STAbits.OERR = 0;
@@ -172,6 +195,19 @@ int main(void)
                      * ADC code here- Store value into Bb
                      *
                      */
+
+                    SendString("OK\n",0);
+                    
+                    char ack=alt_read_adc(ALT_ADDR,&pres);
+                    sprintf(SBDnormal,"P:%x %d\n",pres,ack);
+                    SendString(SBDnormal,0);
+                    alt_start_pressure(ALT_ADDR);
+                    SendString("OK\n",0);
+                    mag_start(MAG_ADDR);
+                    while (!mag_check(MAG_ADDR));
+                    mag_read(MAG_ADDR,&mx,&my,&mz);
+                    sprintf(SBDnormal,"M:%d,%d,%d\n",mx,my,mz);
+                    SendString(SBDnormal,0);
 
                     //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
                     //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
