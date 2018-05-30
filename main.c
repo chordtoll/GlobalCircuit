@@ -81,7 +81,7 @@ unsigned int pres;
 int main(void)
 {
 
-    HackBusyWait(100);
+    //HackBusyWait(100);
 
     AD1PCFG = 0x0000;      // Analog
     // These are the SPI pins on the PIC. The current are for the PIC32MX460 and
@@ -149,11 +149,11 @@ int main(void)
     while (U2STAbits.TRMT == 0);
     U2TXREG = (0x0A);
     while (U2STAbits.TRMT == 0);
-    SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
+    //SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
 
     //while(1) {
     //    mag_reset(MAG_ADDR);
-    //    SendString("Init'd\n",0);
+        SendString("Init'd\n",0);
     //    for (i=0;i<10000;i++);
     //}
     //while(1);
@@ -165,7 +165,13 @@ int main(void)
     //    else
     //        SendString("NAK\n",0);
     //}
-        //while(1);
+    while(1) {
+        GPSready=1;
+        if (GPSnew) {
+            SendString(GPSdat,0);
+            GPSnew=0;
+        }
+    }
     while(1) {  //Main loop
         //if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
         //    U1STAbits.OERR = 0;
@@ -220,7 +226,7 @@ int main(void)
                      * RockBlock code here- transmit SBDnormal
                      *
                      */
-                    HackRockSend(SBDnormal);
+                    //HackRockSend(SBDnormal);
                     //HackBusyWait(100);
                 }
                 GPScount=0;

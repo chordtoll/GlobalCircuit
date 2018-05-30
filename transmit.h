@@ -8,6 +8,10 @@
 #ifndef _TRANSMIT_H_
 #define	_TRANSMIT_H_
 
+volatile char GPSready;
+volatile char GPSnew;
+volatile char GPSdat[84];
+
 void InterruptInit();
 void UARTInit();
 int HackBusyWait(unsigned char time);
