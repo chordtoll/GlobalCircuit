@@ -24,6 +24,10 @@
       <itemPath>TimerFunctions.h</itemPath>
       <itemPath>transmit.c</itemPath>
       <itemPath>transmit.h</itemPath>
+      <itemPath>MAG3310.c</itemPath>
+      <itemPath>MAG3310.h</itemPath>
+      <itemPath>MS5607.c</itemPath>
+      <itemPath>MS5607.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

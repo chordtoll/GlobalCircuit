@@ -32,13 +32,12 @@ char mag_check(char addr) {
     I2cStart();
     ack |= I2cWrite(addr << 1);
     ack |= I2cWrite(MAG_REG_DRS);
-    I2cStop();
-    I2cStart();
+    I2cRestart();
     ack |= I2cWrite((addr << 1)+1);
     val=I2cRead();
     I2cNAck();
     I2cStop();
-    return (val&0x40);
+    return (val&0x04 );
 }
 
 char mag_read(char addr, short* x, short* y, short* z) {
@@ -46,20 +45,19 @@ char mag_read(char addr, short* x, short* y, short* z) {
     I2cStart();
     ack |= I2cWrite(addr << 1);
     ack |= I2cWrite(MAG_REG_VXM);
-    I2cStop();
-    I2cStart();
+    I2cRestart();
     ack |= I2cWrite((addr << 1)+1);
-    x=I2cRead()<<8;
+    *x=I2cRead()<<8;
     I2cAck();
-    x|=I2cRead();
+    *x|=I2cRead();
     I2cAck();
-    y=I2cRead()<<8;
+    *y=I2cRead()<<8;
     I2cAck();
-    y|=I2cRead();
+    *y|=I2cRead();
     I2cAck();
-    z=I2cRead()<<8;
+    *z=I2cRead()<<8;
     I2cAck();
-    z|=I2cRead();
+    *z|=I2cRead();
     I2cNAck();
     I2cStop();
     return ack;

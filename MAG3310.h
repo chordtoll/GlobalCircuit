@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MAG3310.h
  * Author: asent
  *

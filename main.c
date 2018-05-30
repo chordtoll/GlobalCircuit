@@ -74,9 +74,9 @@ char nLati[20];
 char nLong[20];
 char nAlti[20];
 
-short mx;
-short my;
-short mz;
+signed short mx;
+signed short my;
+signed short mz;
 
 int main(void)
 {
@@ -106,7 +106,8 @@ int main(void)
     //RockInit();      // Initializes the rockblock modem
     char receivedChar;
     char n[50];
-
+    I2cConfig();
+    mag_reset(MAG_ADDR);
     ///////////////////////////////GPS//////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Transmits to the GPS to tell it to only print two NMEA strings instead of four
@@ -142,7 +143,21 @@ int main(void)
     while (U2STAbits.TRMT == 0);
     U2TXREG = (0x0A);
     while (U2STAbits.TRMT == 0);
-    SendString("Init'd\n",0);
+    //while(1) {
+    //    mag_reset(MAG_ADDR);
+        SendString("Init'd\n",0);
+    //    for (i=0;i<10000;i++);
+    //}
+    //while(1);
+    //for(i=0;i<0x80;i++) {
+    //    sprintf(SBDnormal,"%x",i);
+    //    SendString(SBDnormal,0);
+    //    if (I2cEnum(i))
+    //        SendString("A\n",0);
+    //    else
+    //        SendString("NAK\n",0);
+    //}
+        //while(1);
     while(1) {  //Main loop
         //if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
         //    U1STAbits.OERR = 0;
@@ -173,11 +188,15 @@ int main(void)
                      *
                      */
 
-                    alt_start_pressure(ALT_ADDR);
-                    int pres=alt_read_adc(ALT_ADDR);
-                    sprintf(SBDnormal,"P:%d\n",pres);
-                    SendString(SBDnormal,0);
+                    //SendString("OK\n",0);
+                    
+                    //int pres=alt_read_adc(ALT_ADDR);
+                    //sprintf(SBDnormal,"P:%d\n",pres);
+                    //SendString(SBDnormal,0);
+                    //alt_start_temperature(ALT_ADDR);
+                    SendString("OK\n",0);
                     mag_start(MAG_ADDR);
+                    while (!mag_check(MAG_ADDR));
                     mag_read(MAG_ADDR,&mx,&my,&mz);
                     sprintf(SBDnormal,"P:%d,%d,%d\n",mx,my,mz);
                     SendString(SBDnormal,0);
