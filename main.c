@@ -77,7 +77,7 @@ char nAlti[20];
 signed short mx;
 signed short my;
 signed short mz;
-
+unsigned int pres;
 int main(void)
 {
     AD1PCFG = 0x0000;      // Analog
@@ -188,17 +188,17 @@ int main(void)
                      *
                      */
 
-                    //SendString("OK\n",0);
+                    SendString("OK\n",0);
                     
-                    //int pres=alt_read_adc(ALT_ADDR);
-                    //sprintf(SBDnormal,"P:%d\n",pres);
-                    //SendString(SBDnormal,0);
-                    //alt_start_temperature(ALT_ADDR);
+                    char ack=alt_read_adc(ALT_ADDR,&pres);
+                    sprintf(SBDnormal,"P:%x %d\n",pres,ack);
+                    SendString(SBDnormal,0);
+                    alt_start_pressure(ALT_ADDR);
                     SendString("OK\n",0);
                     mag_start(MAG_ADDR);
                     while (!mag_check(MAG_ADDR));
                     mag_read(MAG_ADDR,&mx,&my,&mz);
-                    sprintf(SBDnormal,"P:%d,%d,%d\n",mx,my,mz);
+                    sprintf(SBDnormal,"M:%d,%d,%d\n",mx,my,mz);
                     SendString(SBDnormal,0);
 
                     //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);

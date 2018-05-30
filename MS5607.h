@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MS5607.h
  * Author: asent
  *
@@ -23,7 +23,8 @@
 
 char alt_start_pressure(char addr);
 char alt_start_temperature(char addr);
-int alt_read_adc(char addr);
+char alt_read_adc(char addr, int* val);
+int alt_read_param(char addr, char loc);
 
 #endif	/* MS5607_H */
 
