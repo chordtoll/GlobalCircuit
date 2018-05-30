@@ -29,22 +29,21 @@ void UARTInit()
 
     U1STAbits.URXEN=1;
     U2STAbits.URXEN=1;
-    
-    U1MODEbits.ON=1;
-    U2MODEbits.ON=1;
-
-    /*
-
-    //Setting up UART1 Receive with Interrupts
 
     IEC0bits.U1RXIE = 1;     //Interrupt is enabled for UART1 receive
-    IPC6bits.U1IP = 7;       //UART1 interrupt priority is 1
-    IPC6bits.U1IS = 3;       //UART1 subpriority is 0
-    U1STAbits.URXISEL = 0;   //Receive interrupt mode flag is set when character is received
-    U1STAbits.URXEN = 1;     //Enable UART1 Receiver
-    U1MODEbits.BRGH = 0;
+    IEC1bits.U2RXIE = 1;     //Interrupt is enabled for UART1 receive
 
-    */
+    IPC6bits.U1IP = 7;       //UART1 interrupt priority is 1
+    IPC8bits.U2IP = 7;       //UART1 interrupt priority is 1
+
+    IPC6bits.U1IS = 3;       //UART1 subpriority is 0
+    IPC8bits.U2IS = 3;       //UART1 subpriority is 0
+
+    U1STAbits.URXISEL = 0;   //Receive interrupt mode flag is set when character is received
+    U2STAbits.URXISEL = 0;   //Receive interrupt mode flag is set when character is received
+
+    U1MODEbits.ON = 1;
+    U2MODEbits.ON = 1;
 
 }
 
@@ -52,6 +51,7 @@ void InterruptInit()
 {
     INTCONbits.MVEC = 1;  //enabling multivector interrupts
     IFS0bits.U1RXIF = 0; // clearing uart1 interrupt flag
+    IFS1bits.U2RXIF = 0; // clearing uart1 interrupt flag
     __asm__("EI");  // enable interrupts
 }
 
@@ -59,60 +59,15 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
 {
     char receivedChar = U1RXREG; //get char from uart1rec line
 
-    //if char is a carriage return and the intIndex is
-    if (receivedChar == '\r' && intIndex != 0  && intIndex < 47)
-    {
-
-        if (bufferflag == 0)
-        {
-            receive1[intIndex++] = '\r';
-            receive1[intIndex] = 0;
-        }
-
-        if (bufferflag != 0)
-        {
-            receive2[intIndex++] = '\r';
-            receive2[intIndex] = 0;
-        }
-
-        ++receivedLine;
-        intIndex = 0;
-        bufferflag = !bufferflag;
-
-    }
-    else if (receivedChar != '\n' && receivedChar != '\r'  && intIndex < 47)
-    {
-        if (bufferflag == 0)
-        {
-            receive1[intIndex++] = receivedChar;
-        }
-
-        if (bufferflag != 0)
-        {
-            receive2[intIndex++] = receivedChar;
-        }
-    }
-    else if (intIndex == 47 && receivedChar != '\r')
-    {
-        if (bufferflag == 0)
-        {
-            receive1[intIndex++] = receivedChar;
-            receive1[intIndex++] = '\r';
-            receive1[intIndex] = 0;
-        }
-
-        if (bufferflag != 0)
-        {
-            receive2[intIndex++] = receivedChar;
-            receive2[intIndex++] = '\r';
-            receive2[intIndex] = 0;
-        }
-            ++receivedLine;
-            intIndex = 0;
-            bufferflag = !bufferflag;
-    }
-
     IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
+
+}
+
+void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
+{
+    char receivedChar = U2RXREG; //get char from uart1rec line
+
+    IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
 
 }
 
