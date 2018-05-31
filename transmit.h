@@ -10,7 +10,7 @@
 
 volatile char GPSready;
 volatile char GPSnew;
-volatile char GPSdat[84];
+volatile char GPSdata[84];
 
 void InterruptInit();
 void UARTInit();

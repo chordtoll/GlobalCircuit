@@ -71,7 +71,7 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbuf[gpsbufi++]=receivedChar;
         gpsbuf[gpsbufi++]=0;
         if (GPSready) {
-            strcpy(GPSdat,gpsbuf);
+            strcpy(GPSdata,gpsbuf);
             GPSready=0;
             GPSnew=1;
         }
