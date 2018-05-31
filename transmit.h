@@ -12,6 +12,10 @@ volatile char GPSready;
 volatile char GPSnew;
 volatile char GPSdata[84];
 
+volatile char rockready;
+volatile char rocknew;
+volatile char rockdata[28];
+
 void InterruptInit();
 void UARTInit();
 int HackBusyWait(unsigned char time);

@@ -4,6 +4,11 @@
 volatile char gpsbuf[84];
 volatile char gpsbufi;
 
+volatile char rockbuf[40];
+volatile char rockbuf2[40];
+volatile char rockbufi = 0;
+volatile char rockline = 0;
+
 void UARTInit()
 {
     //Setting up UART1 Transmit
@@ -54,6 +59,43 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
 {
     char receivedChar = U1RXREG; //get char from uart1rec line
 
+    if (rockbufi==38) {
+        rockbufi=0;
+    }
+    if(receivedChar == '\n')
+    {
+        rockbuf[rockbufi++]=receivedChar;
+        rockbuf[rockbufi++]=0;
+        rockbufi=0;
+        if(rockline == 2)
+        {
+            strcpy(rockbuf2,rockbuf);
+        }
+        if(rockbuf[0] == 'O' && rockbuf[1] == 'K' && rockbuf[2] == '\r' && rockbuf[3] == '\n' )
+        {
+            rockline = 0;
+        }
+    }
+
+
+    /*
+    if (rockbufi==26) {
+        rockbufi=0;
+    }
+    if (receivedChar=='$') {
+        rockbufi=0;
+        rockbuf[rockbufi++]=receivedChar;
+    } else if (receivedChar==0x0A) {
+        rockbuf[rockbufi++]=receivedChar;
+        rockbuf[rockbufi++]=0;
+        if (rockready) {
+            strcpy(rockdata,rockbuf);
+            rockready=0;
+            rocknew=1;
+        }
+    } else {
+        rockbuf[rockbufi++]=receivedChar;
+    }*/
     IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
 
 }
@@ -115,98 +157,98 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
 //    return 0;
 //}
 
-int HackBusyWait(unsigned char time)
-{
-    unsigned char i = 0;
-    unsigned char j = 0;
-    unsigned char k = 0;
-    unsigned char l = 0;
-    unsigned char m = 0;
+//int HackBusyWait(unsigned char time)
+//{
+//    unsigned char i = 0;
+//    unsigned char j = 0;
+//    unsigned char k = 0;
+//    unsigned char l = 0;
+//    unsigned char m = 0;
+//
+//    for(i = 0; i < time; ++i)
+//    {
+//        for(j = 0; j < time; ++j)
+//        {
+//            for(k = 0; k < time; ++k)
+//            {
+//                for(l = 0; l < time; ++l)
+//                {
+//                    m = l;
+//                }
+//            }
+//        }
+//    }
+//    return m;
+//}
 
-    for(i = 0; i < time; ++i)
-    {
-        for(j = 0; j < time; ++j)
-        {
-            for(k = 0; k < time; ++k)
-            {
-                for(l = 0; l < time; ++l)
-                {
-                    m = l;
-                }
-            }
-        }
-    }
-    return m;
-}
-
-int HackRockSend(unsigned char * message)
-{
-    char oldestReceivedChar = 255;
-    char olderReceivedChar = 255;
-    char oldReceivedChar = 255;
-    char receivedChar = 255;
-    char timeToGo = 0;
-    int i = 0;
-
-    //static char sentYet = 0;
-    //static char prevHour = 0;
-    //static char prevMin = 0;
-
-    //if((sentYet == 0) || (message[7] != prevMin) || (message[8] != prevHour) )
-    {
-    //    sentYet = 1;
-    //    prevMin = message[7];
-    //    prevHour = message[8];
-
-        SendString("AT\r", 0);
-
-        for(i = 0; i < 4; ++i)
-        {
-            timeToGo = 0;
-
-            while(timeToGo == 0) //Wait for us to get the go ahead to continue
-            {
-                //Wait for response to be over
-                if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
-                {
-                    U1STAbits.OERR = 0;
-                }
-                if (U1STAbits.URXDA)  //If data available from Rockblock
-                {
-                    oldestReceivedChar = olderReceivedChar;
-                    olderReceivedChar = oldReceivedChar;
-                    oldReceivedChar = receivedChar;
-                    receivedChar = U1RXREG; // Read the receive line of the PIC from the GPS
-
-                    if(oldestReceivedChar == 'O' && olderReceivedChar == 'K' && oldReceivedChar == '\r' && receivedChar == '\n' )
-                    {
-                        timeToGo = 1;
-                    }
-
-                }
-            }
-
-
-            if(i == 0)
-            {
-                SendString("AT&K0\r", 0);
-            }
-            else if(i == 1)
-            {
-                //SendString("AT+SBDWT=This message was successfully sent from PIC32MX360\r", 0);
-                SendString("AT+SBDWT=", 0);
-                SendString(message, 0);
-                SendString("\r", 0);
-            }
-            else if(i == 2)
-            {
-                SendString("AT+SBDIX\r", 0);
-            }
-        }
-    }
-
-    return 0;
-}
+//int HackRockSend(unsigned char * message)
+//{
+//    char oldestReceivedChar = 255;
+//    char olderReceivedChar = 255;
+//    char oldReceivedChar = 255;
+//    char receivedChar = 255;
+//    char timeToGo = 0;
+//    int i = 0;
+//
+//    //static char sentYet = 0;
+//    //static char prevHour = 0;
+//    //static char prevMin = 0;
+//
+//    //if((sentYet == 0) || (message[7] != prevMin) || (message[8] != prevHour) )
+//    {
+//    //    sentYet = 1;
+//    //    prevMin = message[7];
+//    //    prevHour = message[8];
+//
+//        SendString("AT\r", 0);
+//
+//        for(i = 0; i < 4; ++i)
+//        {
+//            timeToGo = 0;
+//
+//            while(timeToGo == 0) //Wait for us to get the go ahead to continue
+//            {
+//                //Wait for response to be over
+//                if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
+//                {
+//                    U1STAbits.OERR = 0;
+//                }
+//                if (U1STAbits.URXDA)  //If data available from Rockblock
+//                {
+//                    oldestReceivedChar = olderReceivedChar;
+//                    olderReceivedChar = oldReceivedChar;
+//                    oldReceivedChar = receivedChar;
+//                    receivedChar = U1RXREG; // Read the receive line of the PIC from the GPS
+//
+//                    if(oldestReceivedChar == 'O' && olderReceivedChar == 'K' && oldReceivedChar == '\r' && receivedChar == '\n' )
+//                    {
+//                        timeToGo = 1;
+//                    }
+//
+//                }
+//            }
+//
+//
+//            if(i == 0)
+//            {
+//                SendString("AT&K0\r", 0);
+//            }
+//            else if(i == 1)
+//            {
+//                //SendString("AT+SBDWT=This message was successfully sent from PIC32MX360\r", 0);
+//                SendString("AT+SBDWT=", 0);
+//                SendString(message, 0);
+//                SendString("\r", 0);
+//            }
+//            else if(i == 2)
+//            {
+//                SendString("AT+SBDIX\r", 0);
+//            }
+//        }
+//    }
+//
+//    return 0;
+//}
 
 //int checkService()
 //{
@@ -224,30 +266,30 @@ int HackRockSend(unsigned char * message)
 //    return 0;
 //}
 
-void SendString(unsigned char* string, char checksum)
-{
-    int sum = 0;
-    int i;
-
-    if (checksum == 0)
-    {
-        while(*string != 0)
-        {
-            SendChar(*(string++));
-        }
-    }
-    else
-    {
-        for (i = 0; i < 340; ++i)
-        {
-            SendChar(*string);
-            sum += *(string++);
-        }
-        //sum = 0xFE01;
-        SendChar(sum/256);
-        SendChar(sum%256);
-    }
-}
+//void SendString(unsigned char* string, char checksum)
+//{
+//    int sum = 0;
+//    int i;
+//
+//    if (checksum == 0)
+//    {
+//        while(*string != 0)
+//        {
+//            SendChar(*(string++));
+//        }
+//    }
+//    else
+//    {
+//        for (i = 0; i < 340; ++i)
+//        {
+//            SendChar(*string);
+//            sum += *(string++);
+//        }
+//        //sum = 0xFE01;
+//        SendChar(sum/256);
+//        SendChar(sum%256);
+//    }
+//}
 
 void SendChar(char letter)
 {

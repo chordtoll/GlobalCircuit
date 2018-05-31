@@ -155,7 +155,7 @@ int main(void) {
 
     //while(1) {
     //    mag_reset(MAG_ADDR);
-    SendString("Init'd\n", 0);
+    //SendString("Init'd\n", 0);
     //    for (i=0;i<10000;i++);
     //}
     //while(1);
@@ -209,8 +209,8 @@ int main(void) {
                 //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
                 //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
                 sprintf(SBDnormal, "%9s%9s%10s%5s", TIME, LATI, LONG, ALT); //Partial packet for Moses Lake
-                SendString(SBDnormal, 0);
-                SendString("\n", 0);
+                //SendString(SBDnormal, 0);
+                //SendString("\n", 0);
 
                 /*
                  *
