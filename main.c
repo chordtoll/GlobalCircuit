@@ -105,6 +105,11 @@ int main(void) {
     //char GPSdata[80]={0};
     int first = 1;
     int loopCounter = 0;
+    int countItUp = 1;
+
+    int messageLength = 0;
+    char message[80]={0};
+
     float x, v;
     InterruptInit(); // Initializes interrupts
     UARTInit(); // Initializes UART
@@ -114,8 +119,8 @@ int main(void) {
 
     char receivedChar;
     char n[50];
-    I2cConfig();
-    mag_reset(MAG_ADDR);
+    //I2cConfig();
+    //mag_reset(MAG_ADDR);
     ///////////////////////////////GPS//////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     // Transmits to the GPS to tell it to only print two NMEA strings instead of four
@@ -174,8 +179,9 @@ int main(void) {
     //            GPSnew=0;
     //        }
     //    }
+    rockReady = 1;
     while (1) { //Main loop
-        GPSready = 1;
+        /*GPSready = 1;
         if (GPSnew) {
             GPSnew = 0;
             if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
@@ -187,7 +193,7 @@ int main(void) {
                 itob64(dTime, TIME);
                 itob64(dLati * 10000, LATI);
                 itob64(dLong * 10000, LONG);
-                itob64(dAlti * 10, ALT);
+                itob64(dAlti * 10, ALT);*/
 
                 /*
                  *
@@ -208,10 +214,14 @@ int main(void) {
 
                 //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
                 //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
+
+
+                /*
                 sprintf(SBDnormal, "%9s%9s%10s%5s", TIME, LATI, LONG, ALT); //Partial packet for Moses Lake
                 //SendString(SBDnormal, 0);
                 //SendString("\n", 0);
-
+                */
+        
                 /*
                  *
                  * RockBlock code here- transmit SBDnormal
@@ -219,6 +229,83 @@ int main(void) {
                  */
                 //HackRockSend(SBDnormal);
                 //HackBusyWait(100);
+            //}
+        //}
+        if(rockReady == 1)
+        {
+            if(countItUp == 1)
+            {
+                rockReady = 0;
+                SendString("ATE1\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 2)
+            {
+                rockReady = 0;
+                SendString("AT&K0\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 3)
+            {
+                rockReady = 0;
+                SendString("AT\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 4)
+            {
+                rockReady = 0;
+                SendString("AT+SBDMTA=0\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 5)
+            {
+                rockReady = 0;
+                SendString("AT+SBDD0\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 6)
+            {
+                rockReady = 0;
+                SendString("AT+SBDIX\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 7)
+            {
+                rockReady = 0;
+                SendString("AT+SBDRB\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 8)
+            {
+                rockReady = 0;
+                SendString("AT+SBDD0\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 9)
+            {
+                rockReady = 0;
+                SendString("AT+SBDWB=4\r", 0);
+                ++countItUp;
+            }
+            else if(countItUp == 10)
+            {
+                rockReady = 0;
+                message[0] = 'T';
+                message[1] = 'e';
+                message[2] = 's';
+                message[3] = 't';
+                message[4] = 1;
+                message[5] = 160;
+                message[6] = '\r';
+                message[7] = 0;
+                SendString(message, 0);
+                ++countItUp;
+            }
+            else if(countItUp == 11)
+            {
+                rockReady = 0;
+                SendString("AT+SBDIX\r", 0);
+                ++countItUp;
             }
         }
     }
