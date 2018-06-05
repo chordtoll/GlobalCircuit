@@ -116,41 +116,9 @@ int main(void) {
     char n[50];
     I2cConfig();
     mag_reset(MAG_ADDR);
-    ///////////////////////////////GPS//////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    // Transmits to the GPS to tell it to only print two NMEA strings instead of four
-    U2TXREG = (0xA0); //skytraq start of sequence: 0xA0A1
-    while (U2STAbits.TRMT == 0); // Waiting for transmission to complete
-    U2TXREG = (0xA1);
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //payload len: 0x0009
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x09);
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x08); //message id: 0x08
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x01); //GGA interval: 0x01
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //GSA interval: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //GSV interval: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //GLL interval: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //RMC interval: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //VTG interval: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //ZDA interval: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x00); //update ram only: 0x00
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x09); //checksum: 0x08
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x0D); //skytraq end of sequence: 0x0D0A
-    while (U2STAbits.TRMT == 0);
-    U2TXREG = (0x0A);
-    while (U2STAbits.TRMT == 0);
+
+    GPS_init();
+    
     //SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
 
     //while(1) {
