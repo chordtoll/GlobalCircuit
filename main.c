@@ -109,8 +109,14 @@ int main(void) {
     InterruptInit(); // Initializes interrupts
     UARTInit(); // Initializes UART
     //RockInit();      // Initializes the rockblock modem
+    IOInit();
+    IOWriteString("Init'd\n");
 
 
+    while(1) {
+        IOWriteString("TEST\n");
+        for (i=10000;i;i--);
+    }
 
     char receivedChar;
     char n[50];
