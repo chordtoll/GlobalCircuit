@@ -28,6 +28,8 @@
       <itemPath>MAG3310.h</itemPath>
       <itemPath>MS5607.c</itemPath>
       <itemPath>MS5607.h</itemPath>
+      <itemPath>GPIODebug.c</itemPath>
+      <itemPath>GPIODebug.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
