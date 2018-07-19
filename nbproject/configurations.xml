@@ -31,6 +31,8 @@
       <itemPath>GPS.c</itemPath>
       <itemPath>GPIODebug.c</itemPath>
       <itemPath>GPIODebug.h</itemPath>
+      <itemPath>Timing.c</itemPath>
+      <itemPath>Timing.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
