@@ -1,6 +1,6 @@
 #include "transmit.h"
 #include "proc\p32mx360f512l.h"
-
+#include "Timing.h"
 volatile char gpsbuf[84];
 volatile char gpsbufi;
 
@@ -65,14 +65,21 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbufi=0;
     }
     if (receivedChar=='$') {
+        SendChar('$');
         // BEGIN TIMING CRITICAL DO NOT SPLIT
         unsigned int ctt=ReadCoreTimer();
         WriteCoreTimer(0);
         timer_accum+=ctt;
         // END   TIMING CRITICAL DO NOT SPLIT
-        tps*=99;
-        tps+=ctt;
-        tps/=100;
+        if (tps<10)
+            tps++;
+        else if (tps==10)
+            tps=ctt;
+        else {
+            tps*=9;
+            tps+=ctt;
+            tps/=10;
+        }
         gpsbufi=0;
         gpsbuf[gpsbufi++]=receivedChar;
     } else if (receivedChar==0x0A) {

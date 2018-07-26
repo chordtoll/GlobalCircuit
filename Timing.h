@@ -17,5 +17,8 @@ void wait_ticks(long n);
 void wait_us(int n);
 void wait_ms(int n);
 void wait_s(int n);
+
+void loop_delay_init();
+void loop_delay_ms(int n);
 #endif	/* TIMING_H */
 

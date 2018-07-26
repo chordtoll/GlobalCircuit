@@ -1,3 +1,6 @@
+#include "Timing.h"
+
+unsigned long long loopstarttime;
 
 unsigned long long get_timer() {
     unsigned long long acc1;
@@ -18,14 +21,23 @@ void wait_ticks(long n) {
 }
 
 void wait_us(int n) {
-    long long donetime=get_timer()+(n*tps)/1000000;
+    long long donetime=get_timer()+n*(tps/1000000);
     while (get_timer()<donetime);
 }
 void wait_ms(int n) {
-    long long donetime=get_timer()+(n*tps)/1000;
+    long long donetime=get_timer()+n*(tps/1000);
     while (get_timer()<donetime);
 }
 void wait_s(int n) {
     long long donetime=get_timer()+n*tps;
     while (get_timer()<donetime);
+}
+
+void loop_delay_init() {
+    loopstarttime=get_timer();
+}
+
+void loop_delay_ms(int n) {
+    while (get_timer()<loopstarttime+n*(tps/1000));
+    loopstarttime=get_timer();
 }
