@@ -1,17 +1,17 @@
 
 #include "proc\p32mx360f512l.h"
 
-void IOInit() {
+void InitIO() {
     TRISECLR=0x1FF;
     ODCECLR=0x1FF;
 }
-void IOWriteChar(char c) {
+void SendChar_GPIO(char c) {
     int i;
     PORTE=PORTE&0xFEFF;
     PORTE=(PORTE&0xFF00)|c;
     PORTE=PORTE|0x100;
 }
-void IOWriteString(char *s) {
+void SendString_GPIO(char *s) {
     for (;*s;s++)
-        IOWriteChar(*s);
+        SendChar_GPIO(*s);
 }

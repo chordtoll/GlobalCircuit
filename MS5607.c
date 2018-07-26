@@ -4,50 +4,50 @@
 //Initializes altimeter module
 char InitAltimeter(char addr) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(ALT_CMD_RESET);
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(ALT_CMD_RESET);
+    StopI2C();
     return ack;
 }
 
 //Begins altimeter pressure conversion
 char TriggerAltimeter_Pressure(char addr) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(ALT_CMD_D1|ALT_OSR_4096);
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(ALT_CMD_D1|ALT_OSR_4096);
+    StopI2C();
     return ack;
 }
 
 //Begins altimeter temperature conversion
 char TriggerAltimeter_Temperature(char addr) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(ALT_CMD_D2|ALT_OSR_4096);
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(ALT_CMD_D2|ALT_OSR_4096);
+    StopI2C();
     return ack;
 }
 
 //Reads altimeter ADC value
 char ReadAltimeter_ADC(char addr, int* val) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(ALT_CMD_ADC);
-    I2cStop();
-    I2cStart();
-    ack |= I2cWrite((addr << 1)+1);
-    *val=I2cRead()<<16;
-    I2cAck();
-    *val|=I2cRead()<<8;
-    I2cAck();
-    *val|=I2cRead();
-    I2cNAck();
-    I2cStop();
-    *val&=0x00FFFFFF;
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(ALT_CMD_ADC);
+    StopI2C();
+    StartI2C();
+    ack |= WriteI2C((addr << 1)+1);
+    *val=(ReadI2C()&0xFF)<<16;
+    AckI2C();
+    *val|=(ReadI2C()&0xFF)<<8;
+    AckI2C();
+    *val|=ReadI2C()&0xFF;
+    NAckI2C();
+    StopI2C();
+    //*val&=0x00FFFFFF;
     return ack;
 }
 
@@ -55,16 +55,16 @@ char ReadAltimeter_ADC(char addr, int* val) {
 int ReadAltimeter_Param(char addr, char loc) {
     int val=0;
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(ALT_CMD_PROM+loc);
-    I2cStop();
-    I2cStart();
-    ack |= I2cWrite((addr << 1)+1);
-    val|=I2cRead()<<8;
-    I2cAck();
-    val|=I2cRead();
-    I2cNAck();
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(ALT_CMD_PROM+loc);
+    StopI2C();
+    StartI2C();
+    ack |= WriteI2C((addr << 1)+1);
+    val|=ReadI2C()<<8;
+    AckI2C();
+    val|=ReadI2C();
+    NAckI2C();
+    StopI2C();
     return val;
 }

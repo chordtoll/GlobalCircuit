@@ -52,7 +52,7 @@
 char InitMagneto(char addr);
 char TriggerMagneto(char addr);
 char CheckMagneto(char addr);
-char ReadMagneto(char addr, short* x, short* y, short* z);
+char ReadMagneto(char addr, unsigned short* x, unsigned short* y, unsigned short* z);
 
 #endif	/* MAG3310_H */
 

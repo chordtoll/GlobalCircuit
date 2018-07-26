@@ -11,14 +11,14 @@
 volatile unsigned long long timer_accum;
 volatile unsigned int tps=1;
 
-unsigned long long get_timer();
+unsigned long long GetTimer();
 
-void wait_ticks(long n);
-void wait_us(int n);
-void wait_ms(int n);
-void wait_s(int n);
+void WaitTicks(long n);
+void WaitUS(int n);
+void WaitMS(int n);
+void WaitS(int n);
 
-void loop_delay_init();
-void loop_delay_ms(int n);
+void InitLoopDelay();
+void DelayLoopMS(int n);
 #endif	/* TIMING_H */
 

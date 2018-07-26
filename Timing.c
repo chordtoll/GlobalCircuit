@@ -2,7 +2,7 @@
 
 unsigned long long loopstarttime;
 
-unsigned long long get_timer() {
+unsigned long long GetTimer() {
     unsigned long long acc1;
     unsigned int tim;
     unsigned long long acc2;
@@ -15,29 +15,29 @@ unsigned long long get_timer() {
     return acc2+tim;
 }
 
-void wait_ticks(long n) {
-    long long donetime=get_timer()+n;
-    while (get_timer()<donetime);
+void WaitTicks(long n) {
+    long long donetime=GetTimer()+n;
+    while (GetTimer()<donetime);
 }
 
-void wait_us(int n) {
-    long long donetime=get_timer()+n*(tps/1000000);
-    while (get_timer()<donetime);
+void WaitUS(int n) {
+    long long donetime=GetTimer()+n*(tps/1000000);
+    while (GetTimer()<donetime);
 }
-void wait_ms(int n) {
-    long long donetime=get_timer()+n*(tps/1000);
-    while (get_timer()<donetime);
+void WaitMS(int n) {
+    long long donetime=GetTimer()+n*(tps/1000);
+    while (GetTimer()<donetime);
 }
-void wait_s(int n) {
-    long long donetime=get_timer()+n*tps;
-    while (get_timer()<donetime);
-}
-
-void loop_delay_init() {
-    loopstarttime=get_timer();
+void WaitS(int n) {
+    long long donetime=GetTimer()+n*tps;
+    while (GetTimer()<donetime);
 }
 
-void loop_delay_ms(int n) {
-    while (get_timer()<loopstarttime+n*(tps/1000));
-    loopstarttime=get_timer();
+void InitLoopDelay() {
+    loopstarttime=GetTimer();
+}
+
+void DelayLoopMS(int n) {
+    while (GetTimer()<loopstarttime+n*(tps/1000));
+    loopstarttime=GetTimer();
 }

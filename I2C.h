@@ -2,19 +2,19 @@
 #ifndef _I2C_H    /* Guard against multiple inclusion */
 #define _I2C_H
 
-void I2cConfig(void);
+void InitI2C(void);
 
-char I2cSend(char addr, char* data, int size);
+char SendI2C(char addr, char* data, int size);
 
-char I2cReceive(char addr, char* data, int size);
+char ReceiveI2C(char addr, char* data, int size);
 
-char I2cRead(void);
-char I2cWrite(char data);
-void I2cStart(void);
-void I2cStop(void);
-void I2cRestart(void);
-void I2cAck(void);
-void I2cNAck(void);
+char ReadI2C(void);
+char WriteI2C(char data);
+void StartI2C(void);
+void StopI2C(void);
+void RestartI2C(void);
+void AckI2C(void);
+void NAckI2C(void);
 
 
 

@@ -87,15 +87,8 @@ int main(void) {
     //HackBusyWait(100);
 
     AD1PCFG = 0x0000; // Analog
-    // These are the SPI pins on the PIC. The current are for the PIC32MX460 and
-    // will have to be changed to the spins used for the PIC32MX360
-    TRISDbits.TRISD10 = 0; // SCK is output RD10
-    TRISCbits.TRISC4 = 1; // SDI is input RC04
-    TRISDbits.TRISD0 = 0; // SDO is output RD00
-    TRISDbits.TRISD9 = 0; // CHIP SELECT IS O/P output RD09
-
     initADC();
-    initSPI();
+    
     int i, j;
     char packet[340] = {0}; // Packet that wil be sent over the rockblock
     double coretimer; // Used to calculate the CPU time
@@ -107,15 +100,19 @@ int main(void) {
     int first = 1;
     int loopCounter = 0;
     float x, v;
-    InterruptInit(); // Initializes interrupts
-    UARTInit(); // Initializes UART
-    GPS_init();
-    //RockInit();      // Initializes the rockblock modem
-    IOInit();
-    SendString("Init'd\n",0);
+    
+    InitIO();
 
-    I2cConfig();
+    InitUART(); // Initializes UART
+    InitGPS();
+    InitInterrupt(); // Initializes interrupts
+
+    InitI2C();
     InitMagneto(MAG_ADDR);
+    InitAltimeter(ALT_ADDR);
+    //RockInit();      // Initializes the rockblock modem
+
+    SendString_UART1("Init'd\n");
 
     unsigned short mx=0xAAAA;
     unsigned short my=0xBBBB;
@@ -123,26 +120,24 @@ int main(void) {
     
 
 
-    loop_delay_init();
-    while(1) {
+    InitLoopDelay();
+    /*while(1) {
         TriggerMagneto(MAG_ADDR);
         ReadMagneto(MAG_ADDR,&mx,&my,&mz);
         sprintf(packet,"X: %4x Y: %4x Z: %4x T: %d\n",mx,my,mz,tps);
-        SendString(packet,0);
+        SendString_UART1(packet);
         loop_delay_ms(1000);
-    }
+    }*/
 
     char receivedChar;
     char n[50];
-    I2cConfig();
-    InitMagneto(MAG_ADDR);
 
     
     //SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
 
     //while(1) {
     //    mag_reset(MAG_ADDR);
-    SendString("Init'd\n", 0);
+    SendString_UART1("Init'd\n");
     //    for (i=0;i<10000;i++);
     //}
     //while(1);
@@ -161,6 +156,8 @@ int main(void) {
     //            GPSnew=0;
     //        }
     //    }
+
+
     while (1) { //Main loop
         GPSready = 1;
         if (GPSnew) {
@@ -175,6 +172,21 @@ int main(void) {
                 itob64(dLati * 10000, LATI);
                 itob64(dLong * 10000, LONG);
                 itob64(dAlti * 10, ALT);
+                int magX=0;
+                int magY=0;
+                int magZ=0;
+                ReadMagneto(MAG_ADDR,&magX,&magY,&magZ);
+                TriggerMagneto(MAG_ADDR);
+                int pressure;
+                int temperature;
+                WaitMS(100);
+                TriggerAltimeter_Pressure(ALT_ADDR);
+                WaitMS(100);
+                ReadAltimeter_ADC(ALT_ADDR, &pressure);
+                WaitMS(100);
+                TriggerAltimeter_Temperature(ALT_ADDR);
+                WaitMS(100);
+                ReadAltimeter_ADC(ALT_ADDR, &temperature);
 
                 /*
                  *
@@ -195,9 +207,13 @@ int main(void) {
 
                 //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
                 //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
-                sprintf(SBDnormal, "%9s%9s%10s%5s", TIME, LATI, LONG, ALT); //Partial packet for Moses Lake
-                SendString(SBDnormal, 0);
-                SendString("\n", 0);
+                //sprintf(SBDnormal, "%9s%9s%10s%5s", TIME, LATI, LONG, ALT); //Partial packet for Moses Lake
+                sprintf(SBDnormal, "Time:%12d Lat:%10d Lon:%10d Alt:%10d ",dTime,dLati,dLong,dAlti);
+                SendString_UART1(SBDnormal);
+                sprintf(SBDnormal, "Mag: X:%4x Y:%4x Z:%4x ",magX,magY,magZ);
+                SendString_UART1(SBDnormal);
+                sprintf(SBDnormal, "Alt: T:%8x P:%8x\n",temperature,pressure);
+                SendString_UART1(SBDnormal);
 
                 /*
                  *
