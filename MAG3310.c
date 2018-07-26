@@ -1,64 +1,68 @@
 #include "I2C.h"
 #include "MAG3310.h"
 
-char mag_reset(char addr) {
+//Initializes magnetometer module
+char InitMagneto(char addr) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(MAG_REG_CR2);
-    ack |= I2cWrite(MAG_CR2_AMR);
-    I2cStop();
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(MAG_REG_CR1);
-    ack |= I2cWrite(MAG_CR1_DR7|MAG_CR1_OS3);
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(MAG_REG_CR2);
+    ack |= WriteI2C(MAG_CR2_AMR);
+    StopI2C();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(MAG_REG_CR1);
+    ack |= WriteI2C(MAG_CR1_DR7|MAG_CR1_OS3);
+    StopI2C();
     return ack;
 }
 
-char mag_start(char addr) {
+//Begins a magnetometer conversion
+char TriggerMagneto(char addr) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(MAG_REG_CR1);
-    ack |= I2cWrite(MAG_CR1_TIM|MAG_CR1_DR7|MAG_CR1_OS3);
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(MAG_REG_CR1);
+    ack |= WriteI2C(MAG_CR1_TIM|MAG_CR1_DR7|MAG_CR1_OS3);
+    StopI2C();
     return ack;
 }
 
-char mag_check(char addr) {
+//Checks if magnetometer conversion complete
+char CheckMagneto(char addr) {
     int val=0;
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(MAG_REG_DRS);
-    I2cRestart();
-    ack |= I2cWrite((addr << 1)+1);
-    val=I2cRead();
-    I2cNAck();
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(MAG_REG_DRS);
+    RestartI2C();
+    ack |= WriteI2C((addr << 1)+1);
+    val=ReadI2C();
+    NAckI2C();
+    StopI2C();
     return (val&0x04 );
 }
 
-char mag_read(char addr, short* x, short* y, short* z) {
+//Reads values from magnetometer
+char ReadMagneto(char addr, unsigned short* x, unsigned short* y, unsigned short* z) {
     char ack=0;
-    I2cStart();
-    ack |= I2cWrite(addr << 1);
-    ack |= I2cWrite(MAG_REG_VXM);
-    I2cRestart();
-    ack |= I2cWrite((addr << 1)+1);
-    *x=I2cRead()<<8;
-    I2cAck();
-    *x|=I2cRead();
-    I2cAck();
-    *y=I2cRead()<<8;
-    I2cAck();
-    *y|=I2cRead();
-    I2cAck();
-    *z=I2cRead()<<8;
-    I2cAck();
-    *z|=I2cRead();
-    I2cNAck();
-    I2cStop();
+    StartI2C();
+    ack |= WriteI2C(addr << 1);
+    ack |= WriteI2C(MAG_REG_VXM);
+    RestartI2C();
+    ack |= WriteI2C((addr << 1)+1);
+    *x=(ReadI2C()&0xFF)<<8;
+    AckI2C();
+    *x|=(ReadI2C()&0xFF);
+    AckI2C();
+    *y=(ReadI2C()&0xFF)<<8;
+    AckI2C();
+    *y|=(ReadI2C()&0xFF);
+    AckI2C();
+    *z=(ReadI2C()&0xFF)<<8;
+    AckI2C();
+    *z|=(ReadI2C()&0xFF);
+    NAckI2C();
+    StopI2C();
     return ack;
 }
