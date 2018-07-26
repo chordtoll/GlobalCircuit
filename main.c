@@ -16,6 +16,7 @@
 #include "MS5607.h"
 #include "MAG3310.h"
 #include "Timing.h"
+#include "Resets.h"
 
 #define FSYS 80000000L      // Frequency of system clock, 80MHz
 
@@ -64,6 +65,8 @@ int main(void) {
     InitLoopDelay();
 
     SendString_UART1("Init'd\n");
+
+    PrintResetReason();
 
     //=============================//
     //          MAIN LOOP          //
