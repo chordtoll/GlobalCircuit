@@ -49,10 +49,10 @@
 #define MAG_CR2_MRS  0x10
 
 
-char mag_reset(char addr);
-char mag_start(char addr);
-char mag_check(char addr);
-char mag_read(char addr, short* x, short* y, short* z);
+char InitMagneto(char addr);
+char TriggerMagneto(char addr);
+char CheckMagneto(char addr);
+char ReadMagneto(char addr, short* x, short* y, short* z);
 
 #endif	/* MAG3310_H */
 

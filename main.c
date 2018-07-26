@@ -115,7 +115,7 @@ int main(void) {
     SendString("Init'd\n",0);
 
     I2cConfig();
-    mag_reset(MAG_ADDR);
+    InitMagneto(MAG_ADDR);
 
     unsigned short mx=0xAAAA;
     unsigned short my=0xBBBB;
@@ -125,8 +125,8 @@ int main(void) {
 
     loop_delay_init();
     while(1) {
-        mag_start(MAG_ADDR);
-        mag_read(MAG_ADDR,&mx,&my,&mz);
+        TriggerMagneto(MAG_ADDR);
+        ReadMagneto(MAG_ADDR,&mx,&my,&mz);
         sprintf(packet,"X: %4x Y: %4x Z: %4x T: %d\n",mx,my,mz,tps);
         SendString(packet,0);
         loop_delay_ms(1000);
@@ -135,7 +135,7 @@ int main(void) {
     char receivedChar;
     char n[50];
     I2cConfig();
-    mag_reset(MAG_ADDR);
+    InitMagneto(MAG_ADDR);
 
     
     //SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);

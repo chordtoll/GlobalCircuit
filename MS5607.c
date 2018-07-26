@@ -1,7 +1,8 @@
 #include "I2C.h"
 #include "MS5607.h"
 
-char alt_reset(char addr) {
+//Initializes altimeter module
+char InitAltimeter(char addr) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
@@ -10,7 +11,8 @@ char alt_reset(char addr) {
     return ack;
 }
 
-char alt_start_pressure(char addr) {
+//Begins altimeter pressure conversion
+char TriggerAltimeter_Pressure(char addr) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
@@ -19,7 +21,8 @@ char alt_start_pressure(char addr) {
     return ack;
 }
 
-char alt_start_temperature(char addr) {
+//Begins altimeter temperature conversion
+char TriggerAltimeter_Temperature(char addr) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
@@ -28,7 +31,8 @@ char alt_start_temperature(char addr) {
     return ack;
 }
 
-char alt_read_adc(char addr, int* val) {
+//Reads altimeter ADC value
+char ReadAltimeter_ADC(char addr, int* val) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
@@ -47,7 +51,8 @@ char alt_read_adc(char addr, int* val) {
     return ack;
 }
 
-int alt_read_param(char addr, char loc) {
+//Reads altimeter parameter
+int ReadAltimeter_Param(char addr, char loc) {
     int val=0;
     char ack=0;
     I2cStart();

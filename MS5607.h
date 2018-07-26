@@ -21,10 +21,10 @@
 #define ALT_OSR_2048  0x06
 #define ALT_OSR_4096  0x08
 
-char alt_start_pressure(char addr);
-char alt_start_temperature(char addr);
-char alt_read_adc(char addr, int* val);
-int alt_read_param(char addr, char loc);
+char TriggerAltimeter_Pressure(char addr);
+char TriggerAltimeter_Temperature(char addr);
+char ReadAltimeter_ADC(char addr, int* val);
+int ReadAltimeter_Param(char addr, char loc);
 
 #endif	/* MS5607_H */
 

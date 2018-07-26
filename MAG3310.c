@@ -1,7 +1,8 @@
 #include "I2C.h"
 #include "MAG3310.h"
 
-char mag_reset(char addr) {
+//Initializes magnetometer module
+char InitMagneto(char addr) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
@@ -16,7 +17,8 @@ char mag_reset(char addr) {
     return ack;
 }
 
-char mag_start(char addr) {
+//Begins a magnetometer conversion
+char TriggerMagneto(char addr) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
@@ -26,7 +28,8 @@ char mag_start(char addr) {
     return ack;
 }
 
-char mag_check(char addr) {
+//Checks if magnetometer conversion complete
+char CheckMagneto(char addr) {
     int val=0;
     char ack=0;
     I2cStart();
@@ -40,7 +43,8 @@ char mag_check(char addr) {
     return (val&0x04 );
 }
 
-char mag_read(char addr, short* x, short* y, short* z) {
+//Reads values from magnetometer
+char ReadMagneto(char addr, short* x, short* y, short* z) {
     char ack=0;
     I2cStart();
     ack |= I2cWrite(addr << 1);
