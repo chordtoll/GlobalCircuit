@@ -8,7 +8,7 @@
 #ifndef GPIODEBUG_H
 #define	GPIODEBUG_H
 
-void InitIO();
+void InitGPIO();
 void SendChar_GPIO(char c);
 void SendString_GPIO(char *s);
 

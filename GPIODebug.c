@@ -1,7 +1,7 @@
 
 #include "proc\p32mx360f512l.h"
 
-void InitIO() {
+void InitGPIO() {
     TRISECLR=0x1FF;
     ODCECLR=0x1FF;
 }
