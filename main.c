@@ -46,6 +46,8 @@ int HpL=0x666666;
 int HmH=0x777777;
 int HmL=0x888888;
 
+int picTemp;
+
 int main(void) {
 
     //=============================//
@@ -61,6 +63,8 @@ int main(void) {
     InitI2C();
     InitMagneto(MAG_ADDR);
     InitAltimeter(ALT_ADDR);
+
+    InitPICADC();
 
     InitLoopDelay();
 
@@ -98,13 +102,17 @@ int main(void) {
                 //ReadADC(&VpH,&VpL,&VmH,&VmL,&HpH,&HpL,&HmH,&HmL);
                 //ADC CODE
 
-                sprintf(SBDnormal, "Time:%10d Lat:%8d Lon:%8d Alt:%6d ",dTime,dLati,dLong,dAlti);
+                picTemp=ReadPICADC();
+
+                sprintf(SBDnormal, "T:%10d L:%8d L:%8d A:%6d ",dTime,dLati,dLong,dAlti);
                 SendString_UART1(SBDnormal);
                 sprintf(SBDnormal, "X:%4x Y:%4x Z:%4x ",magX,magY,magZ);
                 SendString_UART1(SBDnormal);
                 sprintf(SBDnormal, "T:%6x P:%6x ",temperature,pressure);
                 SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "V+H:%6x V+L:%6x V-H:%6x V-L:%6x H+H:%6x H+L:%6x H-H:%6x H-L:%6x\n",VpH,VpL,VmH,VmL,HpH,HpL,HmH,HmL);
+                sprintf(SBDnormal, "V+H:%6x V+L:%6x V-H:%6x V-L:%6x H+H:%6x H+L:%6x H-H:%6x H-L:%6x ",VpH,VpL,VmH,VmL,HpH,HpL,HmH,HmL);
+                SendString_UART1(SBDnormal);
+                sprintf(SBDnormal, "A:%3x\n",picTemp);
                 SendString_UART1(SBDnormal);
                 /*
                  *

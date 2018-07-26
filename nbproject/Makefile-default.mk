@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c Resets.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c Resets.c PICADC.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/transmit.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/GPIODebug.o.d ${OBJECTDIR}/Timing.o.d ${OBJECTDIR}/Resets.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o ${OBJECTDIR}/PICADC.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/transmit.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/GPIODebug.o.d ${OBJECTDIR}/Timing.o.d ${OBJECTDIR}/Resets.o.d ${OBJECTDIR}/PICADC.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o ${OBJECTDIR}/PICADC.o
 
 # Source Files
-SOURCEFILES=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c Resets.c
+SOURCEFILES=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c Resets.c PICADC.c
 
 
 CFLAGS=
@@ -145,6 +145,12 @@ ${OBJECTDIR}/Resets.o: Resets.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Resets.o 
 	@${FIXDEPS} "${OBJECTDIR}/Resets.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Resets.o.d" -o ${OBJECTDIR}/Resets.o Resets.c   
 	
+${OBJECTDIR}/PICADC.o: PICADC.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/PICADC.o.d 
+	@${RM} ${OBJECTDIR}/PICADC.o 
+	@${FIXDEPS} "${OBJECTDIR}/PICADC.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PICADC.o.d" -o ${OBJECTDIR}/PICADC.o PICADC.c   
+	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -199,6 +205,12 @@ ${OBJECTDIR}/Resets.o: Resets.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Resets.o.d 
 	@${RM} ${OBJECTDIR}/Resets.o 
 	@${FIXDEPS} "${OBJECTDIR}/Resets.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Resets.o.d" -o ${OBJECTDIR}/Resets.o Resets.c   
+	
+${OBJECTDIR}/PICADC.o: PICADC.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/PICADC.o.d 
+	@${RM} ${OBJECTDIR}/PICADC.o 
+	@${FIXDEPS} "${OBJECTDIR}/PICADC.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PICADC.o.d" -o ${OBJECTDIR}/PICADC.o PICADC.c   
 	
 endif
 

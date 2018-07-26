@@ -29,6 +29,8 @@
       <itemPath>Timing.h</itemPath>
       <itemPath>Resets.c</itemPath>
       <itemPath>Resets.h</itemPath>
+      <itemPath>PICADC.c</itemPath>
+      <itemPath>PICADC.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
