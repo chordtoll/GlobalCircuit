@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c ExponentialCalculation.c I2C.c TimerFunctions.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c ExponentialCalculation.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/ExponentialCalculation.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/TimerFunctions.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/ExponentialCalculation.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/TimerFunctions.o.d ${OBJECTDIR}/transmit.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/GPIODebug.o.d ${OBJECTDIR}/Timing.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/ExponentialCalculation.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/ExponentialCalculation.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/transmit.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/GPIODebug.o.d ${OBJECTDIR}/Timing.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/ExponentialCalculation.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/TimerFunctions.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/ExponentialCalculation.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o
 
 # Source Files
-SOURCEFILES=main.c ExponentialCalculation.c I2C.c TimerFunctions.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c
+SOURCEFILES=main.c ExponentialCalculation.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c
 
 
 CFLAGS=
@@ -108,12 +108,6 @@ ${OBJECTDIR}/I2C.o: I2C.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/I2C.o.d 
 	@${RM} ${OBJECTDIR}/I2C.o 
 	@${FIXDEPS} "${OBJECTDIR}/I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/I2C.o.d" -o ${OBJECTDIR}/I2C.o I2C.c   
-	
-${OBJECTDIR}/TimerFunctions.o: TimerFunctions.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/TimerFunctions.o.d 
-	@${RM} ${OBJECTDIR}/TimerFunctions.o 
-	@${FIXDEPS} "${OBJECTDIR}/TimerFunctions.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/TimerFunctions.o.d" -o ${OBJECTDIR}/TimerFunctions.o TimerFunctions.c   
 	
 ${OBJECTDIR}/transmit.o: transmit.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -169,12 +163,6 @@ ${OBJECTDIR}/I2C.o: I2C.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/I2C.o.d 
 	@${RM} ${OBJECTDIR}/I2C.o 
 	@${FIXDEPS} "${OBJECTDIR}/I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/I2C.o.d" -o ${OBJECTDIR}/I2C.o I2C.c   
-	
-${OBJECTDIR}/TimerFunctions.o: TimerFunctions.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/TimerFunctions.o.d 
-	@${RM} ${OBJECTDIR}/TimerFunctions.o 
-	@${FIXDEPS} "${OBJECTDIR}/TimerFunctions.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/TimerFunctions.o.d" -o ${OBJECTDIR}/TimerFunctions.o TimerFunctions.c   
 	
 ${OBJECTDIR}/transmit.o: transmit.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 

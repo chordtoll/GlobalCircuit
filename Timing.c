@@ -41,3 +41,21 @@ void DelayLoopMS(int n) {
     while (GetTimer()<loopstarttime+n*(tps/1000));
     loopstarttime=GetTimer();
 }
+
+unsigned int __attribute__((nomips16)) ReadCoreTimer(void)
+{
+    unsigned int timer;
+
+    // get the count reg
+    asm volatile("mfc0   %0, $9" : "=r"(timer));
+
+    return timer;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void __attribute__((nomips16)) WriteCoreTimer(unsigned int timer)
+{
+    /* get the count reg */
+    asm volatile("mtc0   %0, $9": "+r"(timer));
+
+}

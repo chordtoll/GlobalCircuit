@@ -18,13 +18,11 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/appio.h>
 #include "transmit.h"
 #include "assert.h"
-#include "TimerFunctions.h"
-#include <sys/appio.h>
 #include "ADCConfig.h"
 #include "GPS.h"
-#include "conversion.h"
 #include "MS5607.h"
 #include "MAG3310.h"
 #include "Timing.h"
