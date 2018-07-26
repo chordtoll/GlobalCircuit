@@ -29,6 +29,7 @@
 #include "conversion.h"
 #include "MS5607.h"
 #include "MAG3310.h"
+#include "Timing.h"
 
 #define ADC_ADDRESS 0b1001000
 #define MAG_ADDRESS 0x1E
@@ -108,14 +109,27 @@ int main(void) {
     float x, v;
     InterruptInit(); // Initializes interrupts
     UARTInit(); // Initializes UART
+    GPS_init();
     //RockInit();      // Initializes the rockblock modem
     IOInit();
-    IOWriteString("Init'd\n");
+    SendString("Init'd\n",0);
+
+    I2cConfig();
+    mag_reset(MAG_ADDR);
+
+    unsigned short mx=0xAAAA;
+    unsigned short my=0xBBBB;
+    unsigned short mz=0xCCCC;
+    
 
 
+    loop_delay_init();
     while(1) {
-        IOWriteString("TEST\n");
-        for (i=10000;i;i--);
+        mag_start(MAG_ADDR);
+        mag_read(MAG_ADDR,&mx,&my,&mz);
+        sprintf(packet,"X: %4x Y: %4x Z: %4x T: %d\n",mx,my,mz,tps);
+        SendString(packet,0);
+        loop_delay_ms(1000);
     }
 
     char receivedChar;
@@ -123,7 +137,6 @@ int main(void) {
     I2cConfig();
     mag_reset(MAG_ADDR);
 
-    GPS_init();
     
     //SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
 
