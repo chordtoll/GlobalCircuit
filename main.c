@@ -23,8 +23,6 @@
 #include "TimerFunctions.h"
 #include <sys/appio.h>
 #include "ADCConfig.h"
-#include "SPIConfig.h"
-#include "ADS1118.h"
 #include "GPS.h"
 #include "conversion.h"
 #include "MS5607.h"
@@ -45,7 +43,6 @@
 int result = 0;
 char SendSMS(char* packet);
 char CheckString(char* message);
-double read_timer(void); // Function to read core timer
 
 // Global memory locations for each part of the packet
 // We will take in the data from the various sensors and store them in each of these
@@ -77,10 +74,21 @@ char nAlti[20];
 char nLatD;
 char nLonD;
 
-signed short mx;
-signed short my;
-signed short mz;
-unsigned int pres;
+int magX=0;
+int magY=0;
+int magZ=0;
+
+int pressure;
+int temperature;
+
+int VpH=0x111111;
+int VpL=0x222222;
+int VmH=0x333333;
+int VmL=0x444444;
+int HpH=0x555555;
+int HpL=0x666666;
+int HmH=0x777777;
+int HmL=0x888888;
 
 int main(void) {
 
@@ -114,48 +122,7 @@ int main(void) {
 
     SendString_UART1("Init'd\n");
 
-    unsigned short mx=0xAAAA;
-    unsigned short my=0xBBBB;
-    unsigned short mz=0xCCCC;
-    
-
-
     InitLoopDelay();
-    /*while(1) {
-        TriggerMagneto(MAG_ADDR);
-        ReadMagneto(MAG_ADDR,&mx,&my,&mz);
-        sprintf(packet,"X: %4x Y: %4x Z: %4x T: %d\n",mx,my,mz,tps);
-        SendString_UART1(packet);
-        loop_delay_ms(1000);
-    }*/
-
-    char receivedChar;
-    char n[50];
-
-    
-    //SendString(""/*"<SILLY>Init'd<SILLY>"*/,0);
-
-    //while(1) {
-    //    mag_reset(MAG_ADDR);
-    SendString_UART1("Init'd\n");
-    //    for (i=0;i<10000;i++);
-    //}
-    //while(1);
-    //for(i=0;i<0x80;i++) {
-    //    sprintf(SBDnormal,"%x",i);
-    //    SendString(SBDnormal,0);
-    //    if (I2cEnum(i))
-    //        SendString("A\n",0);
-    //    else
-    //        SendString("NAK\n",0);
-    //}
-    //    while(1) {
-    //        GPSready=1;
-    //        if (GPSnew) {
-    //            SendString(GPSdat,0);
-    //            GPSnew=0;
-    //        }
-    //    }
 
 
     while (1) { //Main loop
@@ -168,17 +135,9 @@ int main(void) {
                 double dLati = atof(nLati);
                 double dLong = atof(nLong);
                 double dAlti = atof(nAlti);
-                itob64(dTime, TIME);
-                itob64(dLati * 10000, LATI);
-                itob64(dLong * 10000, LONG);
-                itob64(dAlti * 10, ALT);
-                int magX=0;
-                int magY=0;
-                int magZ=0;
                 ReadMagneto(MAG_ADDR,&magX,&magY,&magZ);
                 TriggerMagneto(MAG_ADDR);
-                int pressure;
-                int temperature;
+                
                 WaitMS(100);
                 TriggerAltimeter_Pressure(ALT_ADDR);
                 WaitMS(100);
@@ -188,33 +147,18 @@ int main(void) {
                 WaitMS(100);
                 ReadAltimeter_ADC(ALT_ADDR, &temperature);
 
-                /*
-                 *
-                 * ADC code here- Store value into Bb
-                 *
-                 */
+                //ADC CODE
+                //ReadADC(&VpH,&VpL,&VmH,&VmL,&HpH,&HpL,&HmH,&HmL);
+                //ADC CODE
 
-                //                    char ack=alt_read_adc(ALT_ADDR,&pres);
-                //                    sprintf(SBDnormal,"P:%x %d\n",pres,ack);
-                //                    SendString(SBDnormal,0);
-                //                    alt_start_pressure(ALT_ADDR);
-                //                    SendString("OK\n",0);
-                //                    mag_start(MAG_ADDR);
-                //                    while (!mag_check(MAG_ADDR));
-                //                    mag_read(MAG_ADDR,&mx,&my,&mz);
-                //                    sprintf(SBDnormal,"M:%d,%d,%d\n",mx,my,mz);
-                //                    SendString(SBDnormal,0);
-
-                //sprintf(SBDnormal,"%9s%9s%10s%5s%2s%2s%1s%1s%2s%1s%2s%66s%120s%120s",TIME,LATI,LONG,ALT,pr,AT,t,B,bv,I,dt,Aa,Bb,Cc);
-                //sprintf(SBDnormal,"%9s%9s%10s%5s%120s",TIME,LATI,LONG,ALT,Bb); //Partial packet for Moses Lake
-                //sprintf(SBDnormal, "%9s%9s%10s%5s", TIME, LATI, LONG, ALT); //Partial packet for Moses Lake
-                sprintf(SBDnormal, "Time:%12d Lat:%10d Lon:%10d Alt:%10d ",dTime,dLati,dLong,dAlti);
+                sprintf(SBDnormal, "Time:%10d Lat:%8d Lon:%8d Alt:%6d ",dTime,dLati,dLong,dAlti);
                 SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "Mag: X:%4x Y:%4x Z:%4x ",magX,magY,magZ);
+                sprintf(SBDnormal, "X:%4x Y:%4x Z:%4x ",magX,magY,magZ);
                 SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "Alt: T:%8x P:%8x\n",temperature,pressure);
+                sprintf(SBDnormal, "T:%6x P:%6x ",temperature,pressure);
                 SendString_UART1(SBDnormal);
-
+                sprintf(SBDnormal, "V+H:%6x V+L:%6x V-H:%6x V-L:%6x H+H:%6x H+L:%6x H-H:%6x H-L:%6x\n",VpH,VpL,VmH,VmL,HpH,HpL,HmH,HmL);
+                SendString_UART1(SBDnormal);
                 /*
                  *
                  * RockBlock code here- transmit SBDnormal
@@ -227,11 +171,4 @@ int main(void) {
     }
 
     return 0;
-}
-
-double read_timer(void) // Reads the core timer to get the time since power on
-{
-    unsigned int core;
-    core = ReadCoreTimer(); // Get the core timer count
-    return (core * 2.0 / FSYS);
 }

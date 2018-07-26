@@ -20,7 +20,7 @@ void SendString_UART1(unsigned char* string);
 void SendChar_UART1(char letter);
 void SendString_UART2(unsigned char* string);
 void SendChar_UART2(char letter);
-//int strlen(char* string);
+
 int strcmp(const char* s1, const char* s2);
 
 #endif	/* _TRANSMIT_H_ */

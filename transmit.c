@@ -70,15 +70,9 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         WriteCoreTimer(0);
         timer_accum+=ctt;
         // END   TIMING CRITICAL DO NOT SPLIT
-        if (tps<10)
-            tps++;
-        else if (tps==10)
-            tps=ctt;
-        else {
-            tps*=9;
-            tps+=ctt;
-            tps/=10;
-        }
+        tps*=9;
+        tps+=ctt;
+        tps/=10;
         gpsbufi=0;
         gpsbuf[gpsbufi++]=receivedChar;
     } else if (receivedChar==0x0A) {
@@ -265,15 +259,6 @@ void SendChar_UART2(char letter)
     while(U2STAbits.TRMT == 0){} //while transmitting don't do anything
     U2TXREG = letter;            //transmit first char
 }
-
-//int strlen(char* string)
-//{
-//    int count = 0;
-//    while(*(string++))
-//        ++count;
-//
-//    return count;
-//}
 
 int strcmp(const char* s1, const char* s2)
 {

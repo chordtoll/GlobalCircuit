@@ -9,7 +9,7 @@
 #define	TIMING_H
 
 volatile unsigned long long timer_accum;
-volatile unsigned int tps=1;
+volatile unsigned int tps=40000000;
 
 unsigned long long GetTimer();
 
