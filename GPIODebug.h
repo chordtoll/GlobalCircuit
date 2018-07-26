@@ -8,9 +8,9 @@
 #ifndef GPIODEBUG_H
 #define	GPIODEBUG_H
 
-void IOInit();
-void IOWriteChar(char c);
-void IOWriteString(char *s);
+void InitGPIO();
+void SendChar_GPIO(char c);
+void SendString_GPIO(char *s);
 
 #endif	/* GPIODEBUG_H */
 

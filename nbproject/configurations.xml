@@ -13,15 +13,9 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.c</itemPath>
-      <itemPath>ADCConfig.h</itemPath>
-      <itemPath>ADS1118.h</itemPath>
-      <itemPath>ExponentialCalculation.c</itemPath>
       <itemPath>GPS.h</itemPath>
       <itemPath>I2C.c</itemPath>
       <itemPath>I2C.h</itemPath>
-      <itemPath>SPIConfig.h</itemPath>
-      <itemPath>TimerFunctions.c</itemPath>
-      <itemPath>TimerFunctions.h</itemPath>
       <itemPath>transmit.c</itemPath>
       <itemPath>transmit.h</itemPath>
       <itemPath>MAG3310.c</itemPath>
@@ -33,6 +27,8 @@
       <itemPath>GPIODebug.h</itemPath>
       <itemPath>Timing.c</itemPath>
       <itemPath>Timing.h</itemPath>
+      <itemPath>Resets.c</itemPath>
+      <itemPath>Resets.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -186,6 +182,7 @@
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="false"/>

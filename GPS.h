@@ -11,7 +11,7 @@
 
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti);
 
-void GPS_init(void);
+void InitGPS(void);
 
 #endif
 

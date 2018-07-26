@@ -4,7 +4,7 @@
 volatile char gpsbuf[84];
 volatile char gpsbufi;
 
-void UARTInit()
+void InitUART()
 {
     //Setting up UART1 Transmit
     U1BRG = 260;           //Initialize U1BRG for 19200 baud rate
@@ -42,7 +42,7 @@ void UARTInit()
 
 }
 
-void InterruptInit()
+void InitInterrupt()
 {
     INTCONbits.MVEC = 1;  //enabling multivector interrupts
     IFS0bits.U1RXIF = 0; // clearing uart1 interrupt flag
@@ -65,21 +65,14 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbufi=0;
     }
     if (receivedChar=='$') {
-        SendChar('$');
         // BEGIN TIMING CRITICAL DO NOT SPLIT
         unsigned int ctt=ReadCoreTimer();
         WriteCoreTimer(0);
         timer_accum+=ctt;
         // END   TIMING CRITICAL DO NOT SPLIT
-        if (tps<10)
-            tps++;
-        else if (tps==10)
-            tps=ctt;
-        else {
-            tps*=9;
-            tps+=ctt;
-            tps/=10;
-        }
+        tps*=9;
+        tps+=ctt;
+        tps/=10;
         gpsbufi=0;
         gpsbuf[gpsbufi++]=receivedChar;
     } else if (receivedChar==0x0A) {
@@ -173,7 +166,7 @@ int HackRockSend(unsigned char * message)
     //    prevMin = message[7];
     //    prevHour = message[8];
 
-        SendString("AT\r", 0);
+        SendString_UART1("AT\r");
 
         for(i = 0; i < 4; ++i)
         {
@@ -204,18 +197,18 @@ int HackRockSend(unsigned char * message)
 
             if(i == 0)
             {
-                SendString("AT&K0\r", 0);
+                SendString_UART1("AT&K0\r");
             }
             else if(i == 1)
             {
                 //SendString("AT+SBDWT=This message was successfully sent from PIC32MX360\r", 0);
-                SendString("AT+SBDWT=", 0);
-                SendString(message, 0);
-                SendString("\r", 0);
+                SendString_UART1("AT+SBDWT=");
+                SendString_UART1(message);
+                SendString_UART1("\r");
             }
             else if(i == 2)
             {
-                SendString("AT+SBDIX\r", 0);
+                SendString_UART1("AT+SBDIX\r");
             }
         }
     }
@@ -239,45 +232,33 @@ int HackRockSend(unsigned char * message)
 //    return 0;
 //}
 
-void SendString(unsigned char* string, char checksum)
+void SendString_UART1(unsigned char* string)
 {
-    int sum = 0;
-    int i;
-
-    if (checksum == 0)
+    while(*string != 0)
     {
-        while(*string != 0)
-        {
-            SendChar(*(string++));
-        }
-    }
-    else
-    {
-        for (i = 0; i < 340; ++i)
-        {
-            SendChar(*string);
-            sum += *(string++);
-        }
-        //sum = 0xFE01;
-        SendChar(sum/256);
-        SendChar(sum%256);
+        SendChar_UART1(*(string++));
     }
 }
 
-void SendChar(char letter)
+void SendChar_UART1(char letter)
 {
     while(U1STAbits.TRMT == 0){} //while transmitting don't do anything
     U1TXREG = letter;            //transmit first char
 }
 
-//int strlen(char* string)
-//{
-//    int count = 0;
-//    while(*(string++))
-//        ++count;
-//
-//    return count;
-//}
+void SendString_UART2(unsigned char* string)
+{
+    while(*string != 0)
+    {
+        SendChar_UART2(*(string++));
+    }
+}
+
+void SendChar_UART2(char letter)
+{
+    while(U2STAbits.TRMT == 0){} //while transmitting don't do anything
+    U2TXREG = letter;            //transmit first char
+}
 
 int strcmp(const char* s1, const char* s2)
 {
