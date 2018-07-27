@@ -5,6 +5,8 @@
  * Created on May 27, 2018, 5:58 PM
  */
 
+#include <stdint.h>
+
 #ifndef MAG3310_H
 #define	MAG3310_H
 
@@ -52,7 +54,7 @@
 char InitMagneto(char addr);
 char TriggerMagneto(char addr);
 char CheckMagneto(char addr);
-char ReadMagneto(char addr, unsigned short* x, unsigned short* y, unsigned short* z);
+char ReadMagneto(char addr, uint16_t* x, uint16_t* y, uint16_t* z);
 
 #endif	/* MAG3310_H */
 
