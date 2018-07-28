@@ -38,10 +38,6 @@ void InitLoopDelay() {
 }
 
 void DelayLoopMS(int n) {
-    if (GetTimer()<loopstarttime+n*(tps/1000))
-        SendChar_UART1(' ');
-    else
-        SendChar_UART1('X');
     while (GetTimer()<loopstarttime+n*(tps/1000));
     loopstarttime+=n*(tps/1000);
 }

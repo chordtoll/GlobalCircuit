@@ -1,6 +1,8 @@
 #include "Stubs.h"
 #include "MAG3310.h"
 #include "MS5607.h"
+#include "transmit.h"
+#include <stdlib.h>
 
 char chanidx[6];
 
@@ -54,8 +56,36 @@ uint32_t ReadAltimeter_S() {
     return pressure;
 }
 
-void ReadGPS_S(double* time, double* latitude, double* longitude, double* altitude) {
+void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt) {
+    char nTime[20];
+    char nLati[20];
+    char nLong[20];
+    char nAlti[20];
+    char nLatD;
+    char nLonD;
     SendString_UART1("Read GPS ");
+    if (GPSnew) {
+        GPSnew=0;
+    if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
+        ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti);
+//        SendString_UART1("\n");
+//        SendString_UART1(GPSdata);
+//        SendString_UART1("\nTIME ");
+//        SendString_UART1(nTime);
+//        SendString_UART1(" LAT ");
+//        SendString_UART1(nLati);
+//        SendString_UART1(" LON ");
+//        SendString_UART1(nLong);
+//        SendString_UART1(" ALT ");
+//        SendString_UART1(nAlti);
+//        SendChar_UART1('\n');
+        *time=atof(nTime);
+        *lat=(atof(nLati)*10000)*(nLatD=='S'?-1:1);
+        *lon=(atof(nLong)*10000)*(nLonD=='W'?-1:1);
+        *alt=(atof(nAlti)*10);
+    }
+    }
+    GPSready=1;
 }
 
 void ChargeProbe_S(chgst_t state) {

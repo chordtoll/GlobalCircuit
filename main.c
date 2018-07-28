@@ -24,8 +24,8 @@
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
 #define T_MINUTE (T_SECOND*60)
-#define T_NORM_LEN 0*(T_MINUTE*9)
-#define T_CON_LEN (T_SECOND*5)
+#define T_NORM_LEN (T_MINUTE*9)
+#define T_CON_LEN (T_MINUTE)
 #define T_CON_CHGN_END  (T_SECOND*2)
 #define T_CON_CHG1_END  (T_CON_CHGN_END+T_SECOND*2)
 #define T_CON_MEAS1_END (T_CON_CHG1_END+T_SECOND*27)
@@ -66,6 +66,11 @@ int HpH=0x555555;
 int HpL=0x666666;
 int HmH=0x777777;
 int HmL=0x888888;
+
+uint32_t gTime;
+int32_t gLat;
+int32_t gLon;
+uint32_t gAlt;
 
 int picTemp;
 
@@ -116,9 +121,9 @@ int main(void) {
     InitGPIO();
 
     InitUART();
+
     InitGPS();
     InitInterrupt();
-
     InitI2C();
     InitMagneto(MAG_ADDR);
     InitAltimeter(ALT_ADDR);
@@ -135,16 +140,18 @@ int main(void) {
 
     state=CONDUCTIVITY;
 
+    GPSready=1;
     //=============================//
     //          MAIN LOOP          //
     //=============================//
     while (1) {
-        sprintf(tempbuf,"%2d:%02d.%03d ",statetimer/T_MINUTE,(statetimer/T_SECOND)%60,(statetimer%T_SECOND)*T_TICK_MS);
-        SendString_UART1(tempbuf);
-        if (state==NORMAL)
-            SendString_UART1("NORMAL ");
-        if (state==CONDUCTIVITY)
-            SendString_UART1("CONDUCTIVITY ");
+        //SendString_UART1(gpsbuf);
+        //sprintf(tempbuf,"%2d:%02d.%03d %1d %1d",statetimer/T_MINUTE,(statetimer/T_SECOND)%60,(statetimer%T_SECOND)*T_TICK_MS,GPSready,GPSnew);
+        //SendString_UART1(tempbuf);
+        //if (state==NORMAL)
+        //    SendString_UART1("NORMAL ");
+        //if (state==CONDUCTIVITY)
+        //    SendString_UART1("CONDUCTIVITY ");
         switch (state) {
             case NORMAL:
                 packet.norm.type=0x55;
@@ -152,6 +159,7 @@ int main(void) {
                     clearPacket(&packet);
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==0) {
+                    SendChar_UART1('\n');
                     TriggerMagneto_S();
                     SampleADC_S(3);
                 }
@@ -194,7 +202,14 @@ int main(void) {
                 if (statetimer%T_SLOWSAM_INTERVAL==11) {
                     packet.norm.vertD=ReadADC_S(2);
                 }
-                if (statetimer%T_FASTSAM_INTERVAL==12) {
+                if (statetimer%T_SLOWSAM_INTERVAL==12) {
+                    ReadGPS_S(&gTime, &gLat, &gLon, &gAlt);
+                    packet.norm.time=gTime;
+                    packet.norm.lat=gLat;
+                    packet.norm.lon=gLon;
+                    packet.norm.alt=gAlt;
+                }
+                if (statetimer%T_SLOWSAM_INTERVAL==T_SECOND*59) {
                     printPacket(packet);
                 }
                 break;
@@ -202,18 +217,23 @@ int main(void) {
                 packet.rare.type=0xAA;
               switch (statetimer) {
                     case 0:
+                        SendChar_UART1('\n');
                         ChargeProbe_S(GND);
                         break;
                     case T_CON_CHGN_END:
+                        SendChar_UART1('\n');
                         ChargeProbe_S(UP);
                         break;
                     case T_CON_CHG1_END:
+                        SendChar_UART1('\n');
                         ChargeProbe_S(NONE);
                         break;
                     case T_CON_MEAS1_END:
+                        SendChar_UART1('\n');
                         ChargeProbe_S(DOWN);
                         break;
                     case T_CON_CHG2_END:
+                        SendChar_UART1('\n');
                         ChargeProbe_S(NONE);
                         break;
                 }
@@ -256,7 +276,7 @@ int main(void) {
                 break;
 
         }
-        SendString_UART1("\n");
+        //SendString_UART1("\n");
         DelayLoopMS(T_TICK_MS);
     }
 
