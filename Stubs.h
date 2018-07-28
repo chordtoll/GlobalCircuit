@@ -13,7 +13,6 @@
 typedef enum chgst {NONE,GND,UP,DOWN} chgst_t;
 
 void InitADC_S();
-void SampleADC_S(char channel);
 int ReadADC_S(char channel);
 
 int ReadPICADC_S(char channel);

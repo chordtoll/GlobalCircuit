@@ -2,6 +2,7 @@
 #include "MAG3310.h"
 #include "MS5607.h"
 #include "transmit.h"
+#include "proc\p32mx360f512l.h"
 #include <stdlib.h>
 
 char chanidx[6];
@@ -11,13 +12,8 @@ void InitADC_S() {
     SendString_UART1("Init ADC ");
     for (i=0;i<6;i++) chanidx[i]=0;
 }
-void SampleADC_S(char channel) {
-    SendString_UART1("Sample ADC");
-    SendChar_UART1('0'+channel);
-    SendChar_UART1(' ');
-    chanidx[channel]++;
-}
 int ReadADC_S(char channel) {
+    chanidx[channel]++;
     SendString_UART1("Read ADC");
     SendChar_UART1('0'+channel);
     SendChar_UART1(' ');
@@ -92,15 +88,27 @@ void ChargeProbe_S(chgst_t state) {
     switch (state) {
         case NONE:
             SendString_UART1("Charge probes OFF ");
+            PORTEbits.RE0=0;
+            PORTEbits.RE1=0;
+            PORTEbits.RE2=0;
             break;
         case UP:
             SendString_UART1("Charge probes ^^^ ");
+            PORTEbits.RE0=0;
+            PORTEbits.RE1=1;
+            PORTEbits.RE2=1;
             break;
         case DOWN:
             SendString_UART1("Charge probes vvv ");
+            PORTEbits.RE0=1;
+            PORTEbits.RE1=0;
+            PORTEbits.RE2=1;
             break;
         case GND:
             SendString_UART1("Charge probes === ");
+            PORTEbits.RE0=1;
+            PORTEbits.RE1=1;
+            PORTEbits.RE2=1;
             break;
     }
 }

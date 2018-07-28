@@ -5,6 +5,7 @@
 #pragma config POSCMOD = XT
 #pragma config FPBDIV = DIV_1
 #pragma config DEBUG = ON
+#pragma config WDTPS = PS1024
 
 #include <proc/p32mx360f512l.h>
 #include <math.h>
@@ -26,7 +27,8 @@
 #define T_MINUTE (T_SECOND*60)
 #define T_NORM_LEN (T_MINUTE*9)
 #define T_CON_LEN (T_MINUTE)
-#define T_CON_CHGN_END  (T_SECOND*2)
+#define T_CON_CHG_BEGIN  (T_SECOND*2)
+#define T_CON_CHGN_END  (T_CON_CHG_BEGIN+T_SECOND*2)
 #define T_CON_CHG1_END  (T_CON_CHGN_END+T_SECOND*2)
 #define T_CON_MEAS1_END (T_CON_CHG1_END+T_SECOND*27)
 #define T_CON_CHG2_END  (T_CON_MEAS1_END+T_SECOND*2)
@@ -72,6 +74,9 @@ int32_t gLat;
 int32_t gLon;
 uint32_t gAlt;
 
+uint16_t cVertH[320];
+uint16_t cVertL[320];
+
 int picTemp;
 
 typedef enum state {INIT,NORMAL,CONDUCTIVITY} state_t;
@@ -111,7 +116,7 @@ void printPacket(packet_u pack) {
     SendChar_UART1('\n');
 }
 
-
+int i,j;
 
 int main(void) {
     //=============================//
@@ -138,7 +143,11 @@ int main(void) {
 
     PrintResetReason();
 
+    InitWatchdog();
+
     state=CONDUCTIVITY;
+
+    PORTECLR=0xFF;
 
     GPSready=1;
     //=============================//
@@ -157,52 +166,36 @@ int main(void) {
                 packet.norm.type=0x55;
                 if (statetimer%T_SLOWSAM_INTERVAL==0) {
                     clearPacket(&packet);
+                    if ((statetimer/T_MINUTE)<8) {
+                        memcpy(packet.norm.cVertH,cVertH+(statetimer/T_MINUTE)*40,40*2);
+                        memcpy(packet.norm.cVertL,cVertL+(statetimer/T_MINUTE)*40,40*2);
+                    }
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==0) {
                     SendChar_UART1('\n');
                     TriggerMagneto_S();
-                    SampleADC_S(3);
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==1) {
-                    int mx;
-                    int my;
-                    int mz;
+                    uint16_t mx;
+                    uint16_t my;
+                    uint16_t mz;
                     ReadMagneto_S(&mx,&my,&mz);
                     packet.norm.compassX[(statetimer/T_FASTSAM_INTERVAL)%12]=mx;
                     packet.norm.compassY[(statetimer/T_FASTSAM_INTERVAL)%12]=my;
-                    packet.norm.horizL[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(3);
+                    packet.norm.horizL[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(2);
+                    packet.norm.horizR[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(5);
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==2) {
-                    SampleADC_S(4);
+                    packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(3);
                 }
-                if (statetimer%T_FASTSAM_INTERVAL==3) {
-                    packet.norm.horizR[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(4);
-                }
-                if (statetimer%T_FASTSAM_INTERVAL==4) {
-                    SampleADC_S(5);
-                }
-                if (statetimer%T_FASTSAM_INTERVAL==5) {
-                    packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(5);
-                }
-                if (statetimer%T_SLOWSAM_INTERVAL==6) {
-                    SampleADC_S(0);
-                }
-                if (statetimer%T_SLOWSAM_INTERVAL==7) {
+                if (statetimer%T_SLOWSAM_INTERVAL==3) {
                     packet.norm.vertH=ReadADC_S(0);
+                    packet.norm.vertL=ReadADC_S(4);
                 }
-                if (statetimer%T_SLOWSAM_INTERVAL==8) {
-                    SampleADC_S(1);
+                if (statetimer%T_SLOWSAM_INTERVAL==4) {
+                    packet.norm.vertD=ReadADC_S(1);
                 }
-                if (statetimer%T_SLOWSAM_INTERVAL==9) {
-                    packet.norm.vertL=ReadADC_S(1);
-                }
-                if (statetimer%T_SLOWSAM_INTERVAL==10) {
-                    SampleADC_S(2);
-                }
-                if (statetimer%T_SLOWSAM_INTERVAL==11) {
-                    packet.norm.vertD=ReadADC_S(2);
-                }
-                if (statetimer%T_SLOWSAM_INTERVAL==12) {
+                if (statetimer%T_SLOWSAM_INTERVAL==5) {
                     ReadGPS_S(&gTime, &gLat, &gLon, &gAlt);
                     packet.norm.time=gTime;
                     packet.norm.lat=gLat;
@@ -216,7 +209,7 @@ int main(void) {
             case CONDUCTIVITY:
                 packet.rare.type=0xAA;
               switch (statetimer) {
-                    case 0:
+                    case T_CON_CHG_BEGIN:
                         SendChar_UART1('\n');
                         ChargeProbe_S(GND);
                         break;
@@ -237,10 +230,21 @@ int main(void) {
                         ChargeProbe_S(NONE);
                         break;
                 }
-                if (statetimer%T_SECOND==1)
-                    SampleADC_S(0);
-                if (statetimer%T_SECOND==2)
-                    packet.rare.vertD[statetimer/T_SECOND]=ReadADC_S(0);
+                if (statetimer==0) {
+                    packet.rare.vertH=ReadADC_S(0);
+                    packet.rare.vertL=ReadADC_S(4);
+                }
+                if (statetimer==1) {
+                    packet.rare.vertD=ReadADC_S(1);
+                }
+                if (statetimer>T_CON_CHGN_END && statetimer<T_CON_CHGN_END+160) {
+                    cVertH[statetimer-T_CON_CHGN_END]=ReadADC_S(0);
+                    cVertL[statetimer-T_CON_CHGN_END]=ReadADC_S(4);
+                }
+                if (statetimer>T_CON_MEAS1_END && statetimer<T_CON_MEAS1_END+160) {
+                    cVertH[statetimer-T_CON_MEAS1_END+160]=ReadADC_S(0);
+                    cVertL[statetimer-T_CON_MEAS1_END+160]=ReadADC_S(4);
+                }
 
                 if (statetimer==0)
                     TriggerAltimeter_Temperature_S();
@@ -277,6 +281,7 @@ int main(void) {
 
         }
         //SendString_UART1("\n");
+        ResetWatchdog();
         DelayLoopMS(T_TICK_MS);
     }
 

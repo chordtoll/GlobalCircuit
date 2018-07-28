@@ -24,7 +24,8 @@ struct __attribute__((packed)) s_packet_norm {
     uint16_t vertD;
     uint16_t compassX[12];
     uint16_t compassY[12];
-    uint8_t end;
+    uint16_t cVertH[40];
+    uint16_t cVertL[40];
 };
 
 struct __attribute__((packed)) s_packet_rare {
@@ -34,13 +35,14 @@ struct __attribute__((packed)) s_packet_rare {
     uint16_t batvolt     : 12;
     uint16_t batcurr     : 12;
     uint16_t thermval    : 12;
-    uint16_t vertD[60];
-    uint8_t end;
+    uint16_t vertH;
+    uint16_t vertL;
+    uint16_t vertD;
 };
 
 typedef union u_packet
 {
-    char bytes[256];
+    char bytes[340];
     struct s_packet_norm norm;
     struct s_packet_rare rare;
 } packet_u;
