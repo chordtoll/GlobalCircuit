@@ -44,7 +44,7 @@ char CheckMagneto(char addr) {
 }
 
 //Reads values from magnetometer
-char ReadMagneto(char addr, unsigned short* x, unsigned short* y, unsigned short* z) {
+char ReadMagneto(char addr, uint16_t* x, uint16_t* y, uint16_t* z) {
     char ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);

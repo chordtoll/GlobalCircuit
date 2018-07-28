@@ -28,8 +28,9 @@ void InitPICADC() {
     AD1CON1bits.ADON=1;   //Turn on ADC
 }
 
-int ReadPICADC() {
+int ReadPICADC(char channel) {
+    AD1CHSbits.CH0SA=channel;
     AD1CON1bits.SAMP=1;
     while (!AD1CON1bits.DONE);
-    return ADC1BUF0;
+    return ADC1BUF0&0x3FF;
 }

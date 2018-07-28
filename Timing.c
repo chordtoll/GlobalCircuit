@@ -39,7 +39,7 @@ void InitLoopDelay() {
 
 void DelayLoopMS(int n) {
     while (GetTimer()<loopstarttime+n*(tps/1000));
-    loopstarttime=GetTimer();
+    loopstarttime+=n*(tps/1000);
 }
 
 unsigned int __attribute__((nomips16)) ReadCoreTimer(void)

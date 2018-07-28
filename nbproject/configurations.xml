@@ -31,6 +31,11 @@
       <itemPath>Resets.h</itemPath>
       <itemPath>PICADC.c</itemPath>
       <itemPath>PICADC.h</itemPath>
+      <itemPath>Stubs.h</itemPath>
+      <itemPath>Stubs.c</itemPath>
+      <itemPath>Packet.h</itemPath>
+      <itemPath>Watchdog.c</itemPath>
+      <itemPath>Watchdog.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

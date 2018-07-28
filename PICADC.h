@@ -9,7 +9,7 @@
 #define	PICADC_H
 
 void InitPICADC();
-int ReadPICADC();
+int ReadPICADC(char channel);
 
 #endif	/* PICADC_H */
 
