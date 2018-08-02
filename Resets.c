@@ -18,6 +18,5 @@ void PrintResetReason() {
         SendString_UART1("MCLR ");
     if (RCONbits.CMR)
         SendString_UART1("Config ");
-    SendChar_UART1('\n');
     RCONCLR=0x1DF;
 }

@@ -145,12 +145,15 @@ int main(void) {
 
     InitLoopDelay();
 
-    SendString_UART1("!Init'd\r");
+    //SendString_UART1("!Init'd\r");
 
-    for (i=0;i<10000000;i++);
+    //for (i=0;i<10000000;i++);
     
-    SendString_UART1("!OK\r");
+    //SendString_UART1("!OK\r");
+
+    //SendString_UART1("!");
     //PrintResetReason();
+    //SendString_UART1("\r");
 
     //InitWatchdog();
 
@@ -174,8 +177,8 @@ int main(void) {
         //    SendString_UART1("NORMAL ");
         //if (state==CONDUCTIVITY)
         //    SendString_UART1("CONDUCTIVITY ");
-        //TickRB();
-        /*
+        TickRB();
+        
         PORTEbits.RE7=statetimer%T_SECOND==0;
         switch (state) {
             case NORMAL:
@@ -281,8 +284,8 @@ int main(void) {
                 if (statetimer==6)
                     packet.rare.batcurr=ReadPICADC_S(2);
                 break;
-        }*/
-        /*statetimer++;
+        }
+        statetimer++;
         switch (state) {
             case NORMAL:
                 if (statetimer>T_NORM_LEN) {
@@ -302,10 +305,10 @@ int main(void) {
                 }
                 break;
 
-        }*/
-        //ResetWatchdog();
-        //i++;
-        //DelayLoopMS(T_TICK_MS);
+        }
+        ResetWatchdog();
+        i++;
+        DelayLoopMS(T_TICK_MS);
     }
 
     return 0;

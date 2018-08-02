@@ -145,11 +145,11 @@ void TickRB() {
                 RBRXbuf[msglen]=0;
                 uint16_t csumr=*rbuf++<<8;
                 csumr|=*rbuf;
-                SendChar_UART1('!');
-                SendString_UART1(RBRXbuf);
-                SendChar_UART1('\r');
-                if (RBRXbuf[0]=='\xF0' && RBRXbuf[1]=='\x9F') {
-                    SendString_UART1("!OK\r");
+                //SendChar_UART1('!');
+                //SendString_UART1(RBRXbuf);
+                //SendChar_UART1('\r');
+                if (RBRXbuf[0]=='\xF0' && RBRXbuf[1]=='\x9F' && RBRXbuf[2]=='\x8E' && RBRXbuf[3]=='\x88') {
+                    //SendString_UART1("!OK\r");
                     SendString_RB(OKARR);
                 }
                 else

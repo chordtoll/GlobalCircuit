@@ -55,11 +55,7 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
 {
     PORTEbits.RE3=1;
     char receivedChar = U1RXREG; //get char from uart1rec line
-
-    IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
-    PORTEbits.RE3=0;
-    return;
-
+    
     if (_rb_status==RB_BUSY) {
         if (_rb_idx>=340)
             _rb_idx=0;
@@ -88,9 +84,6 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
     PORTEbits.RE4=1;
     char receivedChar = U2RXREG; //get char from uart1rec line
 
-    IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
-    PORTEbits.RE4=0;
-    return;
     if (gpsbufi>=80) {
         gpsbufi=0;
     }
