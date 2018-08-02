@@ -8,8 +8,12 @@
 #ifndef TIMING_H
 #define	TIMING_H
 
+#define TPS_DEFAULT 40000000
+#define TPS_MAX     60000000
+#define TPS_MIN     30000000
+
 volatile unsigned long long timer_accum;
-volatile unsigned int tps=40000000;
+volatile unsigned int tps=TPS_DEFAULT;
 
 unsigned long long GetTimer();
 

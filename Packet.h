@@ -12,6 +12,7 @@
 
 struct __attribute__((packed)) s_packet_norm {
     uint8_t type;
+    uint8_t yikes;
     uint32_t time;
     int32_t lat;
     int32_t lon;
@@ -30,6 +31,7 @@ struct __attribute__((packed)) s_packet_norm {
 
 struct __attribute__((packed)) s_packet_rare {
     uint8_t type;
+    uint8_t yikes;
     uint32_t pressure    : 24;
     uint32_t temperature : 24;
     uint16_t batvolt     : 12;

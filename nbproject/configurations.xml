@@ -38,6 +38,7 @@
       <itemPath>Watchdog.h</itemPath>
       <itemPath>RockBlock.c</itemPath>
       <itemPath>RockBlock.h</itemPath>
+      <itemPath>Yikes.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

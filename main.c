@@ -6,6 +6,7 @@
 #pragma config FPBDIV = DIV_1
 #pragma config DEBUG = ON
 #pragma config WDTPS = PS1024
+#pragma config FWDTEN = OFF
 
 #include <proc/p32mx360f512l.h>
 #include <math.h>
@@ -22,6 +23,7 @@
 #include "Stubs.h"
 #include "Packet.h"
 #include "RockBlock.h"
+#include "Yikes.h"
 
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
@@ -123,6 +125,8 @@ int main(void) {
     //=============================//
     //       INITIALIZATION        //
     //=============================//
+    yikes.byte=0;
+    yikes.reset=1;
 
     InitGPIO();
 
@@ -141,19 +145,24 @@ int main(void) {
 
     InitLoopDelay();
 
-    //SendString_UART1("Init'd\n");
+    SendString_UART1("!Init'd\r");
 
+    for (i=0;i<10000000;i++);
+    
+    SendString_UART1("!OK\r");
     //PrintResetReason();
 
-    InitWatchdog();
+    //InitWatchdog();
 
     state=CONDUCTIVITY;
 
-    PORTECLR=0xFF;
+    //PORTECLR=0xFF;
 
     GPSready=1;
 
     PORTEbits.RE8=1;
+
+
     //=============================//
     //          MAIN LOOP          //
     //=============================//
@@ -165,7 +174,8 @@ int main(void) {
         //    SendString_UART1("NORMAL ");
         //if (state==CONDUCTIVITY)
         //    SendString_UART1("CONDUCTIVITY ");
-        TickRB();
+        //TickRB();
+        /*
         PORTEbits.RE7=statetimer%T_SECOND==0;
         switch (state) {
             case NORMAL:
@@ -210,6 +220,8 @@ int main(void) {
                     packet.norm.alt=gAlt;
                 }
                 if (statetimer%T_SLOWSAM_INTERVAL==T_SECOND*59) {
+                    packet.norm.yikes=yikes.byte;
+                    yikes.byte=0;
                     RockSend_S(packet.bytes);
                     //printPacket(packet);
                 }
@@ -217,7 +229,7 @@ int main(void) {
             case CONDUCTIVITY:
                 PORTEbits.RE6=1;
                 packet.rare.type=0xAA;
-              switch (statetimer) {
+                switch (statetimer) {
                     case T_CON_CHG_BEGIN:
                         //SendChar_UART1('\n');
                         ChargeProbe_S(GND);
@@ -254,7 +266,6 @@ int main(void) {
                     cVertH[statetimer-T_CON_MEAS1_END+160]=ReadADC_S(0);
                     cVertL[statetimer-T_CON_MEAS1_END+160]=ReadADC_S(4);
                 }
-
                 if (statetimer==0)
                     TriggerAltimeter_Temperature_S();
                 if (statetimer==1)
@@ -270,8 +281,8 @@ int main(void) {
                 if (statetimer==6)
                     packet.rare.batcurr=ReadPICADC_S(2);
                 break;
-        }
-        statetimer++;
+        }*/
+        /*statetimer++;
         switch (state) {
             case NORMAL:
                 if (statetimer>T_NORM_LEN) {
@@ -281,6 +292,8 @@ int main(void) {
                 break;
             case CONDUCTIVITY:
                 if (statetimer>T_CON_LEN) {
+                    packet.rare.yikes=yikes.byte;
+                    yikes.byte=0;
                     RockSend_S(packet.bytes);
                     //printPacket(packet);
                     clearPacket(&packet);
@@ -289,10 +302,10 @@ int main(void) {
                 }
                 break;
 
-        }
-        //SendString_UART1("\n");
-        ResetWatchdog();
-        DelayLoopMS(T_TICK_MS);
+        }*/
+        //ResetWatchdog();
+        //i++;
+        //DelayLoopMS(T_TICK_MS);
     }
 
     return 0;

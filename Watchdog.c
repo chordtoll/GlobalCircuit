@@ -4,5 +4,5 @@ void InitWatchdog() {
     WDTCONbits.ON=1;
 }
 void ResetWatchdog() {
-    WDTCONbits.WDTCLR=1;
+    //WDTCONbits.WDTCLR=1;
 }

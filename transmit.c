@@ -1,6 +1,7 @@
 #include "transmit.h"
 #include "proc\p32mx360f512l.h"
 #include "Timing.h"
+#include "Yikes.h"
 volatile char gpsbuf[84];
 volatile char gpsbufi;
 
@@ -52,8 +53,13 @@ void InitInterrupt()
 
 void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART1_ISR(void)
 {
-    IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
+    PORTEbits.RE3=1;
     char receivedChar = U1RXREG; //get char from uart1rec line
+
+    IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
+    PORTEbits.RE3=0;
+    return;
+
     if (_rb_status==RB_BUSY) {
         if (_rb_idx>=340)
             _rb_idx=0;
@@ -73,13 +79,19 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
             _rb_idx=0;
         }
     }
-
+    IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
+    PORTEbits.RE3=0;
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
 {
+    PORTEbits.RE4=1;
     char receivedChar = U2RXREG; //get char from uart1rec line
-    if (gpsbufi<=80) {
+
+    IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
+    PORTEbits.RE4=0;
+    return;
+    if (gpsbufi>=80) {
         gpsbufi=0;
     }
     if (receivedChar=='$') {
@@ -88,9 +100,13 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         WriteCoreTimer(0);
         timer_accum+=ctt;
         // END   TIMING CRITICAL DO NOT SPLIT
-        tps*=9;
-        tps+=ctt;
-        tps/=10;
+        if (ctt>TPS_MIN && ctt<TPS_MAX) {
+            tps*=9;
+            tps+=ctt;
+            tps/=10;
+        } else {
+            yikes.gpstick=1;
+        }
         gpsbufi=0;
         gpsbuf[gpsbufi++]=receivedChar;
     } else if (receivedChar==0x0A) {
@@ -105,7 +121,7 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbuf[gpsbufi++]=receivedChar;
     }
     IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
-
+    PORTEbits.RE4=0;
 }
 
 //int RockInit()

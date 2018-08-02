@@ -1,4 +1,6 @@
 #include "Timing.h"
+#include "Yikes.h"
+#include <proc/p32mx360f512l.h>
 
 unsigned long long loopstarttime;
 
@@ -38,6 +40,9 @@ void InitLoopDelay() {
 }
 
 void DelayLoopMS(int n) {
+    if (GetTimer()>=loopstarttime+n*(tps/1000)) {
+        yikes.looprate=1;
+    }
     while (GetTimer()<loopstarttime+n*(tps/1000));
     loopstarttime+=n*(tps/1000);
 }
