@@ -21,6 +21,7 @@
 #include "Resets.h"
 #include "Stubs.h"
 #include "Packet.h"
+#include "RockBlock.h"
 
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
@@ -128,6 +129,7 @@ int main(void) {
     InitUART();
 
     InitGPS();
+    InitRB();
     InitInterrupt();
     InitI2C();
     InitMagneto(MAG_ADDR);
@@ -139,9 +141,9 @@ int main(void) {
 
     InitLoopDelay();
 
-    SendString_UART1("Init'd\n");
+    //SendString_UART1("Init'd\n");
 
-    PrintResetReason();
+    //PrintResetReason();
 
     InitWatchdog();
 
@@ -150,6 +152,8 @@ int main(void) {
     PORTECLR=0xFF;
 
     GPSready=1;
+
+    PORTEbits.RE8=1;
     //=============================//
     //          MAIN LOOP          //
     //=============================//
@@ -161,8 +165,11 @@ int main(void) {
         //    SendString_UART1("NORMAL ");
         //if (state==CONDUCTIVITY)
         //    SendString_UART1("CONDUCTIVITY ");
+        TickRB();
+        PORTEbits.RE7=statetimer%T_SECOND==0;
         switch (state) {
             case NORMAL:
+                PORTEbits.RE6=0;
                 packet.norm.type=0x55;
                 if (statetimer%T_SLOWSAM_INTERVAL==0) {
                     clearPacket(&packet);
@@ -172,7 +179,7 @@ int main(void) {
                     }
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==0) {
-                    SendChar_UART1('\n');
+                    //SendChar_UART1('\n');
                     TriggerMagneto_S();
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==1) {
@@ -203,30 +210,32 @@ int main(void) {
                     packet.norm.alt=gAlt;
                 }
                 if (statetimer%T_SLOWSAM_INTERVAL==T_SECOND*59) {
-                    printPacket(packet);
+                    RockSend_S(packet.bytes);
+                    //printPacket(packet);
                 }
                 break;
             case CONDUCTIVITY:
+                PORTEbits.RE6=1;
                 packet.rare.type=0xAA;
               switch (statetimer) {
                     case T_CON_CHG_BEGIN:
-                        SendChar_UART1('\n');
+                        //SendChar_UART1('\n');
                         ChargeProbe_S(GND);
                         break;
                     case T_CON_CHGN_END:
-                        SendChar_UART1('\n');
+                        //SendChar_UART1('\n');
                         ChargeProbe_S(UP);
                         break;
                     case T_CON_CHG1_END:
-                        SendChar_UART1('\n');
+                        //SendChar_UART1('\n');
                         ChargeProbe_S(NONE);
                         break;
                     case T_CON_MEAS1_END:
-                        SendChar_UART1('\n');
+                        //SendChar_UART1('\n');
                         ChargeProbe_S(DOWN);
                         break;
                     case T_CON_CHG2_END:
-                        SendChar_UART1('\n');
+                        //SendChar_UART1('\n');
                         ChargeProbe_S(NONE);
                         break;
                 }
@@ -272,7 +281,8 @@ int main(void) {
                 break;
             case CONDUCTIVITY:
                 if (statetimer>T_CON_LEN) {
-                    printPacket(packet);
+                    RockSend_S(packet.bytes);
+                    //printPacket(packet);
                     clearPacket(&packet);
                     state=NORMAL;
                     statetimer=0;
@@ -283,55 +293,6 @@ int main(void) {
         //SendString_UART1("\n");
         ResetWatchdog();
         DelayLoopMS(T_TICK_MS);
-    }
-
-    while (1) {
-        GPSready = 1;
-        if (GPSnew) {
-            GPSnew = 0;
-            if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
-                ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti);
-                dTime = atof(nTime);
-                dLati = atof(nLati);
-                dLong = atof(nLong);
-                dAlti = atof(nAlti);
-                ReadMagneto(MAG_ADDR,&magX,&magY,&magZ);
-                TriggerMagneto(MAG_ADDR);
-                
-                WaitMS(100);
-                TriggerAltimeter_Pressure(ALT_ADDR);
-                WaitMS(100);
-                ReadAltimeter_ADC(ALT_ADDR, &pressure);
-                WaitMS(100);
-                TriggerAltimeter_Temperature(ALT_ADDR);
-                WaitMS(100);
-                ReadAltimeter_ADC(ALT_ADDR, &temperature);
-
-                //ADC CODE
-                //ReadADC(&VpH,&VpL,&VmH,&VmL,&HpH,&HpL,&HmH,&HmL);
-                //ADC CODE
-
-                picTemp=ReadPICADC();
-
-                sprintf(SBDnormal, "T:%10d L:%8d L:%8d A:%6d ",dTime,dLati,dLong,dAlti);
-                SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "X:%4x Y:%4x Z:%4x ",magX,magY,magZ);
-                SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "T:%6x P:%6x ",temperature,pressure);
-                SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "V+H:%6x V+L:%6x V-H:%6x V-L:%6x H+H:%6x H+L:%6x H-H:%6x H-L:%6x ",VpH,VpL,VmH,VmL,HpH,HpL,HmH,HmL);
-                SendString_UART1(SBDnormal);
-                sprintf(SBDnormal, "A:%3x\n",picTemp);
-                SendString_UART1(SBDnormal);
-                /*
-                 *
-                 * RockBlock code here- transmit SBDnormal
-                 *
-                 */
-                //HackRockSend(SBDnormal);
-                //HackBusyWait(100);
-            }
-        }
     }
 
     return 0;

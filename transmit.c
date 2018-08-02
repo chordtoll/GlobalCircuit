@@ -52,16 +52,34 @@ void InitInterrupt()
 
 void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART1_ISR(void)
 {
-    char receivedChar = U1RXREG; //get char from uart1rec line
-
     IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
+    char receivedChar = U1RXREG; //get char from uart1rec line
+    if (_rb_status==RB_BUSY) {
+        if (_rb_idx>=340)
+            _rb_idx=0;
+        _rb_cmdbuf[_rb_idx]=receivedChar;
+        _rb_idx++;
+        _rb_cmdbuf[_rb_idx]=0;
+        if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rKO"))   { //Check if response is OK
+            _rb_status=RB_OK;
+            _rb_idx=0;
+        }
+        if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rYDAER")){ //Check if response is READY
+            _rb_status=RB_READY;
+            _rb_idx=0;
+        }
+        if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rRORRE")){ //Check if response is ERROR
+            _rb_status=RB_ERROR;
+            _rb_idx=0;
+        }
+    }
 
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
 {
     char receivedChar = U2RXREG; //get char from uart1rec line
-    if (gpsbufi==80) {
+    if (gpsbufi<=80) {
         gpsbufi=0;
     }
     if (receivedChar=='$') {
@@ -240,6 +258,25 @@ void SendString_UART1(unsigned char* string)
     }
 }
 
+void SendBuffer_UART1(char *buf, int start, int len) {
+    int i;
+    for (i=start;i<len;i++) {
+        SendChar_UART1(buf[i]);
+    }
+}
+
+void SendHex_UART1(char letter) {
+    SendNybble_UART1((letter>>4)&0xF);
+    SendNybble_UART1(letter&0xF);
+}
+
+void SendNybble_UART1(char n) {
+    if (n>9)
+        SendChar_UART1('A'+n-10);
+    else
+        SendChar_UART1('0'+n);
+}
+
 void SendChar_UART1(char letter)
 {
     while(U1STAbits.TRMT == 0){} //while transmitting don't do anything
@@ -265,4 +302,16 @@ int strcmp(const char* s1, const char* s2)
     while(*s1 && (*s1==*s2))
         s1++,s2++;
     return *(const unsigned char*)s1 - *(const unsigned char*)s2;
+}
+
+char rbstrcmp(const char *s1,int s1i,const char *s2) {
+    while (*s2) {
+        if (s1i==0)
+            return 0;
+        s1i--;
+        if (s1[s1i]!=*s2)
+            return 0;
+        s2++;
+    }
+    return 1;
 }
