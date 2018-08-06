@@ -274,16 +274,16 @@ void SendBuffer_UART1(char *buf, int start, int len) {
     }
 }
 
-void SendHex_UART1(char letter) {
-    SendNybble_UART1((letter>>4)&0xF);
-    SendNybble_UART1(letter&0xF);
-}
-
 void SendNybble_UART1(char n) {
     if (n>9)
         SendChar_UART1('A'+n-10);
     else
         SendChar_UART1('0'+n);
+}
+
+void SendHex_UART1(char letter) {
+    SendNybble_UART1((letter>>4)&0xF);
+    SendNybble_UART1(letter&0xF);
 }
 
 void SendChar_UART1(char letter)

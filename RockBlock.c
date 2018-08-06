@@ -88,7 +88,7 @@ void TickRB() {
             break;
         case SENT_TXBUF:
             for (i=0;i<340;i++)
-                csum+=RBTXbuf[i];
+                csum+=(uint8_t) RBTXbuf[i];
             SendChar_UART1(csum>>8);
             SendChar_UART1(csum&0xFF);
             _rb_state=SENT_CSUM;
@@ -175,7 +175,7 @@ void ParseSBDIX(char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,c
     while (*cmdbuf!='+')
         cmdbuf++;
     while (cmdbuf[idx]) {
-        if (cmdbuf[idx]==',' || cmdbuf[idx]=='\r') {
+        if (cmdbuf[idx]==',' || cmdbuf[idx]=='\r' || cmdbuf[idx]==':') {
             switch(field) {
                 case 1:
                     mos[idx-fieldstart]=0;
