@@ -2,8 +2,8 @@
 #include "MAG3310.h"
 
 //Initializes magnetometer module
-char InitMagneto(char addr) {
-    char ack=0;
+uint8_t InitMagneto(uint8_t addr) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(MAG_REG_CR2);
@@ -18,8 +18,8 @@ char InitMagneto(char addr) {
 }
 
 //Begins a magnetometer conversion
-char TriggerMagneto(char addr) {
-    char ack=0;
+uint8_t TriggerMagneto(uint8_t addr) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(MAG_REG_CR1);
@@ -29,9 +29,9 @@ char TriggerMagneto(char addr) {
 }
 
 //Checks if magnetometer conversion complete
-char CheckMagneto(char addr) {
-    int val=0;
-    char ack=0;
+uint8_t CheckMagneto(uint8_t addr) {
+    uint8_t val=0;
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(MAG_REG_DRS);
@@ -44,8 +44,8 @@ char CheckMagneto(char addr) {
 }
 
 //Reads values from magnetometer
-char ReadMagneto(char addr, uint16_t* x, uint16_t* y, uint16_t* z) {
-    char ack=0;
+uint8_t ReadMagneto(uint8_t addr, uint16_t* x, uint16_t* y, uint16_t* z) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(MAG_REG_VXM);

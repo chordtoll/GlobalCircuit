@@ -8,8 +8,10 @@
 #ifndef PICADC_H
 #define	PICADC_H
 
+
 void InitPICADC();
-int ReadPICADC(char channel);
+
+uint16_t ReadPICADC(uint8_t channel);
 
 #endif	/* PICADC_H */
 

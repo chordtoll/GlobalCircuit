@@ -9,6 +9,8 @@
 #ifndef _GPS_H    /* Guard against multiple inclusion */
 #define _GPS_H
 
+#include <stdint.h>
+
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti);
 
 void InitGPS(void);

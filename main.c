@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <sys/appio.h>
 #include <stdint.h>
+#include "GPIODebug.h"
 #include "transmit.h"
 #include "GPS.h"
 #include "MS5607.h"
@@ -56,21 +57,12 @@ double dLati;
 double dLong;
 double dAlti;
 
-int magX=0;
-int magY=0;
-int magZ=0;
+uint16_t magX=0;
+uint16_t magY=0;
+uint16_t magZ=0;
 
-int pressure;
-int temperature;
-
-int VpH=0x111111;
-int VpL=0x222222;
-int VmH=0x333333;
-int VmL=0x444444;
-int HpH=0x555555;
-int HpL=0x666666;
-int HmH=0x777777;
-int HmL=0x888888;
+uint32_t pressure;
+uint32_t temperature;
 
 uint32_t gTime;
 int32_t gLat;
@@ -80,12 +72,10 @@ uint32_t gAlt;
 uint16_t cVertH[320];
 uint16_t cVertL[320];
 
-int picTemp;
+typedef enum state {NORMAL,CONDUCTIVITY} state_t;
 
-typedef enum state {INIT,NORMAL,CONDUCTIVITY} state_t;
-
-state_t state=INIT;
-int statetimer;
+state_t state;
+uint32_t statetimer;
 
 char tempbuf[20]; //TODO: DELETE
 
@@ -93,13 +83,13 @@ packet_u packet;
 
 
 void clearPacket(packet_u *pack) {
-    int i;
+    uint16_t i;
     for (i=0;i<sizeof(*pack);i++)
         (*pack).bytes[i]=0;
 }
 
 void printPacket(packet_u pack) {
-    int i;
+    uint16_t i;
     SendChar_UART1('\n');
     for (i=0;i<sizeof(pack);i++) {
         if ((pack.bytes[i]&0xF)>9)
@@ -119,7 +109,7 @@ void printPacket(packet_u pack) {
     SendChar_UART1('\n');
 }
 
-int i,j;
+uint32_t i,j;
 
 int main(void) {
     //=============================//
@@ -155,7 +145,7 @@ int main(void) {
     //PrintResetReason();
     //SendString_UART1("\r");
 
-    //InitWatchdog();
+    InitWatchdog();
 
     state=CONDUCTIVITY;
 
@@ -177,6 +167,7 @@ int main(void) {
         //    SendString_UART1("NORMAL ");
         //if (state==CONDUCTIVITY)
         //    SendString_UART1("CONDUCTIVITY ");
+
         TickRB();
         
         PORTEbits.RE7=statetimer%T_SECOND==0;

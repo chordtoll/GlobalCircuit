@@ -2,8 +2,8 @@
 #include "MS5607.h"
 
 //Initializes altimeter module
-char InitAltimeter(char addr) {
-    char ack=0;
+uint8_t InitAltimeter(uint8_t addr) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(ALT_CMD_RESET);
@@ -12,8 +12,8 @@ char InitAltimeter(char addr) {
 }
 
 //Begins altimeter pressure conversion
-char TriggerAltimeter_Pressure(char addr) {
-    char ack=0;
+uint8_t TriggerAltimeter_Pressure(uint8_t addr) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(ALT_CMD_D1|ALT_OSR_4096);
@@ -22,8 +22,8 @@ char TriggerAltimeter_Pressure(char addr) {
 }
 
 //Begins altimeter temperature conversion
-char TriggerAltimeter_Temperature(char addr) {
-    char ack=0;
+uint8_t TriggerAltimeter_Temperature(uint8_t addr) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(ALT_CMD_D2|ALT_OSR_4096);
@@ -32,8 +32,8 @@ char TriggerAltimeter_Temperature(char addr) {
 }
 
 //Reads altimeter ADC value
-char ReadAltimeter_ADC(char addr, int* val) {
-    char ack=0;
+uint8_t ReadAltimeter_ADC(uint8_t addr, uint32_t* val) {
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(ALT_CMD_ADC);
@@ -52,9 +52,9 @@ char ReadAltimeter_ADC(char addr, int* val) {
 }
 
 //Reads altimeter parameter
-int ReadAltimeter_Param(char addr, char loc) {
-    int val=0;
-    char ack=0;
+uint16_t ReadAltimeter_Param(uint8_t addr, uint8_t loc) {
+    uint16_t val=0;
+    uint8_t ack=0;
     StartI2C();
     ack |= WriteI2C(addr << 1);
     ack |= WriteI2C(ALT_CMD_PROM+loc);

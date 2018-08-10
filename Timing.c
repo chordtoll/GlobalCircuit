@@ -2,12 +2,12 @@
 #include "Yikes.h"
 #include <proc/p32mx360f512l.h>
 
-unsigned long long loopstarttime;
+uint64_t loopstarttime;
 
-unsigned long long GetTimer() {
-    unsigned long long acc1;
-    unsigned int tim;
-    unsigned long long acc2;
+uint64_t GetTimer() {
+    uint64_t acc1;
+    uint32_t tim;
+    uint64_t acc2;
     acc1=timer_accum;
     tim=ReadCoreTimer();
     acc2=timer_accum;
@@ -17,21 +17,21 @@ unsigned long long GetTimer() {
     return acc2+tim;
 }
 
-void WaitTicks(long n) {
-    long long donetime=GetTimer()+n;
+void WaitTicks(uint64_t n) {
+    uint64_t donetime=GetTimer()+n;
     while (GetTimer()<donetime);
 }
 
-void WaitUS(int n) {
-    long long donetime=GetTimer()+n*(tps/1000000);
+void WaitUS(uint32_t n) {
+    uint64_t donetime=GetTimer()+n*(tps/1000000);
     while (GetTimer()<donetime);
 }
-void WaitMS(int n) {
-    long long donetime=GetTimer()+n*(tps/1000);
+void WaitMS(uint32_t n) {
+    uint64_t donetime=GetTimer()+n*(tps/1000);
     while (GetTimer()<donetime);
 }
-void WaitS(int n) {
-    long long donetime=GetTimer()+n*tps;
+void WaitS(uint32_t n) {
+    uint64_t donetime=GetTimer()+n*tps;
     while (GetTimer()<donetime);
 }
 
@@ -39,7 +39,7 @@ void InitLoopDelay() {
     loopstarttime=GetTimer();
 }
 
-void DelayLoopMS(int n) {
+void DelayLoopMS(uint32_t n) {
     if (GetTimer()>=loopstarttime+n*(tps/1000)) {
         yikes.looprate=1;
     }
@@ -47,9 +47,9 @@ void DelayLoopMS(int n) {
     loopstarttime+=n*(tps/1000);
 }
 
-unsigned int __attribute__((nomips16)) ReadCoreTimer(void)
+uint32_t __attribute__((nomips16)) ReadCoreTimer(void)
 {
-    unsigned int timer;
+    uint32_t timer;
 
     // get the count reg
     asm volatile("mfc0   %0, $9" : "=r"(timer));
@@ -58,7 +58,7 @@ unsigned int __attribute__((nomips16)) ReadCoreTimer(void)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void __attribute__((nomips16)) WriteCoreTimer(unsigned int timer)
+void __attribute__((nomips16)) WriteCoreTimer(uint32_t timer)
 {
     /* get the count reg */
     asm volatile("mtc0   %0, $9": "+r"(timer));

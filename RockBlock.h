@@ -8,6 +8,8 @@
 #ifndef ROCKBLOCK_H
 #define	ROCKBLOCK_H
 
+#include <stdint.h>
+
 typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT} rb_state_t;
 typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
 
@@ -19,13 +21,14 @@ char _rb_mts[8];
 char _rb_mtm[8];
 char _rb_mtl[8];
 char _rb_mtq[8];
-int _rb_imos;
-int _rb_imos;
-int _rb_imts;
-int _rb_imtm;
-int _rb_imtl;
-int _rb_imtq;
+uint8_t _rb_imos;
+uint16_t _rb_imom;
+uint8_t _rb_imts;
+uint16_t _rb_imtm;
+uint16_t _rb_imtl;
+uint16_t _rb_imtq;
 
+void InitRB();
 void TickRB();
 void SendString_RB(char *msg);
 

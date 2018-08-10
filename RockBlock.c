@@ -4,12 +4,18 @@
 #include "Yikes.h"
 
 char OKARR[340];
+char _rb_reqsend;
+uint16_t _rb_idletimer;
+
+void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq);
 
 void InitRB() {
     _rb_state=RB_INIT;
     _rb_idx=0;
     _rb_status=RB_BUSY;
     _rb_cmdbuf[340]=0;
+    _rb_reqsend=0;
+    _rb_idletimer=0;
     OKARR[0]=0xF0;
     OKARR[1]=0x9F;
     OKARR[2]=0x91;
@@ -19,7 +25,17 @@ void InitRB() {
 
 void TickRB() {
     uint16_t csum=0;
-    int i;
+    uint16_t i;
+    if (_rb_state==RB_IDLE)
+        _rb_idletimer=0;
+    else
+        _rb_idletimer++;
+    if (_rb_idletimer==RB_IDLE_SOFT_TIMEOUT)
+        _rb_state=RB_INIT;
+    if (_rb_idletimer==RB_IDLE_FIRM_TIMEOUT)
+        _rb_state=RB_INIT;
+    if (_rb_idletimer==RB_IDLE_HARD_TIMEOUT)
+        while(1);
     switch (_rb_state){
         case RB_INIT:
             SendString_UART1("ATE0\r");
@@ -69,6 +85,11 @@ void TickRB() {
             }
             break;
         case RB_IDLE:
+            if (_rb_reqsend)
+            {
+                _rb_reqsend=0;
+                _rb_state=BEGINSEND;
+            }
             break;
         case BEGINSEND:
             SendString_UART1("AT+SBDWB=340\r");
@@ -77,7 +98,7 @@ void TickRB() {
             break;
         case SENT_SBDWB:
             if (_rb_status==RB_READY) {
-                SendBuffer_UART1(RBTXbuf,0,340);
+                SendBuffer_UART1((char *)RBTXbuf,0,340);
                 _rb_state=SENT_TXBUF;
                 _rb_status=RB_BUSY;
             }
@@ -134,7 +155,7 @@ void TickRB() {
             break;
         case SENT_SBDRB:
             if (_rb_status==RB_OK) {
-                char *rbuf=_rb_cmdbuf+2;
+                volatile char *rbuf=_rb_cmdbuf;
                 uint16_t csumc=0;
                 uint16_t msglen=*rbuf++<<8;
                 msglen|=*rbuf++;
@@ -151,9 +172,12 @@ void TickRB() {
                 if (RBRXbuf[0]=='\xF0' && RBRXbuf[1]=='\x9F' && RBRXbuf[2]=='\x8E' && RBRXbuf[3]=='\x88') {
                     //SendString_UART1("!OK\r");
                     SendString_RB(OKARR);
-                }
-                else
                     _rb_state=RB_IDLE;
+                } else {
+                    SendString_UART1("AT\r");
+                    _rb_state=SENT_ACKAT;
+                    _rb_status=RB_BUSY;
+                }
             }
             if (_rb_status==RB_ERROR) {
                 yikes.rberror=1;
@@ -164,14 +188,14 @@ void TickRB() {
 }
 
 void SendString_RB(char *msg) {
-    memcpy(RBTXbuf,msg,340);
-    _rb_state=BEGINSEND;
+    memcpy((void *)RBTXbuf,msg,340);
+    _rb_reqsend=1;
 }
 
-void ParseSBDIX(char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {
-    int field=0;
-    int fieldstart=0;
-    int idx=0;
+void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {
+    uint8_t field=0;
+    uint16_t fieldstart=0;
+    uint16_t idx=0;
     while (*cmdbuf!='+')
         cmdbuf++;
     while (cmdbuf[idx]) {

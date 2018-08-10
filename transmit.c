@@ -1,9 +1,10 @@
+#include <string.h>
 #include "transmit.h"
 #include "proc\p32mx360f512l.h"
 #include "Timing.h"
 #include "Yikes.h"
 volatile char gpsbuf[84];
-volatile char gpsbufi;
+volatile uint8_t gpsbufi;
 
 void InitUART()
 {
@@ -89,7 +90,7 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
     }
     if (receivedChar=='$') {
         // BEGIN TIMING CRITICAL DO NOT SPLIT
-        unsigned int ctt=ReadCoreTimer();
+        uint32_t ctt=ReadCoreTimer();
         WriteCoreTimer(0);
         timer_accum+=ctt;
         // END   TIMING CRITICAL DO NOT SPLIT
@@ -106,7 +107,7 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbuf[gpsbufi++]=receivedChar;
         gpsbuf[gpsbufi++]=0;
         if (GPSready) {
-            strcpy(GPSdata,gpsbuf);
+            strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
             GPSready=0;
             GPSnew=1;
         }
@@ -117,148 +118,6 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
     PORTEbits.RE4=0;
 }
 
-//int RockInit()
-//{
-//    char transmit[] = "AT+CIER=1,0,1\r";
-//    char OK[] = "OK\r";
-//    char* reply = 0;
-//
-//    while(ReceivedLine()) // clears the buffer
-//        GetString();
-//
-//    do
-//    {
-//       SendString(transmit, 0);
-//
-//        while(ReceivedLine() == 0);
-//        reply = GetString();
-//
-//
-//
-//        if (strcmp(transmit, reply) == 0)
-//        {
-//            //SendString("Got the init string\r\n");
-//        }
-//
-//
-//        while(ReceivedLine() == 0);
-//        reply = GetString();
-//
-//    } while (strcmp(OK, reply) != 0);
-//
-//
-//    return 0;
-//}
-
-int HackBusyWait(unsigned char time)
-{
-    unsigned char i = 0;
-    unsigned char j = 0;
-    unsigned char k = 0;
-    unsigned char l = 0;
-    unsigned char m = 0;
-
-    for(i = 0; i < time; ++i)
-    {
-        for(j = 0; j < time; ++j)
-        {
-            for(k = 0; k < time; ++k)
-            {
-                for(l = 0; l < time; ++l)
-                {
-                    m = l;
-                }
-            }
-        }
-    }
-    return m;
-}
-
-int HackRockSend(unsigned char * message)
-{
-    char oldestReceivedChar = 255;
-    char olderReceivedChar = 255;
-    char oldReceivedChar = 255;
-    char receivedChar = 255;
-    char timeToGo = 0;
-    int i = 0;
-
-    //static char sentYet = 0;
-    //static char prevHour = 0;
-    //static char prevMin = 0;
-
-    //if((sentYet == 0) || (message[7] != prevMin) || (message[8] != prevHour) )
-    {
-    //    sentYet = 1;
-    //    prevMin = message[7];
-    //    prevHour = message[8];
-
-        SendString_UART1("AT\r");
-
-        for(i = 0; i < 4; ++i)
-        {
-            timeToGo = 0;
-
-            while(timeToGo == 0) //Wait for us to get the go ahead to continue
-            {
-                //Wait for response to be over
-                if (U1STAbits.OERR) // If there is an overflow, do not read, and reset
-                {
-                    U1STAbits.OERR = 0;
-                }
-                if (U1STAbits.URXDA)  //If data available from Rockblock
-                {
-                    oldestReceivedChar = olderReceivedChar;
-                    olderReceivedChar = oldReceivedChar;
-                    oldReceivedChar = receivedChar;
-                    receivedChar = U1RXREG; // Read the receive line of the PIC from the GPS
-
-                    if(oldestReceivedChar == 'O' && olderReceivedChar == 'K' && oldReceivedChar == '\r' && receivedChar == '\n' )
-                    {
-                        timeToGo = 1;
-                    }
-
-                }
-            }
-
-
-            if(i == 0)
-            {
-                SendString_UART1("AT&K0\r");
-            }
-            else if(i == 1)
-            {
-                //SendString("AT+SBDWT=This message was successfully sent from PIC32MX360\r", 0);
-                SendString_UART1("AT+SBDWT=");
-                SendString_UART1(message);
-                SendString_UART1("\r");
-            }
-            else if(i == 2)
-            {
-                SendString_UART1("AT+SBDIX\r");
-            }
-        }
-    }
-
-    return 0;
-}
-
-//int checkService()
-//{
-//    char service[] = "+CIEV:1,1\r";//network service available
-//    char noservice[] = "+CIEV:1,0\r";//network service unavailable
-//    char* reply = 0;
-//
-//    do
-//    {
-//        while(ReceivedLine() == 0);
-//        reply = GetString();
-//
-//    } while (strcmp(service, reply) != 0);
-//
-//    return 0;
-//}
-
 void SendString_UART1(unsigned char* string)
 {
     while(*string != 0)
@@ -267,8 +126,8 @@ void SendString_UART1(unsigned char* string)
     }
 }
 
-void SendBuffer_UART1(char *buf, int start, int len) {
-    int i;
+void SendBuffer_UART1(char *buf, uint16_t start, uint16_t len) {
+    uint16_t i;
     for (i=start;i<len;i++) {
         SendChar_UART1(buf[i]);
     }
@@ -306,14 +165,7 @@ void SendChar_UART2(char letter)
     U2TXREG = letter;            //transmit first char
 }
 
-int strcmp(const char* s1, const char* s2)
-{
-    while(*s1 && (*s1==*s2))
-        s1++,s2++;
-    return *(const unsigned char*)s1 - *(const unsigned char*)s2;
-}
-
-char rbstrcmp(const char *s1,int s1i,const char *s2) {
+char rbstrcmp(volatile char *s1,uint16_t s1i,const char *s2) {
     while (*s2) {
         if (s1i==0)
             return 0;

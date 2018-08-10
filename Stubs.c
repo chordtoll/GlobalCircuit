@@ -5,14 +5,14 @@
 #include "proc\p32mx360f512l.h"
 #include <stdlib.h>
 
-char chanidx[6];
+uint8_t chanidx[6];
 
 void InitADC_S() {
-    int i;
+    uint8_t i;
     //SendString_UART1("Init ADC ");
     for (i=0;i<6;i++) chanidx[i]=0;
 }
-int ReadADC_S(char channel) {
+uint16_t ReadADC_S(uint8_t channel) {
     chanidx[channel]++;
     //SendString_UART1("Read ADC");
     //SendChar_UART1('0'+channel);
@@ -20,7 +20,7 @@ int ReadADC_S(char channel) {
     return chanidx[channel]|(channel<<8);
 }
 
-int ReadPICADC_S(char channel) {
+uint16_t ReadPICADC_S(uint8_t channel) {
     //SendString_UART1("Read PIC ADC");
     //SendChar_UART1('0'+channel);
     //SendChar_UART1(' ');

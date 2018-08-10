@@ -2,14 +2,11 @@
 #ifndef _I2C_H    /* Guard against multiple inclusion */
 #define _I2C_H
 
+#include <stdint.h>
+
 void InitI2C(void);
-
-char SendI2C(char addr, char* data, int size);
-
-char ReceiveI2C(char addr, char* data, int size);
-
-char ReadI2C(void);
-char WriteI2C(char data);
+uint8_t ReadI2C(void);
+uint8_t WriteI2C(uint8_t data);
 void StartI2C(void);
 void StopI2C(void);
 void RestartI2C(void);

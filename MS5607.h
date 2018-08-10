@@ -8,6 +8,8 @@
 #ifndef MS5607_H
 #define	MS5607_H
 
+#include <stdint.h>
+
 #define ALT_ADDR      0x77
 #define ALT_CMD_RESET 0x1E
 #define ALT_CMD_D1    0x40
@@ -21,10 +23,12 @@
 #define ALT_OSR_2048  0x06
 #define ALT_OSR_4096  0x08
 
-char TriggerAltimeter_Pressure(char addr);
-char TriggerAltimeter_Temperature(char addr);
-char ReadAltimeter_ADC(char addr, int* val);
-int ReadAltimeter_Param(char addr, char loc);
+uint8_t InitAltimeter(uint8_t addr);
+
+uint8_t TriggerAltimeter_Pressure(uint8_t addr);
+uint8_t TriggerAltimeter_Temperature(uint8_t addr);
+uint8_t ReadAltimeter_ADC(uint8_t addr, uint32_t* val);
+uint16_t ReadAltimeter_Param(uint8_t addr, uint8_t loc);
 
 #endif	/* MS5607_H */
 

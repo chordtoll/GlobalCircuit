@@ -13,9 +13,9 @@
 typedef enum chgst {NONE,GND,UP,DOWN} chgst_t;
 
 void InitADC_S();
-int ReadADC_S(char channel);
+uint16_t ReadADC_S(uint8_t channel);
 
-int ReadPICADC_S(char channel);
+uint16_t ReadPICADC_S(uint8_t channel);
 
 void TriggerMagneto_S();
 void TriggerAltimeter_Pressure_S();

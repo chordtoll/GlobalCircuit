@@ -1,9 +1,9 @@
 #include <proc/p32mx360f512l.h>
 
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti) {
-    int field=0;
-    int fieldstart=0;
-    int idx=0;
+    uint8_t field=0;
+    uint16_t fieldstart=0;
+    uint16_t idx=0;
     while (data[idx]) {
         if (data[idx]==',') {
             switch(field) {
@@ -50,7 +50,7 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
 
 void InitGPS(void) {
     char InitString[16]={0xA0,0xA1,0x00,0x09,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x09,0x0D,0x0A};
-    int i;
+    uint8_t i;
     for (i=0;i<16;i++) {
         U2TXREG=InitString[i];
         while (U2STAbits.TRMT == 0);
