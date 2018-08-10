@@ -32,10 +32,9 @@
 #define T_NORM_LEN (T_MINUTE*9)
 #define T_CON_LEN (T_MINUTE)
 #define T_CON_CHG_BEGIN  (T_SECOND*2)
-#define T_CON_CHGN_END  (T_CON_CHG_BEGIN+T_SECOND*2)
-#define T_CON_CHG1_END  (T_CON_CHGN_END+T_SECOND*2)
-#define T_CON_MEAS1_END (T_CON_CHG1_END+T_SECOND*27)
-#define T_CON_CHG2_END  (T_CON_MEAS1_END+T_SECOND*2)
+#define T_CON_CHG1_END  (T_CON_CHG_BEGIN+T_SECOND*2)
+#define T_CON_CHG2_END  (T_CON_CHG1_END+T_SECOND*3)
+#define T_CON_MEAS_END (T_CON_CHG2_END+T_SECOND*10)
 
 #define T_FASTSAM_INTERVAL (T_SECOND*5)
 #define T_SLOWSAM_INTERVAL (T_FASTSAM_INTERVAL*12)
@@ -124,7 +123,9 @@ int main(void) {
 
     InitGPS();
     InitRB();
+
     InitInterrupt();
+
     InitI2C();
     InitMagneto(MAG_ADDR);
     InitAltimeter(ALT_ADDR);
@@ -135,55 +136,31 @@ int main(void) {
 
     InitLoopDelay();
 
-    //SendString_UART1("!Init'd\r");
-
-    //for (i=0;i<10000000;i++);
-    
-    //SendString_UART1("!OK\r");
-
-    //SendString_UART1("!");
-    //PrintResetReason();
-    //SendString_UART1("\r");
-
     InitWatchdog();
 
     state=CONDUCTIVITY;
 
-    //PORTECLR=0xFF;
-
     GPSready=1;
 
-    PORTEbits.RE8=1;
 
 
     //=============================//
     //          MAIN LOOP          //
     //=============================//
     while (1) {
-        //SendString_UART1(gpsbuf);
-        //sprintf(tempbuf,"%2d:%02d.%03d %1d %1d",statetimer/T_MINUTE,(statetimer/T_SECOND)%60,(statetimer%T_SECOND)*T_TICK_MS,GPSready,GPSnew);
-        //SendString_UART1(tempbuf);
-        //if (state==NORMAL)
-        //    SendString_UART1("NORMAL ");
-        //if (state==CONDUCTIVITY)
-        //    SendString_UART1("CONDUCTIVITY ");
 
         TickRB();
         
-        PORTEbits.RE7=statetimer%T_SECOND==0;
         switch (state) {
             case NORMAL:
-                PORTEbits.RE6=0;
                 packet.norm.type=0x55;
                 if (statetimer%T_SLOWSAM_INTERVAL==0) {
-                    clearPacket(&packet);
                     if ((statetimer/T_MINUTE)<8) {
                         memcpy(packet.norm.cVertH,cVertH+(statetimer/T_MINUTE)*40,40*2);
                         memcpy(packet.norm.cVertL,cVertL+(statetimer/T_MINUTE)*40,40*2);
                     }
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==0) {
-                    //SendChar_UART1('\n');
                     TriggerMagneto_S();
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==1) {
@@ -217,31 +194,19 @@ int main(void) {
                     packet.norm.yikes=yikes.byte;
                     yikes.byte=0;
                     RockSend_S(packet.bytes);
-                    //printPacket(packet);
+                    clearPacket(&packet);
                 }
                 break;
             case CONDUCTIVITY:
-                PORTEbits.RE6=1;
                 packet.rare.type=0xAA;
                 switch (statetimer) {
                     case T_CON_CHG_BEGIN:
-                        //SendChar_UART1('\n');
                         ChargeProbe_S(GND);
                         break;
-                    case T_CON_CHGN_END:
-                        //SendChar_UART1('\n');
+                    case T_CON_CHG1_END:
                         ChargeProbe_S(UP);
                         break;
-                    case T_CON_CHG1_END:
-                        //SendChar_UART1('\n');
-                        ChargeProbe_S(NONE);
-                        break;
-                    case T_CON_MEAS1_END:
-                        //SendChar_UART1('\n');
-                        ChargeProbe_S(DOWN);
-                        break;
                     case T_CON_CHG2_END:
-                        //SendChar_UART1('\n');
                         ChargeProbe_S(NONE);
                         break;
                 }
@@ -252,13 +217,9 @@ int main(void) {
                 if (statetimer==1) {
                     packet.rare.vertD=ReadADC_S(1);
                 }
-                if (statetimer>T_CON_CHGN_END && statetimer<T_CON_CHGN_END+160) {
-                    cVertH[statetimer-T_CON_CHGN_END]=ReadADC_S(0);
-                    cVertL[statetimer-T_CON_CHGN_END]=ReadADC_S(4);
-                }
-                if (statetimer>T_CON_MEAS1_END && statetimer<T_CON_MEAS1_END+160) {
-                    cVertH[statetimer-T_CON_MEAS1_END+160]=ReadADC_S(0);
-                    cVertL[statetimer-T_CON_MEAS1_END+160]=ReadADC_S(4);
+                if (statetimer>=T_CON_CHG_BEGIN && statetimer<T_CON_MEAS_END) {
+                    cVertH[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(0);
+                    cVertL[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(4);
                 }
                 if (statetimer==0)
                     TriggerAltimeter_Temperature_S();
@@ -289,7 +250,6 @@ int main(void) {
                     packet.rare.yikes=yikes.byte;
                     yikes.byte=0;
                     RockSend_S(packet.bytes);
-                    //printPacket(packet);
                     clearPacket(&packet);
                     state=NORMAL;
                     statetimer=0;

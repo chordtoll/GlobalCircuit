@@ -87,28 +87,12 @@ void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt) {
 void ChargeProbe_S(chgst_t state) {
     switch (state) {
         case NONE:
-            //SendString_UART1("Charge probes OFF ");
-            PORTEbits.RE0=0;
-            PORTEbits.RE1=0;
-            PORTEbits.RE2=0;
             break;
         case UP:
-            //SendString_UART1("Charge probes ^^^ ");
-            PORTEbits.RE0=0;
-            PORTEbits.RE1=1;
-            PORTEbits.RE2=1;
             break;
         case DOWN:
-            //SendString_UART1("Charge probes vvv ");
-            PORTEbits.RE0=1;
-            PORTEbits.RE1=0;
-            PORTEbits.RE2=1;
             break;
         case GND:
-            //SendString_UART1("Charge probes === ");
-            PORTEbits.RE0=1;
-            PORTEbits.RE1=1;
-            PORTEbits.RE2=1;
             break;
     }
 }

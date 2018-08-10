@@ -54,7 +54,6 @@ void InitInterrupt()
 
 void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART1_ISR(void)
 {
-    PORTEbits.RE3=1;
     char receivedChar = U1RXREG; //get char from uart1rec line
     
     if (_rb_status==RB_BUSY) {
@@ -77,12 +76,10 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         }
     }
     IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
-    PORTEbits.RE3=0;
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
 {
-    PORTEbits.RE4=1;
     char receivedChar = U2RXREG; //get char from uart1rec line
 
     if (gpsbufi>=80) {
@@ -115,7 +112,6 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbuf[gpsbufi++]=receivedChar;
     }
     IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
-    PORTEbits.RE4=0;
 }
 
 void SendString_UART1(unsigned char* string)
