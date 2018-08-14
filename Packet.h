@@ -13,6 +13,7 @@
 struct __attribute__((packed)) s_packet_norm {
     uint8_t type;
     uint8_t yikes;
+    uint16_t seq;
     uint32_t time;
     int32_t lat;
     int32_t lon;
@@ -25,18 +26,19 @@ struct __attribute__((packed)) s_packet_norm {
     uint16_t vertD;
     uint16_t compassX[12];
     uint16_t compassY[12];
-    uint16_t cVertH[40];
-    uint16_t cVertL[40];
+    uint16_t cVertH[25];
+    uint16_t cVertL[25];
 };
 
 struct __attribute__((packed)) s_packet_rare {
     uint8_t type;
     uint8_t yikes;
-    uint32_t pressure    : 24;
-    uint32_t temperature : 24;
-    uint16_t batvolt     : 12;
-    uint16_t batcurr     : 12;
-    uint16_t thermval    : 12;
+    uint16_t seq;
+    uint32_t pressure;
+    uint32_t temperature;
+    uint16_t batvolt;
+    uint16_t batcurr;
+    uint16_t thermval;
     uint16_t vertH;
     uint16_t vertL;
     uint16_t vertD;

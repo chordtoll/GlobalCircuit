@@ -68,15 +68,15 @@ int32_t gLat;
 int32_t gLon;
 uint32_t gAlt;
 
-uint16_t cVertH[320];
-uint16_t cVertL[320];
+uint16_t cVertH[150];
+uint16_t cVertL[150];
 
 typedef enum state {NORMAL,CONDUCTIVITY} state_t;
 
 state_t state;
 uint32_t statetimer;
 
-char tempbuf[20]; //TODO: DELETE
+uint16_t sequence;
 
 packet_u packet;
 
@@ -117,6 +117,8 @@ int main(void) {
     yikes.byte=0;
     yikes.reset=1;
 
+    sequence=0;
+
     InitGPIO();
 
     InitUART();
@@ -153,11 +155,10 @@ int main(void) {
         
         switch (state) {
             case NORMAL:
-                packet.norm.type=0x55;
                 if (statetimer%T_SLOWSAM_INTERVAL==0) {
-                    if ((statetimer/T_MINUTE)<8) {
-                        memcpy(packet.norm.cVertH,cVertH+(statetimer/T_MINUTE)*40,40*2);
-                        memcpy(packet.norm.cVertL,cVertL+(statetimer/T_MINUTE)*40,40*2);
+                    if ((statetimer/T_MINUTE)<6) {
+                        memcpy(packet.norm.cVertH,cVertH+(statetimer/T_MINUTE)*25,25*2);
+                        memcpy(packet.norm.cVertL,cVertL+(statetimer/T_MINUTE)*25,25*2);
                     }
                 }
                 if (statetimer%T_FASTSAM_INTERVAL==0) {
@@ -191,8 +192,11 @@ int main(void) {
                     packet.norm.alt=gAlt;
                 }
                 if (statetimer%T_SLOWSAM_INTERVAL==T_SECOND*59) {
+                    packet.norm.type=0x55;
                     packet.norm.yikes=yikes.byte;
                     yikes.byte=0;
+                    packet.norm.seq=sequence;
+                    sequence++;
                     RockSend_S(packet.bytes);
                     clearPacket(&packet);
                 }
@@ -247,8 +251,11 @@ int main(void) {
                 break;
             case CONDUCTIVITY:
                 if (statetimer>T_CON_LEN) {
+                    packet.rare.type=0xAA;
                     packet.rare.yikes=yikes.byte;
                     yikes.byte=0;
+                    packet.rare.seq=sequence;
+                    sequence++;
                     RockSend_S(packet.bytes);
                     clearPacket(&packet);
                     state=NORMAL;
