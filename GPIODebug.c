@@ -6,7 +6,6 @@ void InitGPIO() {
     ODCECLR=0x1FF;
 }
 void SendChar_GPIO(char c) {
-    int i;
     PORTE=PORTE&0xFEFF;
     PORTE=(PORTE&0xFF00)|c;
     PORTE=PORTE|0x100;

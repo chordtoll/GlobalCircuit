@@ -51,10 +51,10 @@
 #define MAG_CR2_MRS  0x10
 
 
-char InitMagneto(char addr);
-char TriggerMagneto(char addr);
-char CheckMagneto(char addr);
-char ReadMagneto(char addr, uint16_t* x, uint16_t* y, uint16_t* z);
+uint8_t InitMagneto(uint8_t addr);
+uint8_t TriggerMagneto(uint8_t addr);
+uint8_t CheckMagneto(uint8_t addr);
+uint8_t ReadMagneto(uint8_t addr, uint16_t* x, uint16_t* y, uint16_t* z);
 
 #endif	/* MAG3310_H */
 

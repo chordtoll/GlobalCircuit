@@ -8,20 +8,26 @@
 #ifndef TIMING_H
 #define	TIMING_H
 
-volatile unsigned long long timer_accum;
-volatile unsigned int tps=40000000;
+#include <stdint.h>
 
-unsigned long long GetTimer();
+#define TPS_DEFAULT 40000000
+#define TPS_MAX     60000000
+#define TPS_MIN     30000000
 
-void WaitTicks(long n);
-void WaitUS(int n);
-void WaitMS(int n);
-void WaitS(int n);
+volatile uint64_t timer_accum;
+volatile uint32_t tps=TPS_DEFAULT;
+
+uint64_t GetTimer();
+
+void WaitTicks(uint64_t n);
+void WaitUS(uint32_t n);
+void WaitMS(uint32_t n);
+void WaitS(uint32_t n);
 
 void InitLoopDelay();
-void DelayLoopMS(int n);
+void DelayLoopMS(uint32_t n);
 
-unsigned int __attribute__((nomips16)) ReadCoreTimer(void);
-void __attribute__((nomips16)) WriteCoreTimer(unsigned int timer);
+uint32_t __attribute__((nomips16)) ReadCoreTimer(void);
+void __attribute__((nomips16)) WriteCoreTimer(uint32_t timer);
 #endif	/* TIMING_H */
 
