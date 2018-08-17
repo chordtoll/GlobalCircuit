@@ -138,8 +138,6 @@ int main(void) {
 
     InitPICADC();
 
-    InitADC_S();
-
     InitLoopDelay();
 
     InitWatchdog();

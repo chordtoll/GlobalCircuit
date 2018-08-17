@@ -11,7 +11,7 @@
 
 
 //Initalize SPI1
-void initSPI1(void)
+void InitSPI1(void)
 {
     //SCK is output RF6
     //SDI is input RF7
@@ -136,7 +136,7 @@ void WriteSPI1(unsigned int data_out)
     }
 }
 
-void initSPI2(void)
+void InitSPI2(void)
 {
     // SCK is output RG6
     // SDI is input RG7
@@ -262,4 +262,5 @@ void Delay ( void )
     int temp;
     for( temp = 0; temp < 10000; temp++ );
 }
+
 

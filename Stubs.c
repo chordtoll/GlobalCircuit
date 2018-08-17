@@ -2,22 +2,13 @@
 #include "MAG3310.h"
 #include "MS5607.h"
 #include "transmit.h"
+#include "ADC.h"
 #include "proc\p32mx360f512l.h"
 #include <stdlib.h>
 
-uint8_t chanidx[6];
 
-void InitADC_S() {
-    uint8_t i;
-    //SendString_UART1("Init ADC ");
-    for (i=0;i<6;i++) chanidx[i]=0;
-}
 uint16_t ReadADC_S(uint8_t channel) {
-    chanidx[channel]++;
-    //SendString_UART1("Read ADC");
-    //SendChar_UART1('0'+channel);
-    //SendChar_UART1(' ');
-    return chanidx[channel]|(channel<<8);
+    ReadADC(channel);
 }
 
 uint16_t ReadPICADC_S(uint8_t channel) {
