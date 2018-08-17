@@ -78,12 +78,24 @@ void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt) {
 void ChargeProbe_S(chgst_t state) {
     switch (state) {
         case NONE:
+            PORTCbits.RC3=1;
+            PORTCbits.RC1=0;
+            PORTCbits.RC2=0;
             break;
         case UP:
+            PORTCbits.RC1=1;
+            PORTCbits.RC2=0;
+            PORTCbits.RC3=0;
             break;
         case DOWN:
+            PORTCbits.RC1=0;
+            PORTCbits.RC2=1;
+            PORTCbits.RC3=0;
             break;
         case GND:
+            PORTCbits.RC1=0;
+            PORTCbits.RC2=0;
+            PORTCbits.RC3=0;
             break;
     }
 }
