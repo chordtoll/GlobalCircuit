@@ -39,6 +39,11 @@
       <itemPath>RockBlock.c</itemPath>
       <itemPath>RockBlock.h</itemPath>
       <itemPath>Yikes.h</itemPath>
+      <itemPath>ADC.c</itemPath>
+      <itemPath>ADC.h</itemPath>
+      <itemPath>SPI.c</itemPath>
+      <itemPath>SPI.h</itemPath>
+      <itemPath>ADS1118.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

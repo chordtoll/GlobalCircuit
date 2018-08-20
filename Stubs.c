@@ -2,22 +2,13 @@
 #include "MAG3310.h"
 #include "MS5607.h"
 #include "transmit.h"
+#include "ADC.h"
 #include "proc\p32mx360f512l.h"
 #include <stdlib.h>
 
-uint8_t chanidx[6];
 
-void InitADC_S() {
-    uint8_t i;
-    //SendString_UART1("Init ADC ");
-    for (i=0;i<6;i++) chanidx[i]=0;
-}
 uint16_t ReadADC_S(uint8_t channel) {
-    chanidx[channel]++;
-    //SendString_UART1("Read ADC");
-    //SendChar_UART1('0'+channel);
-    //SendChar_UART1(' ');
-    return chanidx[channel]|(channel<<8);
+    ReadADC(channel);
 }
 
 uint16_t ReadPICADC_S(uint8_t channel) {
@@ -87,12 +78,24 @@ void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt) {
 void ChargeProbe_S(chgst_t state) {
     switch (state) {
         case NONE:
+            PORTCbits.RC3=1;
+            PORTCbits.RC1=0;
+            PORTCbits.RC2=0;
             break;
         case UP:
+            PORTCbits.RC1=1;
+            PORTCbits.RC2=0;
+            PORTCbits.RC3=0;
             break;
         case DOWN:
+            PORTCbits.RC1=0;
+            PORTCbits.RC2=1;
+            PORTCbits.RC3=0;
             break;
         case GND:
+            PORTCbits.RC1=0;
+            PORTCbits.RC2=0;
+            PORTCbits.RC3=0;
             break;
     }
 }

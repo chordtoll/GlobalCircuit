@@ -25,6 +25,7 @@
 #include "Packet.h"
 #include "RockBlock.h"
 #include "Yikes.h"
+#include "SPI.h"
 
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
@@ -132,9 +133,10 @@ int main(void) {
     InitMagneto(MAG_ADDR);
     InitAltimeter(ALT_ADDR);
 
-    InitPICADC();
+    InitSPI1();
+    InitSPI2();
 
-    InitADC_S();
+    InitPICADC();
 
     InitLoopDelay();
 
