@@ -39,7 +39,6 @@ uint32_t ReadAltimeter_S() {
     uint32_t pressure;
     //SendString_UART1("Read alt ");
     ReadAltimeter_ADC(ALT_ADDR, &pressure);
-    return 0x00ABCDEF;
     return pressure;
 }
 
