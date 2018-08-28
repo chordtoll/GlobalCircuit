@@ -71,9 +71,9 @@ uint32_t gAlt;
 uint16_t cVertH[150];
 uint16_t cVertL[150];
 
-uint32_t supTemperature;
-uint32_t supPressure;
-uint16_t supIl0;
+uint32_t supTemperature=0;
+uint32_t supPressure=0;
+uint16_t supIl0=0;
 uint16_t supIl1;
 uint16_t supIl2;
 uint16_t supIh0;
@@ -148,8 +148,6 @@ int main(void) {
     InitLoopDelay();
 
     InitWatchdog();
-
-    state=CONDUCTIVITY;
 
     GPSready=1;
 
