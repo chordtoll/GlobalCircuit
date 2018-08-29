@@ -31,8 +31,8 @@ struct __attribute__((packed)) s_packet_norm {
     uint8_t yikes;
     uint16_t seq;
     uint32_t time;
-    int32_t lat;
-    int32_t lon;
+    uint32_t lat;
+    uint32_t lon;
     uint32_t alt;
     uint16_t horizL[12];
     uint16_t horizR[12];

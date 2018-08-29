@@ -7,8 +7,8 @@
 #include <stdlib.h>
 
 
-uint16_t ReadADC_S(uint8_t channel) {
-    ReadADC(channel);
+uint16_t ReadADC_S(uint8_t channel) {    
+    return ReadADC(channel);
 }
 
 uint16_t ReadPICADC_S(uint8_t channel) {
@@ -42,7 +42,7 @@ uint32_t ReadAltimeter_S() {
     return pressure;
 }
 
-void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt) {
+void ReadGPS_S(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
     char nTime[20];
     char nLati[20];
     char nLong[20];
@@ -66,8 +66,12 @@ void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt) {
 //        SendString_UART1(nAlti);
 //        SendChar_UART1('\n');
         *time=atof(nTime);
-        *lat=(atof(nLati)*10000)*(nLatD=='S'?-1:1);
-        *lon=(atof(nLong)*10000)*(nLonD=='W'?-1:1);
+        *lat=(atof(nLati)*10000);
+        if (nLatD=='S')
+            *lat|=0x80000000;
+        *lon=(atof(nLong)*10000);
+        if (nLonD=='W')
+            *lon|=0x80000000;
         *alt=(atof(nAlti)*10);
     }
     }

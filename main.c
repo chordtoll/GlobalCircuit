@@ -65,8 +65,8 @@ uint32_t pressure;
 uint32_t temperature;
 
 uint32_t gTime;
-int32_t gLat;
-int32_t gLon;
+uint32_t gLat;
+uint32_t gLon;
 uint32_t gAlt;
 
 uint16_t cVertH[150];
@@ -252,6 +252,13 @@ int main(void) {
             }
             if (statetimer==1) {
                 packet.norm.vertD=ReadADC_S(1); //Store vertical differential value
+            }
+            if (statetimer==2) {
+                ReadGPS_S(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
+                packet.norm.time=gTime; //Store GPS time&location in packet
+                packet.norm.lat=gLat;
+                packet.norm.lon=gLon;
+                packet.norm.alt=gAlt;
             }
             //While in conductivity measuring interval,
             if (statetimer>=T_CON_CHG_BEGIN && statetimer<T_CON_MEAS_END) {

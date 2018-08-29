@@ -26,10 +26,11 @@ void InitRB() {
 void TickRB() {
     uint16_t csum=0;
     uint16_t i;
-    /*if (_rb_state==RB_IDLE)
+    if (_rb_state==RB_IDLE)
         _rb_idletimer=0;
     else
         _rb_idletimer++;
+    /*
     if (_rb_idletimer==RB_IDLE_SOFT_TIMEOUT)
         _rb_state=RB_INIT;
     if (_rb_idletimer==RB_IDLE_FIRM_TIMEOUT)

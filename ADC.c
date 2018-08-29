@@ -5,14 +5,15 @@
  * Created on August 16, 2018, 7:30 PM
  */
 #include <proc/p32mx360f512l.h>
+#include <stdint.h>
 #include "ADC.h"
 #include "SPI.h"
 
 uint16_t ReadADC(uint8_t channel)
 {
-	unsigned short bufferData = 0;
-	unsigned short result = 0;
-	unsigned short configReadBack = 0;
+	uint32_t bufferData = 0;
+	uint16_t result = 0;
+	uint16_t configReadBack = 0;
 	switch (channel)
 	{
 		case 0:
@@ -20,7 +21,7 @@ uint16_t ReadADC(uint8_t channel)
 			while(!SPI1STATbits.SPIRBF);
 			bufferData = ReadSPI1();
 			result = bufferData >> 16;
-			configReadBack = result;
+			configReadBack = bufferData;
 			return result;
 			break;
 		case 1:
@@ -28,7 +29,7 @@ uint16_t ReadADC(uint8_t channel)
 			while(!SPI1STATbits.SPIRBF);
 			bufferData = ReadSPI1();
 			result = bufferData >> 16;
-			configReadBack = result;
+			configReadBack = bufferData;
 			return result;
 			break;
 		case 2:
@@ -36,7 +37,7 @@ uint16_t ReadADC(uint8_t channel)
 			while(!SPI1STATbits.SPIRBF);
 			bufferData = ReadSPI1();
 			result = bufferData >> 16;
-			configReadBack = result;
+			configReadBack = bufferData;
 			return result;
 			break;
 		case 3:
@@ -44,7 +45,7 @@ uint16_t ReadADC(uint8_t channel)
 			while(!SPI2STATbits.SPIRBF);
 			bufferData = ReadSPI2();
 			result = bufferData >> 16;
-			configReadBack = result;
+			configReadBack = bufferData;
 			return result;
 			break;
 		case 4:
@@ -52,7 +53,7 @@ uint16_t ReadADC(uint8_t channel)
 			while(!SPI2STATbits.SPIRBF);
 			bufferData = ReadSPI2();
 			result = bufferData >> 16;
-			configReadBack = result;
+			configReadBack = bufferData;
 			return result;
 			break;
 		case 5:
@@ -60,7 +61,7 @@ uint16_t ReadADC(uint8_t channel)
 			while(!SPI2STATbits.SPIRBF);
 			bufferData = ReadSPI2();
 			result = bufferData >> 16;
-			configReadBack = result;
+			configReadBack = bufferData;
 			return result;
 			break;
 	}

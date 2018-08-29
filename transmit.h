@@ -10,10 +10,6 @@
 
 #include "RockBlock.h"
 
-#define RB_IDLE_SOFT_TIMEOUT 3000
-#define RB_IDLE_FIRM_TIMEOUT 4500
-#define RB_IDLE_HARD_TIMEOUT 6000
-
 volatile char GPSready;
 volatile char GPSnew;
 volatile char GPSdata[84];

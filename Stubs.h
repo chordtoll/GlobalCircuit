@@ -25,7 +25,7 @@ void ReadMagneto_S(uint16_t* a, uint16_t* b, uint16_t* c);
 
 uint32_t ReadAltimeter_S();
 
-void ReadGPS_S(uint32_t* time, int32_t* lat, int32_t* lon, uint32_t* alt);
+void ReadGPS_S(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt);
 
 void ChargeProbe_S(chgst_t state);
 
