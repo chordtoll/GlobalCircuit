@@ -141,6 +141,11 @@ void SendHex_UART1(char letter) {
     SendNybble_UART1(letter&0xF);
 }
 
+void Send16_UART1(uint16_t letter) {
+    SendHex_UART1((letter>>8)&0xFF);
+    SendHex_UART1(letter&0xFF);
+}
+
 void SendChar_UART1(char letter)
 {
     while(U1STAbits.TRMT == 0){} //while transmitting don't do anything

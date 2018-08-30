@@ -7,25 +7,6 @@
 
 //Defines
 
-//ADC channel configs
-//Single Shot start, AIN0=p, AIN3=n, Gain = +-4.096, Continuous conversion, 8SPS, ADC Mode, Pullup, Write to config register
-#define ADC0_VP 0x920A //Correct readback: 120a or 120b
-
-//Single Shot start, AIN2=p, AIN3=n, Gain = +-4.096, Continuous conversion, 8SPS, ADC Mode, Pullup, Write to config register
-#define ADC0_HP 0xB20A //Correct readback: 0320a or 032b
-
-//Single Shot start, AIN1=p, AIN3=n, Gain = +-4.096, Continuous conversion, 8SPS, ADC Mode, Pullup, Write to config register
-#define ADC0_VD 0xA20A //Correct readback: 220a or 220b
-
-//Single Shot start, AIN1=p, AIN3=n, Gain = +-4.096, Continuous conversion, 8SPS, ADC Mode, Pullup, Write to config register
-#define ADC1_VN 0xA20A //Correct readback: 220a or 220b
-
-//Single Shot start, AIN2=p, AIN3=n, Gain = +-4.096, Continuous conversion, 8SPS, ADC Mode, Pullup, Write to config register
-#define ADC1_HN 0xB20A //Correct readback: 0320a or 032b
-
-//Single Shot start, AIN0=p, AIN3=n, Gain = +-4.096, Continuous conversion, 8SPS, ADC Mode, Pullup, Write to config register
-#define ADC1_HD 0x920A //Correct readback: 020a or 020b
-
 //Chip select is the pins latch register bit
 #define CS1 LATBbits.LATB2
 #define CS2 LATGbits.LATG9

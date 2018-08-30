@@ -34,11 +34,11 @@ struct __attribute__((packed)) s_packet_norm {
     uint32_t lat;
     uint32_t lon;
     uint32_t alt;
-    uint16_t horizL[12];
-    uint16_t horizR[12];
+    uint16_t horiz1[12];
+    uint16_t horiz2[12];
     uint16_t horizD[12];
-    uint16_t vertH;
-    uint16_t vertL;
+    uint16_t vert1;
+    uint16_t vert2;
     uint16_t vertD;
     uint16_t compassX[12];
     uint16_t compassY[12];
