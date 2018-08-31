@@ -85,7 +85,6 @@ uint16_t supT1;
 uint16_t supT2;
 
 uint32_t statetimer;
-uint8_t fastsamidx;
 
 uint16_t sequence;
 
@@ -130,7 +129,6 @@ int main(void) {
 
     sequence=0;
     statetimer=0;
-    fastsamidx=0;
 
     InitGPIO();
 
@@ -211,17 +209,16 @@ int main(void) {
                 uint16_t my;
                 uint16_t mz;
                 ReadMagneto_S(&mx,&my,&mz); //Read magnetometer values
-                packet.norm.compassX[fastsamidx]=mx; //Store magnetometer values in the packet
-                packet.norm.compassY[fastsamidx]=my;
+                packet.norm.compassX[(statetimer/T_FASTSAM_INTERVAL)%12]=mx; //Store magnetometer values in the packet
+                packet.norm.compassY[(statetimer/T_FASTSAM_INTERVAL)%12]=my;
                 uint16_t h1=ReadADC_S(2);
                 uint16_t h2=ReadADC_S(5);
-                packet.norm.horiz1[fastsamidx]=h1; //Store horizontal probe values in the packet
-                packet.norm.horiz2[fastsamidx]=h2;
+                packet.norm.horiz1[(statetimer/T_FASTSAM_INTERVAL)%12]=h1; //Store horizontal probe values in the packet
+                packet.norm.horiz2[(statetimer/T_FASTSAM_INTERVAL)%12]=h2;
             }
             if (statetimer%T_FASTSAM_INTERVAL==2) { //Tick 2
                 uint16_t hD=ReadADC_S(3);
-                packet.norm.horizD[fastsamidx]=hD;  //Store horizontal differential value in the packet
-                fastsamidx++;
+                packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=hD;  //Store horizontal differential value in the packet
             }
             //END every 5 seconds
             //BEGIN every 60 seconds
@@ -318,7 +315,6 @@ int main(void) {
             RockSend_S(packet.bytes); //Send packet
             clearPacket(&packet); //Clear packet buffer
             statetimer=0; //Reset state timer for start of next packet
-            fastsamidx=0;
         }
         ResetWatchdog(); //Clear watchdog timer
         DelayLoopMS(T_TICK_MS); //Delay to maintain constant tick rate
