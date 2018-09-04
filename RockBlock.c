@@ -2,6 +2,7 @@
 #include "RockBlock.h"
 #include "transmit.h"
 #include "Yikes.h"
+#include "Ballast.h"
 
 char OKARR[340];
 char _rb_reqsend;
@@ -16,10 +17,10 @@ void InitRB() {
     _rb_cmdbuf[340]=0;
     _rb_reqsend=0;
     _rb_idletimer=0;
-    OKARR[0]=0xF0;
-    OKARR[1]=0x9F;
-    OKARR[2]=0x91;
-    OKARR[3]=0x8C;
+    OKARR[0]='D';
+    OKARR[1]='O';
+    OKARR[2]='N';
+    OKARR[3]='E';
     OKARR[4]=0x00;
 }
 
@@ -167,12 +168,16 @@ void TickRB() {
                 RBRXbuf[msglen]=0;
                 uint16_t csumr=*rbuf++<<8;
                 csumr|=*rbuf;
-                //SendChar_UART1('!');
-                //SendString_UART1(RBRXbuf);
-                //SendChar_UART1('\r');
-                if (RBRXbuf[0]=='\xF0' && RBRXbuf[1]=='\x9F' && RBRXbuf[2]=='\x8E' && RBRXbuf[3]=='\x88') {
-                    //SendString_UART1("!OK\r");
-                    SendString_RB(OKARR);
+                //SendString_UART1("!");
+                //SendBuffer_UART1(RBRXbuf,0,20);
+                //SendString_UART1("!\r");
+                if (RBRXbuf[2]=='T' && RBRXbuf[3]=='E' && RBRXbuf[4]=='S' && RBRXbuf[5]=='T') {
+                    DeployBallast(0);
+                    //SendString_RB(OKARR);
+                    _rb_state=RB_IDLE;
+                } else if (RBRXbuf[2]=='C' && RBRXbuf[3]=='U' && RBRXbuf[4]=='T') {
+                    SendString_GPIO("\xE2\x9C\x82\x20");
+                    //SendString_RB(OKARR);
                     _rb_state=RB_IDLE;
                 } else {
                     SendString_UART1("AT\r");
