@@ -44,6 +44,8 @@
       <itemPath>SPI.c</itemPath>
       <itemPath>SPI.h</itemPath>
       <itemPath>ADS1118.h</itemPath>
+      <itemPath>PPS.c</itemPath>
+      <itemPath>PPS.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

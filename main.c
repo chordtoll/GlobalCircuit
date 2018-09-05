@@ -5,7 +5,7 @@
 #pragma config POSCMOD = XT
 #pragma config FPBDIV = DIV_1
 #pragma config DEBUG = ON
-#pragma config WDTPS = PS1024
+#pragma config WDTPS = PS8192
 #pragma config FWDTEN = OFF
 
 #include <proc/p32mx360f512l.h>
@@ -147,13 +147,17 @@ int main(void) {
 
     InitPICADC();
 
+    InitTimer();
+
+    InitPPS();
+
     InitLoopDelay();
 
     InitWatchdog();
 
     GPSready=1;
 
-
+    //SendChar_UART1('A');
 
     //=============================//
     //          MAIN LOOP          //

@@ -1,10 +1,39 @@
 #include "Timing.h"
 #include "Yikes.h"
 #include <proc/p32mx360f512l.h>
+volatile uint8_t tmancount;
 
 uint64_t loopstarttime;
 
-uint64_t GetTimer() {
+void InitTimer() {
+    T1CONbits.ON=0;     //Disable timer
+    T1CONbits.TCS=0;    //Source: PBCLK
+    T1CONbits.TCKPS=3;  //Prescale: 1/256
+    TMR1=0;
+    PR1=0xFFFF;         //
+    IFS0bits.T1IF=0;
+    IPC1bits.T1IP=7;
+    IPC1bits.T1IS=3;
+    IEC0bits.T1IE=1;
+    T1CONbits.ON=1;
+}
+
+void  __attribute__((vector(_TIMER_1_VECTOR), interrupt(IPL7SRS), nomips16)) TIMER1_ISR(void)
+{
+    
+    if (ReadCoreTimer()>TPS_MAX) {
+        // BEGIN TIMING CRITICAL DO NOT SPLIT
+        uint32_t ctt=ReadCoreTimer();
+        WriteCoreTimer(0);
+        timer_accum+=ctt;
+        // END TIMING CRITICAL DO NOT SPLIT
+        ctt_valid=0;
+        yikes.gpstick=1;
+    }
+    IFS0bits.T1IF = 0; //clear interrupt flag status for Timer 1
+}
+
+uint64_t GetCoreTimer() {
     uint64_t acc1;
     uint32_t tim;
     uint64_t acc2;
@@ -18,32 +47,32 @@ uint64_t GetTimer() {
 }
 
 void WaitTicks(uint64_t n) {
-    uint64_t donetime=GetTimer()+n;
-    while (GetTimer()<donetime);
+    uint64_t donetime=GetCoreTimer()+n;
+    while (GetCoreTimer()<donetime);
 }
 
 void WaitUS(uint32_t n) {
-    uint64_t donetime=GetTimer()+n*(tps/1000000);
-    while (GetTimer()<donetime);
+    uint64_t donetime=GetCoreTimer()+n*(tps/1000000);
+    while (GetCoreTimer()<donetime);
 }
 void WaitMS(uint32_t n) {
-    uint64_t donetime=GetTimer()+n*(tps/1000);
-    while (GetTimer()<donetime);
+    uint64_t donetime=GetCoreTimer()+n*(tps/1000);
+    while (GetCoreTimer()<donetime);
 }
 void WaitS(uint32_t n) {
-    uint64_t donetime=GetTimer()+n*tps;
-    while (GetTimer()<donetime);
+    uint64_t donetime=GetCoreTimer()+n*tps;
+    while (GetCoreTimer()<donetime);
 }
 
 void InitLoopDelay() {
-    loopstarttime=GetTimer();
+    loopstarttime=GetCoreTimer();
 }
 
 void DelayLoopMS(uint32_t n) {
-    if (GetTimer()>=loopstarttime+n*(tps/1000)) {
+    if (GetCoreTimer()>=loopstarttime+n*(tps/1000)) {
         yikes.looprate=1;
     }
-    while (GetTimer()<loopstarttime+n*(tps/1000));
+    while (GetCoreTimer()<loopstarttime+n*(tps/1000));
     loopstarttime+=n*(tps/1000);
 }
 

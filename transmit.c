@@ -49,6 +49,7 @@ void InitInterrupt()
     INTCONbits.MVEC = 1;  //enabling multivector interrupts
     IFS0bits.U1RXIF = 0; // clearing uart1 interrupt flag
     IFS1bits.U2RXIF = 0; // clearing uart1 interrupt flag
+    IFS0bits.T1IF   = 0; // clearing uart1 interrupt flag
     __asm__("EI");  // enable interrupts
 }
 
@@ -86,18 +87,6 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbufi=0;
     }
     if (receivedChar=='$') {
-        // BEGIN TIMING CRITICAL DO NOT SPLIT
-        uint32_t ctt=ReadCoreTimer();
-        WriteCoreTimer(0);
-        timer_accum+=ctt;
-        // END   TIMING CRITICAL DO NOT SPLIT
-        if (ctt>TPS_MIN && ctt<TPS_MAX) {
-            tps*=9;
-            tps+=ctt;
-            tps/=10;
-        } else {
-            yikes.gpstick=1;
-        }
         gpsbufi=0;
         gpsbuf[gpsbufi++]=receivedChar;
     } else if (receivedChar==0x0A) {
