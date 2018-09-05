@@ -16,8 +16,9 @@
 
 volatile uint64_t timer_accum;
 volatile uint32_t tps=TPS_DEFAULT;
+volatile uint8_t ctt_valid;
 
-uint64_t GetTimer();
+uint64_t GetCoreTimer();
 
 void WaitTicks(uint64_t n);
 void WaitUS(uint32_t n);

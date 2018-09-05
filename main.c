@@ -147,13 +147,17 @@ int main(void) {
 
     InitPICADC();
 
+    InitTimer();
+
+    InitPPS();
+
     InitLoopDelay();
 
     InitWatchdog();
 
     GPSready=1;
 
-
+    //SendChar_UART1('A');
 
     //=============================//
     //          MAIN LOOP          //
