@@ -10,6 +10,7 @@ void InitGPIO() {
     ODCCbits.ODCC1=0;
     ODCCbits.ODCC2=0;
     ODCCbits.ODCC3=1;
+    PORTCbits.RC3=1;
     TRISDSET=0x03;
     TRISDCLR=0xFC;
     ODCDCLR=0xFF;

@@ -187,13 +187,12 @@ ${OBJECTDIR}/Ballast.o: Ballast.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Ballast.o 
 	@${FIXDEPS} "${OBJECTDIR}/Ballast.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Ballast.o.d" -o ${OBJECTDIR}/Ballast.o Ballast.c    -Wno-error=implicit-function-declaration
 	
-
 ${OBJECTDIR}/PPS.o: PPS.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/PPS.o.d 
 	@${RM} ${OBJECTDIR}/PPS.o 
 	@${FIXDEPS} "${OBJECTDIR}/PPS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PPS.o.d" -o ${OBJECTDIR}/PPS.o PPS.c    -Wno-error=implicit-function-declaration
-
+	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -284,8 +283,7 @@ ${OBJECTDIR}/SPI.o: SPI.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/SPI.o.d 
 	@${RM} ${OBJECTDIR}/SPI.o 
 	@${FIXDEPS} "${OBJECTDIR}/SPI.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/SPI.o.d" -o ${OBJECTDIR}/SPI.o SPI.c    -Wno-error=implicit-function-declaration
-
-
+	
 ${OBJECTDIR}/Ballast.o: Ballast.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/Ballast.o.d 
@@ -297,8 +295,6 @@ ${OBJECTDIR}/PPS.o: PPS.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/PPS.o.d 
 	@${RM} ${OBJECTDIR}/PPS.o 
 	@${FIXDEPS} "${OBJECTDIR}/PPS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PPS.o.d" -o ${OBJECTDIR}/PPS.o PPS.c    -Wno-error=implicit-function-declaration
-	
-
 	
 endif
 
