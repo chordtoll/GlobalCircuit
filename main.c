@@ -128,6 +128,7 @@ int main(void) {
     yikes.reset=1;
 
     sequence=0;
+    statetimer=0;
 
     InitGPIO();
 
@@ -214,17 +215,20 @@ int main(void) {
                 ReadMagneto_S(&mx,&my,&mz); //Read magnetometer values
                 packet.norm.compassX[(statetimer/T_FASTSAM_INTERVAL)%12]=mx; //Store magnetometer values in the packet
                 packet.norm.compassY[(statetimer/T_FASTSAM_INTERVAL)%12]=my;
-                packet.norm.horizL[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(2); //Store horizontal probe values in the packet
-                packet.norm.horizR[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(5);
+                uint16_t h1=ReadADC_S(2);
+                uint16_t h2=ReadADC_S(5);
+                packet.norm.horiz1[(statetimer/T_FASTSAM_INTERVAL)%12]=h1; //Store horizontal probe values in the packet
+                packet.norm.horiz2[(statetimer/T_FASTSAM_INTERVAL)%12]=h2;
             }
             if (statetimer%T_FASTSAM_INTERVAL==2) { //Tick 2
-                packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=ReadADC_S(3);  //Store horizontal differential value in the packet
+                uint16_t hD=ReadADC_S(3);
+                packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=hD;  //Store horizontal differential value in the packet
             }
             //END every 5 seconds
             //BEGIN every 60 seconds
             if (statetimer==3) { //Tick 3 (Starts at 3 so as not to conflict with ^^^)
-                packet.norm.vertH=ReadADC_S(0);  //Store vertical probe values in packet
-                packet.norm.vertL=ReadADC_S(4);
+                packet.norm.vert1=ReadADC_S(0);  //Store vertical probe values in packet
+                packet.norm.vert2=ReadADC_S(4);
             }
             if (statetimer==4) { //Tick 4
                 packet.norm.vertD=ReadADC_S(1);  //Store vertical differential value in packet
@@ -251,8 +255,8 @@ int main(void) {
                     break;
             }
             if (statetimer==0) { //Tick 0
-                packet.norm.vertH=ReadADC_S(0); //Store vertical probe values
-                packet.norm.vertL=ReadADC_S(4); //(Before conductivity charging)
+                packet.norm.vert1=ReadADC_S(0); //Store vertical probe values
+                packet.norm.vert2=ReadADC_S(4); //(Before conductivity charging)
             }
             if (statetimer==1) {
                 packet.norm.vertD=ReadADC_S(1); //Store vertical differential value

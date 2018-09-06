@@ -17,7 +17,7 @@ uint16_t ReadADC(uint8_t channel)
 	switch (channel)
 	{
 		case 0:
-			WriteSPI1(ADC0_VP);
+			WriteSPI1(ADC1_V1);
 			while(!SPI1STATbits.SPIRBF);
 			bufferData = ReadSPI1();
 			result = bufferData >> 16;
@@ -25,7 +25,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 1:
-			WriteSPI1(ADC0_VD);
+			WriteSPI1(ADC1_VD);
 			while(!SPI1STATbits.SPIRBF);
 			bufferData = ReadSPI1();
 			result = bufferData >> 16;
@@ -33,7 +33,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 2:
-			WriteSPI1(ADC0_HP);
+			WriteSPI1(ADC1_H1);
 			while(!SPI1STATbits.SPIRBF);
 			bufferData = ReadSPI1();
 			result = bufferData >> 16;
@@ -41,7 +41,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 3:
-			WriteSPI2(ADC1_HD);
+			WriteSPI2(ADC2_HD);
 			while(!SPI2STATbits.SPIRBF);
 			bufferData = ReadSPI2();
 			result = bufferData >> 16;
@@ -49,7 +49,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 4:
-			WriteSPI2(ADC1_VN);
+			WriteSPI2(ADC2_V2);
 			while(!SPI2STATbits.SPIRBF);
 			bufferData = ReadSPI2();
 			result = bufferData >> 16;
@@ -57,7 +57,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 5:
-			WriteSPI2(ADC1_HN);
+			WriteSPI2(ADC2_H2);
 			while(!SPI2STATbits.SPIRBF);
 			bufferData = ReadSPI2();
 			result = bufferData >> 16;

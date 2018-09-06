@@ -28,5 +28,7 @@ void SendChar_UART1(char letter);
 void SendString_UART2(unsigned char* string);
 void SendChar_UART2(char letter);
 
+void Send16_UART1(uint16_t i);
+
 char rbstrcmp(volatile char *s1,uint16_t s1i,const char *s2);
 #endif	/* _TRANSMIT_H_ */
