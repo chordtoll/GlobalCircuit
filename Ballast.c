@@ -23,10 +23,12 @@ uint8_t DeployBallast(uint8_t addr) {
         BALLAST_IDLE();
         return 1;
     }
+    ResetWatchdog();
     BALLAST_ARM();
     while (!PORTDbits.RD1);
     WaitS(3);
     BALLAST_FIRE();
+    ResetWatchdog();
     while (PORTDbits.RD1);
     BALLAST_IDLE();
     return 0;
