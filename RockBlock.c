@@ -100,13 +100,20 @@ void TickRB() {
             break;
         case SENT_SBDWB:
             if (_rb_status==RB_READY) {
-                SendBuffer_UART1((char *)RBTXbuf,0,340);
-                _rb_state=SENT_TXBUF;
-                _rb_status=RB_BUSY;
+                _rb_state=SENDING_TXBUF;
+                _rb_buf_sindex=0;
             }
             if (_rb_status==RB_ERROR) {
                 yikes.rberror=1;
                 _rb_state=RB_INIT;
+            }
+            break;
+        case SENDING_TXBUF:
+            if (_rb_buf_sindex<10) {
+                SendBuffer_UART1((char *)RBTXbuf,_rb_buf_sindex*34,_rb_buf_sindex*34+34);
+                _rb_buf_sindex++;
+            } else {
+                _rb_state=SENT_TXBUF;
             }
             break;
         case SENT_TXBUF:
@@ -115,6 +122,7 @@ void TickRB() {
             SendChar_UART1(csum>>8);
             SendChar_UART1(csum&0xFF);
             _rb_state=SENT_CSUM;
+            _rb_status=RB_BUSY;
             break;
         case SENT_CSUM:
             if (_rb_status==RB_OK) {
