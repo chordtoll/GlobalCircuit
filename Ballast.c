@@ -26,7 +26,7 @@ uint8_t DeployBallast(uint8_t addr) {
     ResetWatchdog();
     BALLAST_ARM();
     while (!PORTDbits.RD1);
-    WaitS(3);
+    WaitUS(2812400);
     BALLAST_FIRE();
     ResetWatchdog();
     while (PORTDbits.RD1);

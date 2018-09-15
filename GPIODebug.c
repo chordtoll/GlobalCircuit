@@ -15,6 +15,8 @@ void InitGPIO() {
     TRISDCLR=0xFC;
     ODCDCLR=0xFF;
     PORTDCLR=0xC0;
+    TRISDbits.TRISD9=0;
+    PORTDbits.RD9=0;
 }
 void SendChar_GPIO(char c) {
     PORTE=PORTE&0xFEFF;

@@ -51,6 +51,12 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
 void InitGPS(void) {
     char InitString[16]={0xA0,0xA1,0x00,0x09,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x09,0x0D,0x0A};
     uint8_t i;
+    
+    PORTDbits.RD9=0;
+    WaitMS(500);
+    PORTDbits.RD9=1;
+    WaitMS(500);
+
     for (i=0;i<16;i++) {
         U2TXREG=InitString[i];
         while (U2STAbits.TRMT == 0);
