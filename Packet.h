@@ -10,7 +10,10 @@
 #ifndef PACKET_H
 #define	PACKET_H
 
-#define PACKET_VERSION 1
+//PACKET CHANGELOG:
+//1->2:Add rbtime field to yikes byte
+
+#define PACKET_VERSION 2
 
 typedef union u_sup {
     uint32_t _1u32;
@@ -42,8 +45,8 @@ struct __attribute__((packed)) s_packet_norm {
     uint16_t vertD;
     uint16_t compassX[12];
     uint16_t compassY[12];
-    uint16_t cVertH[15];
-    uint16_t cVertL[15];
+    uint16_t cVert1[15];
+    uint16_t cVert2[15];
     sup_t sup;
 };
 

@@ -69,8 +69,8 @@ uint32_t gLat;
 uint32_t gLon;
 uint32_t gAlt;
 
-uint16_t cVertH[150];
-uint16_t cVertL[150];
+uint16_t cVert1[150];
+uint16_t cVert2[150];
 
 uint32_t supTemperature=0;
 uint32_t supPressure=0;
@@ -198,8 +198,8 @@ int main(void) {
             }
 
             //Copy slice of conductivity data into the packet.
-            memcpy(packet.norm.cVertH,cVertH+(sequence%10)*15,15*2);
-            memcpy(packet.norm.cVertL,cVertL+(sequence%10)*15,15*2);
+            memcpy(packet.norm.cVert1,cVert1+(sequence%10)*15,15*2);
+            memcpy(packet.norm.cVert2,cVert2+(sequence%10)*15,15*2);
         }
 
         //We perform normal voltage measurements for the first 9/10 intervals
@@ -270,8 +270,8 @@ int main(void) {
             }
             //While in conductivity measuring interval,
             if (statetimer>=T_CON_CHG_BEGIN && statetimer<T_CON_MEAS_END) {
-                cVertH[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(0); //Store vertical probe values in temporary array
-                cVertL[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(4);
+                cVert1[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(0); //Store vertical probe values in temporary array
+                cVert2[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(4);
             }
             //Measure, store supervision values in temp variables
             switch (statetimer) {

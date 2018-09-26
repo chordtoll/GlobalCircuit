@@ -16,7 +16,8 @@ typedef union {
     uint8_t looprate:1;
     uint8_t gpstick :1;
     uint8_t rberror :1;
-    uint8_t idk     :4;
+    uint8_t rbtime  :1;
+    uint8_t idk     :3;
   };
   struct {
     uint8_t byte:8;

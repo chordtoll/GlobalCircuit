@@ -31,13 +31,18 @@ void TickRB() {
         _rb_idletimer=0;
     else
         _rb_idletimer++;
-    /*
-    if (_rb_idletimer==RB_IDLE_SOFT_TIMEOUT)
+    
+    if (_rb_idletimer==RB_IDLE_SOFT_TIMEOUT) {
         _rb_state=RB_INIT;
-    if (_rb_idletimer==RB_IDLE_FIRM_TIMEOUT)
+        yikes.rbtime=1;
+    }
+    if (_rb_idletimer==RB_IDLE_FIRM_TIMEOUT) {
         _rb_state=RB_INIT;
-    if (_rb_idletimer==RB_IDLE_HARD_TIMEOUT)
-        while(1);*/
+        yikes.rbtime=1;
+    }
+    if (_rb_idletimer==RB_IDLE_HARD_TIMEOUT) {
+        while(1);
+    }
     switch (_rb_state){
         case RB_INIT:
             SendString_UART1("ATE0\r");
