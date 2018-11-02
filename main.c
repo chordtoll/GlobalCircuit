@@ -5,7 +5,7 @@
 #pragma config POSCMOD = XT
 #pragma config FPBDIV = DIV_1
 #pragma config DEBUG = ON
-#pragma config WDTPS = PS8192
+#pragma config WDTPS = PS8192  //8 second watchdog timeout
 #pragma config FWDTEN = OFF
 
 #include <proc/p32mx360f512l.h>
@@ -198,6 +198,7 @@ int main(void) {
             }
 
             //Copy slice of conductivity data into the packet.
+            //15 of 150 samples are sent per packet
             memcpy(packet.norm.cVert1,cVert1+(sequence%10)*15,15*2);
             memcpy(packet.norm.cVert2,cVert2+(sequence%10)*15,15*2);
         }

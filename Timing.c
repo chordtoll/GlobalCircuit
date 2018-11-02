@@ -52,11 +52,11 @@ void WaitTicks(uint64_t n) {
 }
 
 void WaitUS(uint32_t n) {
-    uint64_t donetime=GetCoreTimer()+n*(tps/1000000);
+    uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //TODO: investigate timing error? division before mult?
     while (GetCoreTimer()<donetime);
 }
 void WaitMS(uint32_t n) {
-    uint64_t donetime=GetCoreTimer()+n*(tps/1000);
+    uint64_t donetime=GetCoreTimer()+n*(tps/1000); //TODO: investigate timing error?
     while (GetCoreTimer()<donetime);
 }
 void WaitS(uint32_t n) {
@@ -72,7 +72,7 @@ void DelayLoopMS(uint32_t n) {
     if (GetCoreTimer()>=loopstarttime+n*(tps/1000)) {
         yikes.looprate=1;
     }
-    while (GetCoreTimer()<loopstarttime+n*(tps/1000));
+    while (GetCoreTimer()<loopstarttime+n*(tps/1000)); //TODO: investigate ^^^
     loopstarttime+=n*(tps/1000);
 }
 
