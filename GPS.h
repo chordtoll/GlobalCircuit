@@ -15,6 +15,5 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
 
 void InitGPS(void);
 
-//COOME
 #endif
 

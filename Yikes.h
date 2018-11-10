@@ -12,19 +12,19 @@
 
 typedef union {
   struct {
-    uint8_t reset   :1;
-    uint8_t looprate:1;
-    uint8_t gpstick :1;
-    uint8_t rberror :1;
-    uint8_t rbtime  :1;
-    uint8_t idk     :3;
+    uint8_t reset   :1; //PIC32 was reset
+    uint8_t looprate:1; //main loop took longer than the target time
+    uint8_t gpstick :1; //GPS ticking has gone out of expected bounds
+    uint8_t rberror :1; //RockBlock ran into an error
+    uint8_t rbtime  :1; //RockBlock timed out
+    uint8_t idk     :3; //¯\_(ツ)_/¯
   };
   struct {
-    uint8_t byte:8;
+    uint8_t byte:8; //full flag byte
   };
 } yikes_t;
 
-yikes_t yikes;
+yikes_t yikes; //initialize an instance of a yikes
 
 #endif	/* YIKES_H */
 

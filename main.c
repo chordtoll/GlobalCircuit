@@ -40,7 +40,7 @@
 #define T_FASTSAM_INTERVAL (T_SECOND*5)
 #define T_SLOWSAM_INTERVAL (T_FASTSAM_INTERVAL*12)
 
-#define FSYS 80000000L      // Frequency of system clock, 80MHz
+#define FSYS 80000000L 
 
 
 unsigned char SBDnormal[512] = {0};
@@ -64,43 +64,47 @@ uint16_t magZ=0;
 uint32_t pressure;
 uint32_t temperature;
 
-uint32_t gTime;
-uint32_t gLat;
-uint32_t gLon;
-uint32_t gAlt;
+uint32_t gTime; //GPS time
+uint32_t gLat;  //GPS latitude
+uint32_t gLon;  //GPS longitude
+uint32_t gAlt;  //GPS altitude
 
-uint16_t cVert1[150];
-uint16_t cVert2[150];
-
-uint32_t supTemperature=0;
-uint32_t supPressure=0;
-uint16_t supIl0=0;
-uint16_t supIl1;
-uint16_t supIl2;
-uint16_t supIh0;
-uint16_t supIh1;
-uint16_t supIh2;
-uint16_t supT0;
-uint16_t supT1;
-uint16_t supT2;
-
-uint32_t statetimer;
-
-uint16_t sequence;
-
-packet_u packet;
+uint16_t cVert1[150]; //conductivity data 1
+uint16_t cVert2[150]; //conductivity data 2
 
 
+//SUPERVISION VALUES
+uint32_t supTemperature=0; //temperature
+uint32_t supPressure=0;    //pressure
+uint16_t supIl0=0;         //PICADC channel 4
+uint16_t supIl1;           //PICADC channel 8
+uint16_t supIl2;           //PICADC channel 10
+uint16_t supIh0;           //PICADC channel 5
+uint16_t supIh1;           //PICADC channel 9
+uint16_t supIh2;           //PICADC channel 11
+uint16_t supT0;            //PICADC channel 0
+uint16_t supT1;            //PICADC channel 1
+uint16_t supT2;            //PICADC channel 3
+
+uint32_t statetimer; //timer for reading and sending correct values into the packet
+
+uint16_t sequence;   //counter for alternating packet contents
+
+packet_u packet;     //packet for storing measurements
+
+//clear all packet bits
 void clearPacket(packet_u *pack) {
     uint16_t i;
     for (i=0;i<sizeof(*pack);i++)
         (*pack).bytes[i]=0;
 }
 
+//send packet data over UART1
 void printPacket(packet_u pack) {
     uint16_t i;
     SendChar_UART1('\n');
     for (i=0;i<sizeof(pack);i++) {
+        //send hex value of least significant 4 bits, '.' if 0 or negative
         if ((pack.bytes[i]&0xF)>9)
             SendChar_UART1((pack.bytes[i]&0xF)+'A'-10);
         else if ((pack.bytes[i]&0xF)>0)
@@ -108,6 +112,7 @@ void printPacket(packet_u pack) {
         else
             SendChar_UART1('.');
 
+        //send hex value of most significant 4 bits, '.' if 0 or negative
         if (((pack.bytes[i]>>4)&0xF)>9)
             SendChar_UART1(((pack.bytes[i]>>4)&0xF)+'A'-10);
         else if (((pack.bytes[i]>>4)&0xF)>0)
@@ -124,37 +129,37 @@ int main(void) {
     //=============================//
     //       INITIALIZATION        //
     //=============================//
-    yikes.byte=0;
-    yikes.reset=1;
+    yikes.byte=0; //clear error flags
+    yikes.reset=1;//set reset flag
 
-    sequence=0;
-    statetimer=0;
+    sequence=0;   //reset sequence counter
+    statetimer=0; //reset state counter
 
-    InitGPIO();
+    InitGPIO();             //initialize GPIO
 
-    InitUART();
+    InitUART();             //initialize UART
 
-    InitGPS();
-    InitRB();
+    InitGPS();              //initialize GPS
+    InitRB();               //initialize RockBlock
 
-    InitInterrupt();
+    InitInterrupt();        //initialize interrupts
 
-    InitI2C();
-    InitMagneto(MAG_ADDR);
-    InitAltimeter(ALT_ADDR);
+    InitI2C();              //initialize I2C
+    InitMagneto(MAG_ADDR);  //initialize magnetometer with correct address
+    InitAltimeter(ALT_ADDR);//intialize altimeter with correct address
 
-    InitSPI1();
-    InitSPI2();
+    InitSPI1();             //initialize SPI 1
+    InitSPI2();             //initialize SPI 2
 
-    InitPICADC();
+    InitPICADC();           //initialize ADC
 
-    InitTimer();
+    InitTimer();            //initialize timer for delays
 
-    InitPPS();
+    InitPPS();              //initialize 
 
-    InitLoopDelay();
+    InitLoopDelay();        //initialize packet loop delays
 
-    InitWatchdog();
+    InitWatchdog();         //initialize watchdog timer
 
     GPSready=1;
 
@@ -169,29 +174,29 @@ int main(void) {
 
         if (statetimer==0) { //If we're at the start of a packet,
             switch (sequence%10) {  //Send supervision data, rotated based on sequence number
-                case 0:
+                case 0: //temperature
                     packet.norm.sup._1u32=supTemperature;
                     break;
-                case 1:
+                case 1: //pressure
                     packet.norm.sup._1u32=supPressure;
                     break;
-                case 2:
+                case 2: //PICADC channels 4 and 8
                     packet.norm.sup._2u16.a=supIl0;
                     packet.norm.sup._2u16.b=supIl1;
                     break;
-                case 3:
+                case 3: //PICADC channels 10 and 5
                     packet.norm.sup._2u16.a=supIl2;
                     packet.norm.sup._2u16.b=supIh0;
                     break;
-                case 4:
+                case 4: //PICADC channels 9 and 11
                     packet.norm.sup._2u16.a=supIh1;
                     packet.norm.sup._2u16.b=supIh2;
                     break;
-                case 5:
+                case 5: //PICADC channels 0 and 1
                     packet.norm.sup._2u16.a=supT0;
                     packet.norm.sup._2u16.b=supT1;
                     break;
-                case 6:
+                case 6: //PICADC channel 3
                     packet.norm.sup._2u16.a=supT2;
                     packet.norm.sup._2u16.b=0;
                     break;
