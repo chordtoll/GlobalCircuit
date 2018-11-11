@@ -54,14 +54,14 @@ void WaitTicks(uint64_t n) {
     while (GetCoreTimer()<donetime);    //count to the tick value
 }
 
-void WaitUS(uint32_t n) {
-    uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
-    //uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS
+void WaitUS(uint64_t n) {
+    //uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
+    uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS
     while (GetCoreTimer()<donetime);                 //count to the tick value
 }
 void WaitMS(uint32_t n) {
-    uint64_t donetime=GetCoreTimer()+n*(tps/1000); //THIS DOESN'T WORK
-    //uint64_t donetime=GetCoreTimer()+(n*tps)/1000; //TRY THIS
+    //uint64_t donetime=GetCoreTimer()+n*(tps/1000); //THIS DOESN'T WORK
+    uint64_t donetime=GetCoreTimer()+(n*tps)/1000; //TRY THIS
     while (GetCoreTimer()<donetime);               //count to the tick value
 }
 void WaitS(uint32_t n) {

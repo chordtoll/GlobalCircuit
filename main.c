@@ -43,6 +43,10 @@
 #define FSYS 80000000L 
 
 
+//#define TIME_TEST
+
+
+
 unsigned char SBDnormal[512] = {0};
 
 char nTime[20];
@@ -163,6 +167,21 @@ int main(void) {
 
     GPSready=1;
 
+#ifdef TIME_TEST
+    uint32_t timez = 2812400;
+    while(1)
+    {
+        ResetWatchdog();
+        PORTDbits.RD6 =1;
+        //SendString_UART1("!GO\r");
+        WaitUS(timez);
+        PORTDbits.RD6 =0;
+
+        WaitS(1);
+    }
+#endif
+
+#ifndef TIME_TEST
     //SendChar_UART1('A');
 
     //=============================//
@@ -329,6 +348,6 @@ int main(void) {
         ResetWatchdog(); //Clear watchdog timer
         DelayLoopMS(T_TICK_MS); //Delay to maintain constant tick rate
     }
-
+#endif
     return 0;
 }
