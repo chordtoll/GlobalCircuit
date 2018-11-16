@@ -38,6 +38,9 @@ void InitLoopDelay();
 //delay for the difference of the time passed and the target time passed
 void DelayLoopMS(uint32_t n);
 
+//function for time testing
+void TimeTest(uint32_t n);
+
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void);
 void __attribute__((nomips16)) WriteCoreTimer(uint32_t timer);
 #endif	/* TIMING_H */

@@ -98,6 +98,11 @@ void TickRB() {
                 _rb_state=BEGINSEND;
             }
             break;
+
+        case TIME_TESTING:
+                _rb_reqsend=0;
+                _rb_state=BEGINSEND;
+            break;
         case BEGINSEND:
             SendString_UART1("AT+SBDWB=340\r");
             _rb_state=SENT_SBDWB;
@@ -192,7 +197,20 @@ void TickRB() {
                     SendString_GPIO("\xE2\x9C\x82\x20");
                     //SendString_RB(OKARR);
                     _rb_state=RB_IDLE;
-                } else {
+                } else if (RBRXbuf[2]=='T' && RBRXbuf[3]=='I' && RBRXbuf[4]=='M' && RBRXbuf[5] =='E') {
+                    uint8_t index = 6;
+                    TestDelay = 0;
+                    while(RBRXbuf[index] != '.' && index < 13)
+                      TestDelay = TestDelay * 10 + (RBRXbuf[index++] - 48);
+                    TestTime = 1;
+                    _rb_state_prev = _rb_state;
+                    _rb_state = TIME_TESTING;
+                } else if (TestTime && RBRXbuf[2]=='!') {
+                    TestTime = 0;
+                    SendString_UART1("AT\r");
+                    _rb_state = SENT_ACKAT;
+                    _rb_status=RB_BUSY;
+                }else {
                     SendString_UART1("AT\r");
                     _rb_state=SENT_ACKAT;
                     _rb_status=RB_BUSY;
@@ -203,9 +221,8 @@ void TickRB() {
                 _rb_state=RB_INIT;
             }
             break;
-    }
+  }
 }
-
 void SendString_RB(char *msg) {
     memcpy((void *)RBTXbuf,msg,340);
     _rb_reqsend=1;

@@ -14,13 +14,16 @@
 #define RB_IDLE_FIRM_TIMEOUT 4500
 #define RB_IDLE_HARD_TIMEOUT 6000
 
-typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT} rb_state_t;
+typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT, TIME_TESTING} rb_state_t;
 typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
 
-rb_state_t  _rb_state;
-
+rb_state_t _rb_state;
+rb_state_t _rb_state_prev;
 uint16_t _rb_buf_sindex;
 
+uint32_t TestDelay;
+
+char TestTime = 0;
 char _rb_mos[8];
 char _rb_mom[8];
 char _rb_mts[8];

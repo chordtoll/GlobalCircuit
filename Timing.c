@@ -82,7 +82,13 @@ void DelayLoopMS(uint32_t n) {
     loopstarttime+=n*(tps/1000);                      //move loop time to next target time
 }
 
-
+void TimeTest(uint32_t n) {
+    ResetWatchdog();
+    PORTDbits.RD6 =1;
+    WaitUS(n);
+    PORTDbits.RD6 =0;
+    WaitS(1);
+}
 
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void)
 {
