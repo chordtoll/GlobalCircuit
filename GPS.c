@@ -51,13 +51,24 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
 void InitGPS(void) {
     char InitString[16]={0xA0,0xA1,0x00,0x09,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x09,0x0D,0x0A};
     uint8_t i;
-    
+
+//comment out if mosfet is not being used for GPS reset
+#define MOSFET_GPS_RESET
+
+//if mosfet is not being used for GPS reset, reset is active low
+#ifndef MOSFET_GPS_RESET
     //PORTDbits.RD9=0;
     //WaitMS(500);
-    PORTDbits.RD9=1;
+    PORTDbits.RD9=1; // take GPS out of reset
     //WaitMS(500);
+#endif
 
-    for (i=0;i<16;i++) {
+//if mosfet is being used for GPS reset, reset is active high
+#ifdef MOSFET_GPS_RESET
+    PORTDbits.RD9=0; //take GPS out of reset
+#endif
+
+    for (i=0;i<16;i++) {            //send initialization string to GPS
         U2TXREG=InitString[i];
         while (U2STAbits.TRMT == 0);
     }

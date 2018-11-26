@@ -22,7 +22,7 @@ void InitGPIO() {
     PORTDbits.RD9=0;    //set a LOW value on RD9
 }
 void SendChar_GPIO(char c) {
-    PORTE=PORTE&0xFEFF;     //clear RE11
+    PORTE=PORTE&0xFEFF;     //clear RE8
     PORTE=(PORTE&0xFF00)|c; //encode passed character into RE0-7
     PORTE=PORTE|0x100;      //set RE8
 }

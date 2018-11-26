@@ -9,28 +9,28 @@
 
 
 void AddrBallast(uint8_t addr) {
-    PORTDbits.RD2=addr&1?1:0;
+    PORTDbits.RD2=addr&1?1:0; //encode address byte into RD2-5
     PORTDbits.RD3=addr&2?1:0;
     PORTDbits.RD4=addr&4?1:0;
     PORTDbits.RD5=addr&8?1:0;
 }
 
 uint8_t DeployBallast(uint8_t addr) {
-    BALLAST_IDLE();
-    AddrBallast(addr);
-    WaitS(2);
-    if (PORTDbits.RD0) {
-        BALLAST_IDLE();
-        return 1;
+    BALLAST_IDLE();        //set ballast idle
+    AddrBallast(addr);     //set ballast address
+    WaitS(2);              //wait for 2 seconds
+    if (PORTDbits.RD0) {   //if the ballast did not acknowledge our signal
+        BALLAST_IDLE();    //set ballast idle
+        return 1;          //return failed condition
     }
     ResetWatchdog();
-    BALLAST_ARM();
-    while (!PORTDbits.RD1);
-    WaitUS(2812400);
-    BALLAST_FIRE();
+    BALLAST_ARM();         //arm the ballast
+    while (!PORTDbits.RD1);//wait for response
+    WaitUS(2812400);       //wait for 2.8124 seconds
+    BALLAST_FIRE();        //give fire signal
     ResetWatchdog();
-    while (PORTDbits.RD1);
-    BALLAST_IDLE();
-    return 0;
+    while (PORTDbits.RD1); //wait for response
+    BALLAST_IDLE();        //set ballast idle
+    return 0;              //return success condition
 }
 
