@@ -16,6 +16,7 @@ void AddrBallast(uint8_t addr) {
 }
 
 uint8_t DeployBallast(uint8_t addr) {
+    ResetWatchdog();
     BALLAST_IDLE();        //set ballast idle
     AddrBallast(addr);     //set ballast address
     WaitS(2);              //wait for 2 seconds
@@ -25,12 +26,18 @@ uint8_t DeployBallast(uint8_t addr) {
     }
     ResetWatchdog();
     BALLAST_ARM();         //arm the ballast
-    while (!PORTDbits.RD1);//wait for response
+    while (!PORTDbits.RD1);//wait for response (forever until signal is high)
     WaitUS(2812400);       //wait for 2.8124 seconds
     BALLAST_FIRE();        //give fire signal
     ResetWatchdog();
-    while (PORTDbits.RD1); //wait for response
+    while (PORTDbits.RD1); //wait for response (forever until signal is low)
     BALLAST_IDLE();        //set ballast idle
     return 0;              //return success condition
+    /*BALLAST_IDLE();
+    WaitMS(10);
+    BALLAST_ARM();
+    WaitMS(10);
+    BALLAST_FIRE();
+    WaitMS(10);
+    BALLAST_IDLE();*/
 }
-

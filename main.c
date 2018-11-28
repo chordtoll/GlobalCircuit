@@ -133,11 +133,11 @@ int main(void) {
     //=============================//
     //       INITIALIZATION        //
     //=============================//
-    yikes.byte=0; //clear error flags
-    yikes.reset=1;//set reset flag
+    yikes.byte=0;            //clear error flags
+    yikes.reset=1;           //set reset flag
 
-    sequence=0;   //reset sequence counter
-    statetimer=0; //reset state counter
+    sequence=0;              //reset sequence counter
+    statetimer=0;            //reset state counter
 
     InitGPIO();             //initialize GPIO
 
@@ -171,12 +171,13 @@ int main(void) {
     uint32_t timez = 2812400;
     while(1)
     {
-        ResetWatchdog();
-        PORTDbits.RD6 =1;
-        WaitUS(timez);
-        PORTDbits.RD6 =0;
-
-        WaitS(1);
+       BALLAST_IDLE();
+       WaitMS(10);
+       BALLAST_ARM();
+       WaitMS(10);
+       BALLAST_FIRE();
+       WaitMS(10);
+       BALLAST_IDLE();
     }
 #endif
 
