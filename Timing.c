@@ -59,21 +59,39 @@ void WaitUS(uint64_t n) {
     char buff[100];
     //uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
     uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS
-    while (1)                 //count to the tick value
+
+    uint64_t ct=GetCoreTimer();
+    //This is the greatest line of code I've ever written -Andrew
+    while ((*((double *)(&(ct))))<(*((double *)(&(donetime))))) //Muffled screaming -Cody
+    //while(ct<donetime)
+        ct=GetCoreTimer();
+
+   /* while (1)                 //count to the tick value
     {
         uint64_t ct = GetCoreTimer();
         int64_t comp = ((ct>>32) - (donetime>>32));
-        sprintf(buff, "!Core Timer: %lu\r", ct);
+        sprintf(buff, "!Core Timer         : %lu\r" , ct);
         SendString_UART1(buff);
-        sprintf(buff, "!CoreTimer<donetime: %c\r", ((ct>>32) < (donetime>>32))?'T':('F'));
+        sprintf(buff, "!CoreTimer<donetime : %c\r"  , ((ct) < (donetime))?'T':('F'));
         SendString_UART1(buff);
-        sprintf(buff, "!donetime: %lu\r",donetime);
+        sprintf(buff, "!CoreTimer<EVILtime : %c\r"  , ((*( (double *) (&(ct)) )) < (*( (double *) (&(donetime)) )))?'T':('F'));
+
         SendString_UART1(buff);
-        sprintf(buff, "comparison: %i, greater: %c\n\r", comp, (comp<0)?'C':'D');
+        sprintf(buff, "!donetime           : %lu\r" , donetime);
+        SendString_UART1(buff);
+        sprintf(buff, "!comparison         : %i\r"  , comp);
+        SendString_UART1(buff);
+        sprintf(buff, "!greater            : %c\r"  , (comp<0)?'C':'D');
+        SendString_UART1(buff);
+        sprintf(buff, "!normal greater     : %c\r"  , (ct<donetime)?'C':'D');
+        SendString_UART1(buff);
+        sprintf(buff, "!\r");
+        SendString_UART1(buff);
+        sprintf(buff, "!\r");
         SendString_UART1(buff);
         if(!(ct < donetime))
             break;
-    }
+    }*/
 }
 void WaitMS(uint32_t n) {
     //uint64_t donetime=GetCoreTimer()+n*(tps/1000); //THIS DOESN'T WORK
