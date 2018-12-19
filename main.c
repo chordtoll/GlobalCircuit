@@ -43,7 +43,7 @@
 #define FSYS 80000000L 
 
 
-#define TEST_LOOP
+//#define TEST_LOOP
 
 
 
@@ -168,17 +168,19 @@ int main(void) {
     GPSready=1;
 
 #ifdef TEST_LOOP
-    /*uint32_t timez = 2812400;
+    uint32_t timez = 2812400;
     while(1)
     {
         ResetWatchdog();
         PORTDbits.RD6 =1;
+        PORTDbits.RD7 = 0;
         WaitUS(timez);
         PORTDbits.RD6 =0;
+        PORTDbits.RD7 = 1;
 
         WaitS(1);
-    }*/
-    uint8_t data = SendChar_GPIO(0,0);
+    }
+    /*uint8_t data = SendChar_GPIO(0,0);
     while(1)
     {
         ResetWatchdog();
@@ -186,10 +188,19 @@ int main(void) {
         if(data == 85)
             WaitS(5);
         
-    }
+    }*/
+    /*while(1)
+    {
+        int i;
+        for(i = '0'; i < 'z'; i++){
+            SendChar_GPIO(i,2);
+            WaitS(1);
+            ResetWatchdog();
+        }
+    }*/
 #endif
 
-#ifndef TIME_TEST
+#ifndef TEST_LOOP
     //SendChar_UART1('A');
 
     //=============================//

@@ -49,12 +49,13 @@ char SendChar_GPIO(char c, char transmit) {
     uint8_t qByte;    //initialize quarter-byte counter
     char result = 0;  //data recieved from PIC16
 
-    OUT_CLK0 = 0;     //set clock to represent 0th quarter-byte
-    OUT_CLK1 = 0;
     if(transmit)
         OUT_TxEnable = 1; //set transmit enable pin
     else
         OUT_TxEnable = 0;
+    OUT_CLK0 = 0;     //set clock to represent 0th quarter-byte
+    OUT_CLK1 = 0;
+    
 
     for(qByte=0; qByte < 4; qByte++)                                 //loop for 4 quarter-bytes
     {
@@ -69,8 +70,13 @@ char SendChar_GPIO(char c, char transmit) {
         TickClock_GPIO();                                            //tick the clock to next quarter-byte
     }
 
+
+    OUT_CLK0 = 0;
+    OUT_CLK1 = 0;
     if(transmit > 1)
         OUT_TxEnable = 0;
+    WaitUS(CLK_PERIOD);
+    OUT_CLK1 = 1;
 
     return result;                                                   //return the data recieved by the PIC16
 }
