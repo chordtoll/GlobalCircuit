@@ -69,11 +69,14 @@ char SendChar_GPIO(char c, char transmit) {
         TickClock_GPIO();                                            //tick the clock to next quarter-byte
     }
 
+    if(transmit > 1)
+        OUT_TxEnable = 0;
+
     return result;                                                   //return the data recieved by the PIC16
 }
 void SendString_GPIO(char *s) {
     for (;*(s+1);s++)          //loop up to the last character of the string
-        SendChar_GPIO(*s, 0);  //send the current character
+        SendChar_GPIO(*s, 1);  //send the current character
 
-    SendChar_GPIO(*s, 1);      //send the final character and end transmission
+    SendChar_GPIO(*s, 2);      //send the final character and end transmission
 }
