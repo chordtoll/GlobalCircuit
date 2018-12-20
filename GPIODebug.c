@@ -42,10 +42,6 @@ void TickClock_GPIO()
     OUT_CLK0 = !(OUT_CLK0);     //change state of bit0
 }
 char SendChar_GPIO(char c, char transmit) {
-    /*PORTE=PORTE&0xFEFF;   //clear RE8
-    PORTE=(PORTE&0xFF00)|c; //encode passed character into RE0-7
-    PORTE=PORTE|0x100;      //set RE8*/
-    
     uint8_t qByte;    //initialize quarter-byte counter
     char result = 0;  //data recieved from PIC16
 
@@ -71,12 +67,12 @@ char SendChar_GPIO(char c, char transmit) {
     }
 
 
-    OUT_CLK0 = 0;
+    OUT_CLK0 = 0;                                                    //set clock back to 0
     OUT_CLK1 = 0;
-    if(transmit > 1)
-        OUT_TxEnable = 0;
-    WaitUS(CLK_PERIOD);
-    OUT_CLK1 = 1;
+    if(transmit > 1)                                                 //if this is the last byte to send
+        OUT_TxEnable = 0;                                            //clear transmit enable pin
+    WaitUS(CLK_PERIOD);                                              //wait for a clock cycle
+    OUT_CLK1 = 1;                                                    //set clock to the idle state (10)
 
     return result;                                                   //return the data recieved by the PIC16
 }
