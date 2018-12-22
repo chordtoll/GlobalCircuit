@@ -28,10 +28,10 @@ void InitGPIO();
 
 /*send a single character on RE0-7
  * transmit = 0: No transmission
- *          = 1: Transmitting
- *          > 1: Transmitting final byte*/
-char SendChar_GPIO(char c, char end);
-//send a string, one character at a time, on RE0-7
+ *          != 0: Transmitting*/
+char ExchangeChar_GPIO(char c, char transmit);
+
+//send a string, one character at a time
 void SendString_GPIO(char *s);
 
 #endif	/* GPIODEBUG_H */

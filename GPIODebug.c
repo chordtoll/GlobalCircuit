@@ -41,18 +41,19 @@ void TickClock_GPIO()
 
     OUT_CLK0 = !(OUT_CLK0);     //change state of bit0
 }
-char SendChar_GPIO(char c, char transmit) {
+char ExchangeChar_GPIO(char c, char transmit) {
     uint8_t qByte;    //initialize quarter-byte counter
     char result = 0;  //data recieved from PIC16
 
-    if(transmit)
-        OUT_TxEnable = 1; //set transmit enable pin
-    else
+    OUT_TxEnable = 1; //set transmit enable pin
+    if(!transmit)
+    {
+        WaitUS(CLK_PERIOD / 10);
         OUT_TxEnable = 0;
+    }
     OUT_CLK0 = 0;     //set clock to represent 0th quarter-byte
     OUT_CLK1 = 0;
     
-
     for(qByte=0; qByte < 4; qByte++)                                 //loop for 4 quarter-bytes
     {
         OUT_DATA0 = (c & (1 << (qByte * 2))) >> (qByte * 2);         //set 0th bit of current quarter-byte
@@ -66,19 +67,14 @@ char SendChar_GPIO(char c, char transmit) {
         TickClock_GPIO();                                            //tick the clock to next quarter-byte
     }
 
-
-    OUT_CLK0 = 0;                                                    //set clock back to 0
-    OUT_CLK1 = 0;
-    if(transmit > 1)                                                 //if this is the last byte to send
-        OUT_TxEnable = 0;                                            //clear transmit enable pin
-    WaitUS(CLK_PERIOD);                                              //wait for a clock cycle
+    OUT_TxEnable = 0;                                                //clear transmit enable pin
+    WaitUS(CLK_PERIOD / 10);
     OUT_CLK1 = 1;                                                    //set clock to the idle state (10)
+    OUT_CLK0 = 0;
 
     return result;                                                   //return the data recieved by the PIC16
 }
 void SendString_GPIO(char *s) {
-    for (;*(s+1);s++)          //loop up to the last character of the string
-        SendChar_GPIO(*s, 1);  //send the current character
-
-    SendChar_GPIO(*s, 2);      //send the final character and end transmission
+    for (;*s;s++)                  //loop up to the last character of the string
+        ExchangeChar_GPIO(*s, 1);  //send the current character
 }
