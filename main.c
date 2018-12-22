@@ -184,11 +184,15 @@ int main(void) {
     while(1)
     {
         int i;
-        for(i = 'd'; i < 'z'; i++){
+        if(InitiateCutdown())
+        {
+        for(i = '0'; i < 'z'; i++){
             ExchangeChar_GPIO(i,1);
             WaitS(1);
             ResetWatchdog();
         }
+        }
+        WaitS(1);
     }
 #endif
 

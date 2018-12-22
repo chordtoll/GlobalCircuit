@@ -10,7 +10,8 @@
 #define IN_TxEnable PORTEbits.RE3
 #define IN_DATA0 PORTEbits.RE6
 #define IN_DATA1 PORTEbits.RE7
-#define CLK_PERIOD 10000        //clock period in microseconds
+
+#define CLK_PERIOD 10        //clock period in milliseconds
 
 void InitGPIO() {
     TRISECLR=0x37;      //set port E pins 0-2, 4-5 to output
@@ -48,7 +49,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     OUT_TxEnable = 1; //set transmit enable pin
     if(!transmit)
     {
-        WaitUS(CLK_PERIOD / 10);
+        WaitMS(CLK_PERIOD / 10);
         OUT_TxEnable = 0;
     }
     OUT_CLK0 = 0;     //set clock to represent 0th quarter-byte
@@ -58,7 +59,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     {
         OUT_DATA0 = (c & (1 << (qByte * 2))) >> (qByte * 2);         //set 0th bit of current quarter-byte
         OUT_DATA1 = (c & (1 << (1 + qByte * 2))) >> (1 + qByte * 2); //set 1st bit of current quarter-byte
-        WaitUS(CLK_PERIOD);                                          //wait for some clock time
+        WaitMS(CLK_PERIOD);                                          //wait for some clock time
         if(IN_TxEnable)                                              //if the PIC16 is sending information
         {
             //store the recieved information into the proper quarter-byte of result
@@ -68,7 +69,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     }
 
     OUT_TxEnable = 0;                                                //clear transmit enable pin
-    WaitUS(CLK_PERIOD / 10);
+    WaitMS(CLK_PERIOD / 10);
     OUT_CLK1 = 1;                                                    //set clock to the idle state (10)
     OUT_CLK0 = 0;
 
@@ -77,4 +78,16 @@ char ExchangeChar_GPIO(char c, char transmit) {
 void SendString_GPIO(char *s) {
     for (;*s;s++)                  //loop up to the last character of the string
         ExchangeChar_GPIO(*s, 1);  //send the current character
+}
+
+char InitiateCutdown() {
+    SendString_GPIO("CUT");               //send a cutdown command to the PIC16
+    if(ExchangeChar_GPIO(0,0) == '?')     //if a confirmation was recieved
+    {
+        SendString_GPIO("DO_IT");         //send a final cutdown command
+        while(!IN_TxEnable){}             //wait for the PIC16 to respond
+        if(ExchangeChar_GPIO(0,0) == 'K') //if a confirmation was recieved
+            return 1;                     //return successful cutdown
+    }
+    return 0;                             //return unsuccessful cutdown
 }

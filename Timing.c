@@ -56,7 +56,6 @@ void WaitTicks(uint64_t n) {
 }
 
 void WaitUS(uint64_t n) {
-    char buff[100];
     //uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
     uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS
 

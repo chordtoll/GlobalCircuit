@@ -34,5 +34,8 @@ char ExchangeChar_GPIO(char c, char transmit);
 //send a string, one character at a time
 void SendString_GPIO(char *s);
 
+//try a cutdown with the PIC16, returns 1 on success, 0 on failure
+char InitiateCutdown();
+
 #endif	/* GPIODEBUG_H */
 
