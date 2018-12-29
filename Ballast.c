@@ -9,7 +9,7 @@
 
 
 void AddrBallast(uint8_t addr) {
-    PORTDbits.RD2=addr&1?1:0; //encode address byte into RD2-5
+    PORTDbits.RD2=addr&1?1:0; //encode address nibble into RD2-5
     PORTDbits.RD3=addr&2?1:0;
     PORTDbits.RD4=addr&4?1:0;
     PORTDbits.RD5=addr&8?1:0;
@@ -33,11 +33,4 @@ uint8_t DeployBallast(uint8_t addr) {
     while (PORTDbits.RD1); //wait for response (forever until signal is low)
     BALLAST_IDLE();        //set ballast idle
     return 0;              //return success condition
-    /*BALLAST_IDLE();
-    WaitMS(10);
-    BALLAST_ARM();
-    WaitMS(10);
-    BALLAST_FIRE();
-    WaitMS(10);
-    BALLAST_IDLE();*/
 }

@@ -19,7 +19,6 @@ void InitTimer() {
     T1CONbits.ON=1;     //enable timer
 }
 
-//ANDREW QUESTIONS
 void  __attribute__((vector(_TIMER_1_VECTOR), interrupt(IPL7SRS), nomips16)) TIMER1_ISR(void)
 {
     
@@ -47,7 +46,6 @@ uint64_t GetCoreTimer() {
     }
     return acc2+tim;
 }
-//END ANDREW QUESTIONS
 
 
 void WaitTicks(uint64_t n) {
@@ -55,6 +53,7 @@ void WaitTicks(uint64_t n) {
     while (GetCoreTimer()<donetime);    //count to the tick value
 }
 
+//THIS IS STILL BROKEN
 void WaitUS(uint64_t n) {
     //uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
     uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS

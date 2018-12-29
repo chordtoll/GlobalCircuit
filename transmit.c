@@ -18,28 +18,28 @@ void InitUART()
     U1MODEbits.STSEL = 0;   //1 stop bit
     U2MODEbits.STSEL = 0;   //1 stop bit
 
-    U1MODEbits.UARTEN=1;
+    U1MODEbits.UARTEN=1;    //enable UART modules
     U2MODEbits.UARTEN=1;
 
-    U1STAbits.UTXEN=1;
+    U1STAbits.UTXEN=1;      //enable transmission
     U2STAbits.UTXEN=1;
 
-    U1STAbits.URXEN=1;
+    U1STAbits.URXEN=1;      //enable reception
     U2STAbits.URXEN=1;
 
-    IEC0bits.U1RXIE = 1;     //Interrupt is enabled for UART1 receive
-    IEC1bits.U2RXIE = 1;     //Interrupt is enabled for UART1 receive
+    IEC0bits.U1RXIE = 1;    //Interrupt is enabled for UART1 receive
+    IEC1bits.U2RXIE = 1;    //Interrupt is enabled for UART1 receive
 
-    IPC6bits.U1IP = 7;       //UART1 interrupt priority is 1
-    IPC8bits.U2IP = 7;       //UART1 interrupt priority is 1
+    IPC6bits.U1IP = 7;      //UART1 interrupt priority is 1
+    IPC8bits.U2IP = 7;      //UART1 interrupt priority is 1
 
-    IPC6bits.U1IS = 3;       //UART1 subpriority is 0
-    IPC8bits.U2IS = 3;       //UART1 subpriority is 0
+    IPC6bits.U1IS = 3;      //UART1 subpriority is 0
+    IPC8bits.U2IS = 3;      //UART1 subpriority is 0
 
-    U1STAbits.URXISEL = 0;   //Receive interrupt mode flag is set when character is received
-    U2STAbits.URXISEL = 0;   //Receive interrupt mode flag is set when character is received
+    U1STAbits.URXISEL = 0;  //Receive interrupt mode flag is set when character is received
+    U2STAbits.URXISEL = 0;  //Receive interrupt mode flag is set when character is received
 
-    U1MODEbits.ON = 1;
+    U1MODEbits.ON = 1;      //Turn UART modules on
     U2MODEbits.ON = 1;
 
 }

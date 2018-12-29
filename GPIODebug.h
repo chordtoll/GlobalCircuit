@@ -16,8 +16,7 @@ pin14 | RC2  <-  pin98  | RE2   - PIC32_TxEnable
 pin15 | RC1  <-  pin94  | RE1   - PIC32_DATA1
 pin16 | RC0  <-  pin93  | RE0   - PIC32_DATA0
 
-            CLOCK (NOT CURRENTLY USED)
-pin17 | RA2  <->  pin18  | RE8
+pin17 | RA2  <->  pin18  | RE8  - UNUSED
 */
 
 #ifndef GPIODEBUG_H

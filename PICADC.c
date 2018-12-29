@@ -29,8 +29,8 @@ void InitPICADC() {
 }
 
 uint16_t ReadPICADC(uint8_t channel) {
-    AD1CHSbits.CH0SA=channel;
-    AD1CON1bits.SAMP=1;
-    while (!AD1CON1bits.DONE);
-    return ADC1BUF0&0x3FF;
+    AD1CHSbits.CH0SA=channel; //select ADC channel to read
+    AD1CON1bits.SAMP=1;       //start sampling
+    while (!AD1CON1bits.DONE);//wait for sampling to finish
+    return ADC1BUF0&0x3FF;    //return conversion result
 }
