@@ -14,31 +14,35 @@
 #define RB_IDLE_FIRM_TIMEOUT 4500
 #define RB_IDLE_HARD_TIMEOUT 6000
 
-typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT, TIME_TESTING} rb_state_t;
+typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT} rb_state_t;
 typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
 
-rb_state_t _rb_state;
-rb_state_t _rb_state_prev;
-uint16_t _rb_buf_sindex;
+rb_state_t _rb_state;   //current rockblock state
+uint16_t _rb_buf_sindex;//rockblock string buffer index counter
 
-uint32_t TestDelay;
+uint32_t TestDelay;     //time delay for TimeTest case
+char TestTime = 0;      //flag for TimeTest case
 
-char TestTime = 0;
-char _rb_mos[8];
-char _rb_mom[8];
-char _rb_mts[8];
-char _rb_mtm[8];
-char _rb_mtl[8];
-char _rb_mtq[8];
-uint8_t _rb_imos;
-uint16_t _rb_imom;
-uint8_t _rb_imts;
-uint16_t _rb_imtm;
-uint16_t _rb_imtl;
-uint16_t _rb_imtq;
+char _rb_mos[8];   //mobile originated message status
+char _rb_mom[8];   //mobile originated message sequence number
+char _rb_mts[8];   //mobile terminated message status
+char _rb_mtm[8];   //mobile terminated message sequence number
+char _rb_mtl[8];   //mobile terminated message length
+char _rb_mtq[8];   //number of mobile terminated messaged queued
+uint8_t _rb_imos;  //integer parsed mos
+uint16_t _rb_imom; //integer parsed mom
+uint8_t _rb_imts;  //integer parsed mts
+uint16_t _rb_imtm; //integer parsed mtm
+uint16_t _rb_imtl; //integer parsed mtl
+uint16_t _rb_imtq; //integer parsed mtq
 
+//initializes rockblock
 void InitRB();
+
+//advance the rockblock state machine
 void TickRB();
+
+//send a passed string over the rockblock
 void SendString_RB(char *msg);
 
 #endif	/* ROCKBLOCK_H */
