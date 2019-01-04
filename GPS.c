@@ -62,6 +62,8 @@ void InitGPS(void) {
     char InitString[16]={0xA0,0xA1,0x00,0x09,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x09,0x0D,0x0A};
     uint8_t i;
 
+    PORTDbits.RD14 = 0; //pull PPS pin low to prevent GPS starting in debug mode
+
 //comment out if mosfet is not being used for GPS reset
 #define MOSFET_GPS_RESET
 

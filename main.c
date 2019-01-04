@@ -43,7 +43,7 @@
 #define FSYS 80000000L 
 
 
-#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
+//#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 
 
@@ -159,7 +159,7 @@ int main(void) {
 
     InitTimer();            //initialize timer for delays
 
-    InitPPS();              //initialize 
+    InitPPS();              //initialize pulse per second
 
     InitLoopDelay();        //initialize packet loop delays
 

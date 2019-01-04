@@ -82,6 +82,7 @@ void SendString_GPIO(char *s) {
 
 char InitiateCutdown() {
     SendString_GPIO("CUT");               //send a cutdown command to the PIC16
+    while(!IN_TxEnable){}                 //wait for the PIC16 to respond
     if(ExchangeChar_GPIO(0,0) == '?')     //if a confirmation was received
     {
         SendString_GPIO("DO_IT");         //send a final cutdown command
