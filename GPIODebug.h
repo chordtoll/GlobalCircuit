@@ -22,19 +22,24 @@ pin17 | RA2  <->  pin18  | RE8  - UNUSED
 #ifndef GPIODEBUG_H
 #define	GPIODEBUG_H
 
+//flag indicating whether or not the cutdown procedure has been completed
+char CUTDOWN_IP = 0;
+
 //initialize GPIO settings
 void InitGPIO();
 
-/*send a single character on RE0-7
+/*send and/or receive a character from PIC16
  * transmit = 0: No transmission
- *          != 0: Transmitting*/
+ *         != 0: Transmitting*/
 char ExchangeChar_GPIO(char c, char transmit);
 
 //send a string, one character at a time
 void SendString_GPIO(char *s);
 
 //try a cutdown with the PIC16, returns 1 on success, 0 on failure
-char InitiateCutdown();
+void InitiateCutdown();
+
+//update yikes and cutdown flags based on result read from PIC16
+void CheckCutdown();
 
 #endif	/* GPIODEBUG_H */
-

@@ -1,6 +1,8 @@
 
 #include "proc\p32mx360f512l.h"
 #include "Timing.h"
+#include "yikes.h"
+#include "GPIODebug.h"
 
 #define OUT_DATA0 PORTEbits.RE0     //bit 0 of Tx data
 #define OUT_DATA1 PORTEbits.RE1     //bit 1 of Tx data
@@ -80,15 +82,46 @@ void SendString_GPIO(char *s) {
         ExchangeChar_GPIO(*s, 1);  //send the current character
 }
 
-char InitiateCutdown() {
+void InitiateCutdown() {
     SendString_GPIO("CUT");               //send a cutdown command to the PIC16
     while(!IN_TxEnable){}                 //wait for the PIC16 to respond
     if(ExchangeChar_GPIO(0,0) == '?')     //if a confirmation was received
     {
         SendString_GPIO("DO_IT");         //send a final cutdown command
-        while(!IN_TxEnable){}             //wait for the PIC16 to respond
-        if(ExchangeChar_GPIO(0,0) == 'K') //if a confirmation was received
-            return 1;                     //return successful cutdown
+        yikes.cutdown0 = 1;
+        yikes.cutdown1 = 1;
+        CUTDOWN_IP = 1;
     }
-    return 0;                             //return unsuccessful cutdown
+}
+
+void CheckCutdown() {
+    if(CUTDOWN_IP)      //check to see if cutdown was started previously, and PIC16 has finished the cutdown
+    {
+        switch(ExchangeChar_GPIO(0,0)) //read in the status character from the PIC16
+        {
+            case 'K':               //if character was 'K' (success)
+                yikes.cutdown0 = 0; //clear all cutdown flags
+                yikes.cutdown1 = 0;
+                CUTDOWN_IP = 0;
+                break;
+
+            case 'U':               //if character was 'U' (unexpected response)
+                yikes.cutdown0 = 1; //set yikes flags to 01
+                yikes.cutdown1 = 0;
+                CUTDOWN_IP = 0;     //clear "cutdown in progress" flag
+                break;
+
+            case 'N':               //if character was 'N' (no response)
+                yikes.cutdown0 = 0; //set yikes flags to 10
+                yikes.cutdown1 = 1;
+                CUTDOWN_IP = 0;     //clear "cutdown in progress" flag
+                break;
+
+            default:                //if none of the above characters were received
+                yikes.cutdown0 = 1; //maintain "cutdown in progress" flag states
+                yikes.cutdown1 = 1;
+                CUTDOWN_IP = 1;
+                break;
+        }
+    }
 }

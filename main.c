@@ -354,6 +354,7 @@ int main(void) {
         statetimer++;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
+            CheckCutdown();
             packet.norm.version=PACKET_VERSION; //Write version ID
             packet.norm.yikes=yikes.byte; //Write error flags to packet
             yikes.byte=0; //Clear error flags
