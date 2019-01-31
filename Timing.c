@@ -19,6 +19,20 @@ void InitTimer() {
     T1CONbits.ON=1;     //enable timer
 }
 
+char LT(uint64_t l, uint64_t r)
+{
+    uint32_t lH = l >> 32;          //split left and right 64 bit values into two 32 bit values
+    uint32_t lL = (l << 32 ) >> 32;
+    uint32_t rH = r >> 32;
+    uint32_t rL = (r <<32 ) >> 32;
+    if(lH < rH)
+        return 1;
+    else if(lH == rH && lL < rL)
+        return 1;
+    else
+        return 0;
+}
+
 void  __attribute__((vector(_TIMER_1_VECTOR), interrupt(IPL7SRS), nomips16)) TIMER1_ISR(void)
 {
     
@@ -61,8 +75,10 @@ void WaitUS(uint64_t n) {
     uint64_t ct=GetCoreTimer();
     //This is the greatest line of code I've ever written -Andrew
     while ((*((double *)(&(ct))))<(*((double *)(&(donetime))))) //Muffled screaming -Cody
-    //while(ct<donetime)
         ct=GetCoreTimer();
+
+    //while(LT(GetCoreTimer(),donetime));
+        //ct=GetCoreTimer();
 
    /* while (1)                 //count to the tick value
     {

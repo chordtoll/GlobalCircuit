@@ -27,7 +27,7 @@ uint8_t DeployBallast(uint8_t addr) {
     ResetWatchdog();
     BALLAST_ARM();         //arm the ballast
     while (!PORTDbits.RD1);//wait for response (forever until signal is high)
-    WaitUS(2812400);       //wait for 2.8124 seconds
+    WaitUS(2814300);       //wait for 2.8124 seconds
     BALLAST_FIRE();        //give fire signal
     ResetWatchdog();
     while (PORTDbits.RD1); //wait for response (forever until signal is low)

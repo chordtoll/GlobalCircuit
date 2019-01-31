@@ -27,6 +27,8 @@
 #include "Yikes.h"
 #include "SPI.h"
 
+//#include "Ballast.c"
+
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
 #define T_MINUTE (T_SECOND*60)
@@ -183,16 +185,25 @@ int main(void) {
     }*/
     while(1)
     {
-        int i;
-        if(InitiateCutdown())
-        {
-        for(i = '0'; i < 'z'; i++){
-            ExchangeChar_GPIO(i,1);
-            WaitS(1);
-            ResetWatchdog();
-        }
-        }
-        WaitS(1);
+    ResetWatchdog();
+    BALLAST_IDLE();        //set ballast idle
+    AddrBallast(0);     //set ballast address
+    WaitS(2);              //wait for 2 seconds
+    if (PORTDbits.RD0) {   //if the ballast did not acknowledge our signal
+        BALLAST_IDLE();    //set ballast idle
+        return 1;          //return failed condition
+    }
+    ResetWatchdog();
+    BALLAST_ARM();         //arm the ballast
+    while (!PORTDbits.RD1);//wait for response (forever until signal is high)
+    WaitUS(2814400);       //wait for 2.8124 seconds
+    BALLAST_FIRE();        //give fire signal
+    ResetWatchdog();
+    while (PORTDbits.RD1); //wait for response (forever until signal is low)
+    BALLAST_IDLE();        //set ballast idle
+    while(1)
+        ResetWatchdog();
+    //return 0;              //return success condition
     }
 #endif
 
