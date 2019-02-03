@@ -24,7 +24,7 @@ uint64_t GetCoreTimer();
 void WaitTicks(uint64_t n);
 
 //wait for a passed number of microseconds
-void WaitUS(uint64_t n);
+void WaitUS(uint32_t n);
 
 //wait for a passed number of milliseconds
 void WaitMS(uint32_t n);

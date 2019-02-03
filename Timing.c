@@ -2,6 +2,8 @@
 #include "Yikes.h"
 #include "transmit.h"
 #include <proc/p32mx360f512l.h>
+
+#define USPERR 1.00019543
 volatile uint8_t tmancount;
 
 uint64_t loopstarttime;
@@ -17,6 +19,12 @@ void InitTimer() {
     IPC1bits.T1IS=3;    //set interrupt subpriority to 3 (max)
     IEC0bits.T1IE=1;    //enable external interrupt
     T1CONbits.ON=1;     //enable timer
+    T2CONbits.ON = 0;   //Disable timer2
+    T2CONbits.TCS = 0;  //set internal clock as source
+    T2CONbits.T32 = 0;  //use a single 16-bit timer
+    T2CONbits.TCKPS = 0;//1:1 prescalar
+    PR2 = 799;          //set timer2 period to 10us
+
 }
 
 char LT(uint64_t l, uint64_t r)
@@ -67,15 +75,26 @@ void WaitTicks(uint64_t n) {
     while (GetCoreTimer()<donetime);    //count to the tick value
 }
 
-//THIS IS STILL BROKEN
-void WaitUS(uint64_t n) {
-    //uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
-    uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS
+void WaitUS(uint32_t n) {
+    TMR2 = 0;           //clear the timer2 counter
+    int i;              //looping variable
+    n /= USPERR;        //adjust for timing error per microsecond
+    T2CONSET = 0x8000;  //start timer2
+    for(i = 0; i < n / 10; ++i) //count microseconds
+    {
+        while(!IFS0bits.T2IF){} //when 10 microseconds have passed
+        IFS0bits.T2IF = 0;      //clear the period match flag
+    }
+    T2CONCLR = 0x8000;          //disable timer2
 
-    uint64_t ct=GetCoreTimer();
+    ////////////////////OLD CODE/////////////////////////////////
+    //uint64_t donetime=GetCoreTimer()+n*(tps/1000000); //THIS DOESN'T WORK
+    //uint64_t donetime=GetCoreTimer()+(n*tps)/1000000;//TRY THIS
+
+    //uint64_t ct=GetCoreTimer();
     //This is the greatest line of code I've ever written -Andrew
-    while ((*((double *)(&(ct))))<(*((double *)(&(donetime))))) //Muffled screaming -Cody
-        ct=GetCoreTimer();
+    //while ((*((double *)(&(ct))))<(*((double *)(&(donetime))))) //Muffled screaming -Cody
+        //ct=GetCoreTimer();
 
     //while(LT(GetCoreTimer(),donetime));
         //ct=GetCoreTimer();
@@ -112,6 +131,7 @@ void WaitMS(uint32_t n) {
     uint64_t donetime=GetCoreTimer()+(n*tps)/1000; //TRY THIS
     while (GetCoreTimer()<donetime);               //count to the tick value
 }
+
 void WaitS(uint32_t n) {
     uint64_t donetime=GetCoreTimer()+n*tps; //set the tick value to count to
     while (GetCoreTimer()<donetime);        //count to the tick value

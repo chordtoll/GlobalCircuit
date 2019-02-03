@@ -27,8 +27,6 @@
 #include "Yikes.h"
 #include "SPI.h"
 
-//#include "Ballast.c"
-
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
 #define T_MINUTE (T_SECOND*60)
@@ -43,7 +41,6 @@
 #define T_SLOWSAM_INTERVAL (T_FASTSAM_INTERVAL*12)
 
 #define FSYS 80000000L 
-
 
 //#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
@@ -170,41 +167,22 @@ int main(void) {
     GPSready=1;
 
 #ifdef TEST_LOOP
-    /*while(1)
-    {
-
-    }*/
-    /*uint8_t data = SendChar_GPIO(0,0);
     while(1)
     {
+        PORTDbits.RD6 = 1;
+        WaitUS(2814300);
+        PORTDbits.RD6 = 0;
+        WaitUS(2814300);
+        ResetWatchdog();
+    }
+    /*uint8_t data = SendChar_GPIO(0,0);
+    while(1)
         ResetWatchdog();
         data = SendChar_GPIO(data, 1);
         if(data == 85)
             WaitS(5);
         
     }*/
-    while(1)
-    {
-    ResetWatchdog();
-    BALLAST_IDLE();        //set ballast idle
-    AddrBallast(0);     //set ballast address
-    WaitS(2);              //wait for 2 seconds
-    if (PORTDbits.RD0) {   //if the ballast did not acknowledge our signal
-        BALLAST_IDLE();    //set ballast idle
-        return 1;          //return failed condition
-    }
-    ResetWatchdog();
-    BALLAST_ARM();         //arm the ballast
-    while (!PORTDbits.RD1);//wait for response (forever until signal is high)
-    WaitUS(2814400);       //wait for 2.8124 seconds
-    BALLAST_FIRE();        //give fire signal
-    ResetWatchdog();
-    while (PORTDbits.RD1); //wait for response (forever until signal is low)
-    BALLAST_IDLE();        //set ballast idle
-    while(1)
-        ResetWatchdog();
-    //return 0;              //return success condition
-    }
 #endif
 
 #ifndef TEST_LOOP
