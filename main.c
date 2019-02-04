@@ -192,12 +192,7 @@ int main(void) {
     //          MAIN LOOP          //
     //=============================//
     while (1) {
-
         TickRB();   //Advance RockBlock state machine
-        if(TestTime)
-            TimeTest(TestDelay);
-        else
-        {
         if (statetimer==0) { //If we're at the start of a packet,
             switch (sequence%10) {  //Send supervision data, rotated based on sequence number
                 case 0: //temperature
@@ -355,7 +350,6 @@ int main(void) {
         }
         ResetWatchdog(); //Clear watchdog timer
         DelayLoopMS(T_TICK_MS); //Delay to maintain constant tick rate
-        }
     }
 #endif
     return 0;
