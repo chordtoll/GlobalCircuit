@@ -87,7 +87,6 @@ void InitiateCutdown() {
     while(!IN_TxEnable){}                 //wait for the PIC16 to respond
     if(ExchangeChar_GPIO(0,0) == '?')     //if a confirmation was received
     {
-        SendString_GPIO("DO_IT");         //send a final cutdown command
         yikes.cutdown0 = 1;
         yikes.cutdown1 = 1;
         CUTDOWN_IP = 1;
