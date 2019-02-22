@@ -13,7 +13,13 @@
 #define IN_DATA0 PORTEbits.RE6      //bit 0 of Rx data
 #define IN_DATA1 PORTEbits.RE7      //bit 1 of Rx data
 
-#define CLK_PERIOD 10   //clock period in milliseconds
+#define CLK_PERIOD 10               //clock period in milliseconds
+
+#define CDFLAG_SUCCESS 1            //cutdown was a success
+#define CDFLAG_INPROGRESS 0b10      //cutdown in progress
+#define CDFLAG_NORSP16 0b100        //cutdown failed due to no response from PIC16
+#define CDFLAG_NORSPCD 0b1000       //cutdown failed due to no response from cutdown apparatus
+#define CDFLAG_BADRSP 0b10000       //cutdown failed due to a bad response from cutdown apparatus
 
 void InitGPIO() {
     TRISECLR=0x37;      //set port E pins 0-2, 4-5 to output
@@ -83,62 +89,44 @@ void SendString_GPIO(char *s) {
 }
 
 void InitiateCutdown() {
-    SendString_GPIO("CUT");               //send a cutdown command to the PIC16
-    while(!IN_TxEnable){}                 //wait for the PIC16 to respond
-    if(ExchangeChar_GPIO(0,0) == '?')     //if a confirmation was received
-    {
-        //yikes.cutdown0 = 1;
-        //yikes.cutdown1 = 1;
-        cutdown_ip = 1;
-    }
-    else
-    {
-        cutdown_ip = 2;
-    }
+    SendString_GPIO("CUT");           //send a cutdown command to the PIC16
+    while(!IN_TxEnable){}             //wait for the PIC16 to respond
+    if(ExchangeChar_GPIO(0,0) == '?') //if a confirmation was received
+        cutdown_ip = 1;               //set cutdown sequence flag
+    else                              //if no or wrong confirmation was received
+        cutdown_ip = 2;               //indicate cutdown failed starting
 }
 
 char CheckCutdown() {
     if(cutdown_ip == 1)      //check to see if cutdown was started previously, and PIC16 has finished the cutdown
     {
-        switch(ExchangeChar_GPIO(0,0)) //read in the status character from the PIC16
+        switch(ExchangeChar_GPIO(0,0))   //read in the status character from the PIC16
         {
-            case 'K':               //if character was 'K' (success)
-                //yikes.cutdown0 = 0; //clear all cutdown flags
-                //yikes.cutdown1 = 0;
-                //packet.norm.cutdown = 0b10; //indicate success on cutdown flags
-                cutdown_ip = 0;               //cutdown sequence complete
-                return 1;
+            case 'K':                    //if character was 'K' (success)
+                cutdown_ip = 0;          //cutdown sequence complete
+                return CDFLAG_SUCCESS;   //return successful code
                 break;
 
-            case 'U':               //if character was 'U' (unexpected response)
-                //yikes.cutdown0 = 1; //set yikes flags to 01
-                //yikes.cutdown1 = 0;
-                //packet.norm.cutdown = 0b1000; //indicate failure due to unexpected response on cutdown flag
-                cutdown_ip = 0;     //cutdown sequence complete
-                return 0b10000;
+            case 'U':                    //if character was 'U' (unexpected response)
+                cutdown_ip = 0;          //cutdown sequence complete
+                return CDFLAG_BADRSP;    //return unexpected response code
                 break;
 
-            case 'N':               //if character was 'N' (no response)
-                //yikes.cutdown0 = 0; //set yikes flags to 10
-                //yikes.cutdown1 = 1;
-                //packet.norm.cutdown = 0b10000; //indicate failure due to no response in cutdown
-                cutdown_ip = 0;     //clear "cutdown in progress" flag
-                return 0b1000;
+            case 'N':                    //if character was 'N' (no response)
+                cutdown_ip = 0;          //cutdown sequence complete
+                return CDFLAG_NORSPCD;   //return no response from cutdown code
                 break;
 
-            default:                //if none of the above characters were received
-                //yikes.cutdown0 = 1; //maintain "cutdown in progress" flag states
-                //yikes.cutdown1 = 1;
-                //packet.norm.cutdown = 1; //indicate that cutdown is still in progress on cutdown flag
-                cutdown_ip =1;
-                return 0b10;
+            default:                     //if none of the above characters were received
+                cutdown_ip =1;           //cutdown sequence continues
+                return CDFLAG_INPROGRESS;//return in progress code
                 break;
         }
     }
-    else if(cutdown_ip == 2)
+    else if(cutdown_ip == 2)  //if cutdown was attempted, but PIC16 gave no response
     {
-        cutdown_ip = 0;
-        return 0b100;
+        cutdown_ip = 0;       //end cutdown sequence
+        return CDFLAG_NORSP16;//send no response from PIC16 code
     }
-    return 0;
+    return 0;                 //if cutdown is not currently in progress, return 0
 }

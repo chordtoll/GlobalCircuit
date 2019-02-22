@@ -42,6 +42,9 @@
 
 #define FSYS 80000000L 
 
+#define FLAG_IDLE 0   //idle state for cutdown/ballast flags
+#define FLAG_ACK 0xFF //acknowledge state for cutdown/ballast flags
+
 //#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 
@@ -342,10 +345,10 @@ int main(void) {
                 if(cutdown_rq == 4)                  //if the window for confirmation was missed
                 {
                     cutdown_rq = 0;                  //clear the cutdown request counter
-                    packet.norm.cutdown = 0;         //clear the cutdown flag
+                    packet.norm.cutdown = FLAG_IDLE; //clear the cutdown flag
                 }
                 else                                 //if currently waiting for confirmation
-                    packet.norm.cutdown = 0xFF;      //send cutdown acknowledge
+                    packet.norm.cutdown = FLAG_ACK;  //send cutdown acknowledge
             }
             else                                     //if cutdown not currently requested
             {
@@ -357,16 +360,16 @@ int main(void) {
                 if(ballast_rq == 4)                  //if the window for confirmation was missed
                 {
                     ballast_rq = 0;                  //clear the ballast request counter
-                    packet.norm.ballast = 0;         //clear the ballast flag
+                    packet.norm.ballast = FLAG_IDLE; //clear the ballast flag
                 }
                 else                                 //if currently waiting for confirmation
-                    packet.norm.ballast = 0xFF;      //send ballast acknowledge
+                    packet.norm.ballast = FLAG_ACK;  //send ballast acknowledge
             }
             /*else
             {
                 packet.norm.ballast = BallastState();
             }*/
-            //packet.norm.version=PACKET_VERSION; //Write version ID
+            packet.norm.version=PACKET_VERSION; //Write version ID
             packet.norm.yikes=yikes.byte; //Write error flags to packet
             yikes.byte=0; //Clear error flags
             packet.norm.seq=sequence; //Write sequence ID
