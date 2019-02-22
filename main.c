@@ -169,11 +169,9 @@ int main(void) {
 #ifdef TEST_LOOP
     while(1)
     {
-        PORTDbits.RD6 = 1;
-        WaitUS(2814300);
-        PORTDbits.RD6 = 0;
-        WaitUS(2814300);
-        ResetWatchdog();
+        InitiateCutdown();
+        while(1)
+            ResetWatchdog();
     }
     /*uint8_t data = SendChar_GPIO(0,0);
     while(1)
@@ -338,8 +336,37 @@ int main(void) {
         statetimer++;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
-            CheckCutdown();
-            packet.norm.version=PACKET_VERSION; //Write version ID
+            if(cutdown_rq)                           //if cutdown has been requested
+            {
+                ++cutdown_rq;                        //increment cutdown request counter
+                if(cutdown_rq == 4)                  //if the window for confirmation was missed
+                {
+                    cutdown_rq = 0;                  //clear the cutdown request counter
+                    packet.norm.cutdown = 0;         //clear the cutdown flag
+                }
+                else                                 //if currently waiting for confirmation
+                    packet.norm.cutdown = 0xFF;      //send cutdown acknowledge
+            }
+            else                                     //if cutdown not currently requested
+            {
+                packet.norm.cutdown = CheckCutdown();//update cutdown status
+            }
+            if(ballast_rq)                           //if ballast has been requested
+            {
+                ++ballast_rq;                        //increment the ballast request counter
+                if(ballast_rq == 4)                  //if the window for confirmation was missed
+                {
+                    ballast_rq = 0;                  //clear the ballast request counter
+                    packet.norm.ballast = 0;         //clear the ballast flag
+                }
+                else                                 //if currently waiting for confirmation
+                    packet.norm.ballast = 0xFF;      //send ballast acknowledge
+            }
+            /*else
+            {
+                packet.norm.ballast = BallastState();
+            }*/
+            //packet.norm.version=PACKET_VERSION; //Write version ID
             packet.norm.yikes=yikes.byte; //Write error flags to packet
             yikes.byte=0; //Clear error flags
             packet.norm.seq=sequence; //Write sequence ID

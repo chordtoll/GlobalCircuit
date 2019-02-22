@@ -4,7 +4,7 @@
 #include "Yikes.h"
 #include "Ballast.h"
 
-#define TEST
+//#define TEST
 
 //char OKARR[340];
 char _rb_reqsend;       //flag indicating that a request to send data was made
@@ -202,44 +202,27 @@ void TickRB() {
                 }
 #endif
 #ifndef TEST
-                if(!ballast_rq && BALLAST && REQUEST)
+                if(!ballast_rq && BALLAST && REQUEST)          //if a ballast request has come in
                 {
-                    ballast_rq = 1;
-                    //add acknowledge to packet
-                    _rb_state=RB_IDLE;
+                    ballast_rq = 1;                            //set ballast_rq flag
+                    _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(ballast_rq == 2)
+                else if(ballast_rq == 3 && BALLAST && CONFIRM) //if a ballast acknowledge is expected and was received
                 {
-                    if(BALLAST && CONFIRM)
-                    {
-                        DeployBallast(0);  //begin ballast deployment
-                    }
-                    else
-                    {
-                        //add unconfirmed ballast error to packet 
-                    }
-                    _rb_state=RB_IDLE;
+                    DeployBallast(0);                          //begin ballast deployment
+                    ballast_rq = 0;                            //clear ballast_rq flag
+                    _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(!cutdown_rq && CUTDOWN && REQUEST)
+                else if(!cutdown_rq && CUTDOWN && REQUEST)     //if a cutdown request has come in
                 {
-                    cutdown_rq = 1;
-                    //add acknowledge to packet
-                    _rb_state=RB_IDLE;
+                    cutdown_rq = 1;                            //set cutdown_rq flag
+                    _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(cutdown_rq == 2)
+                else if(cutdown_rq == 3 && CUTDOWN && CONFIRM) //if a cutdown acknowledge is expected as was received
                 {
-                    if(CUTDOWN && CONFIRM)
-                    {
-                        ResetWatchdog();
-                        InitiateCutdown(); //initiate a cutdown sequence
-                    }
-                    else
-                    {
-                        //add unconfirmed cutdown error to packet
-                    }
-                     cutdown_rq = 0;
-                     _rb_state=RB_IDLE;
-
+                     InitiateCutdown();                        //initiate a cutdown sequence
+                     cutdown_rq = 0;                           //clear the cutdown_rq flag
+                     _rb_state=RB_IDLE;                        //rockblock is now idle
                 }
 #endif
                 else {                        //if none of the above messages were received

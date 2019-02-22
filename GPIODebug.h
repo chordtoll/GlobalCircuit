@@ -23,7 +23,7 @@ pin17 | RA2  <->  pin18  | RE8  - UNUSED
 #define	GPIODEBUG_H
 
 //flag indicating whether or not the cutdown procedure has been completed
-char CUTDOWN_IP = 0;
+char cutdown_ip = 0;
 
 //initialize GPIO settings
 void InitGPIO();
@@ -40,6 +40,6 @@ void SendString_GPIO(char *s);
 void InitiateCutdown();
 
 //update yikes and cutdown flags based on result read from PIC16
-void CheckCutdown();
+char CheckCutdown();
 
 #endif	/* GPIODEBUG_H */

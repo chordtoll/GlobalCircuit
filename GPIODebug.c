@@ -87,40 +87,58 @@ void InitiateCutdown() {
     while(!IN_TxEnable){}                 //wait for the PIC16 to respond
     if(ExchangeChar_GPIO(0,0) == '?')     //if a confirmation was received
     {
-        yikes.cutdown0 = 1;
-        yikes.cutdown1 = 1;
-        CUTDOWN_IP = 1;
+        //yikes.cutdown0 = 1;
+        //yikes.cutdown1 = 1;
+        cutdown_ip = 1;
+    }
+    else
+    {
+        cutdown_ip = 2;
     }
 }
 
-void CheckCutdown() {
-    if(CUTDOWN_IP)      //check to see if cutdown was started previously, and PIC16 has finished the cutdown
+char CheckCutdown() {
+    if(cutdown_ip == 1)      //check to see if cutdown was started previously, and PIC16 has finished the cutdown
     {
         switch(ExchangeChar_GPIO(0,0)) //read in the status character from the PIC16
         {
             case 'K':               //if character was 'K' (success)
-                yikes.cutdown0 = 0; //clear all cutdown flags
-                yikes.cutdown1 = 0;
-                CUTDOWN_IP = 0;
+                //yikes.cutdown0 = 0; //clear all cutdown flags
+                //yikes.cutdown1 = 0;
+                //packet.norm.cutdown = 0b10; //indicate success on cutdown flags
+                cutdown_ip = 0;               //cutdown sequence complete
+                return 1;
                 break;
 
             case 'U':               //if character was 'U' (unexpected response)
-                yikes.cutdown0 = 1; //set yikes flags to 01
-                yikes.cutdown1 = 0;
-                CUTDOWN_IP = 0;     //clear "cutdown in progress" flag
+                //yikes.cutdown0 = 1; //set yikes flags to 01
+                //yikes.cutdown1 = 0;
+                //packet.norm.cutdown = 0b1000; //indicate failure due to unexpected response on cutdown flag
+                cutdown_ip = 0;     //cutdown sequence complete
+                return 0b10000;
                 break;
 
             case 'N':               //if character was 'N' (no response)
-                yikes.cutdown0 = 0; //set yikes flags to 10
-                yikes.cutdown1 = 1;
-                CUTDOWN_IP = 0;     //clear "cutdown in progress" flag
+                //yikes.cutdown0 = 0; //set yikes flags to 10
+                //yikes.cutdown1 = 1;
+                //packet.norm.cutdown = 0b10000; //indicate failure due to no response in cutdown
+                cutdown_ip = 0;     //clear "cutdown in progress" flag
+                return 0b1000;
                 break;
 
             default:                //if none of the above characters were received
-                yikes.cutdown0 = 1; //maintain "cutdown in progress" flag states
-                yikes.cutdown1 = 1;
-                CUTDOWN_IP = 1;
+                //yikes.cutdown0 = 1; //maintain "cutdown in progress" flag states
+                //yikes.cutdown1 = 1;
+                //packet.norm.cutdown = 1; //indicate that cutdown is still in progress on cutdown flag
+                cutdown_ip =1;
+                return 0b10;
                 break;
         }
     }
+    else if(cutdown_ip == 2)
+    {
+        cutdown_ip = 0;
+        return 0b100;
+    }
+    return 0;
 }
