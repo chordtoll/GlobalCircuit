@@ -97,7 +97,7 @@ void InitiateCutdown() {
         cutdown_ip = 2;               //indicate cutdown failed starting
 }
 
-char CheckCutdown() {
+uint8_t GetCutdownStatus() {
     if(cutdown_ip == 1)      //check to see if cutdown was started previously, and PIC16 has finished the cutdown
     {
         switch(ExchangeChar_GPIO(0,0))   //read in the status character from the PIC16

@@ -8,9 +8,11 @@
 #ifndef BALLAST_H
 #define	BALLAST_H
 
-//runs through sequence of deploying the ballast with a passed address, returns 0 on success, 1 on failure
+//runs through sequence of deploying the ballast with a passed address, updates flag based on success of deployment
 //DOCUMENT MORE FULLY FUNCTION OF EACH PIN
-uint8_t DeployBallast(uint8_t addr);
+void DeployBallast(uint8_t addr);
+
+//returns a flag corresponding to the current status of ballast, clears status flag
+uint8_t GetBallastStatus();
 
 #endif	/* BALLAST_H */
-

@@ -40,6 +40,6 @@ void SendString_GPIO(char *s);
 void InitiateCutdown();
 
 //update yikes and cutdown flags based on result read from PIC16
-char CheckCutdown();
+uint8_t GetCutdownStatus();
 
 #endif	/* GPIODEBUG_H */

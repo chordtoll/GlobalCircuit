@@ -172,9 +172,13 @@ int main(void) {
 #ifdef TEST_LOOP
     while(1)
     {
-        InitiateCutdown();
-        while(1)
-            ResetWatchdog();
+        int i;
+        //PORTDbits.RD6 = WaitForSignal(2000, 1000, PORTDbits.RD0)
+        PORTDbits.RD6 = 1;
+        WaitUS(10);
+        PORTDbits.RD6 = 0;
+        WaitUS(10);
+        ResetWatchdog();
     }
     /*uint8_t data = SendChar_GPIO(0,0);
     while(1)
@@ -339,36 +343,36 @@ int main(void) {
         statetimer++;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
-            if(cutdown_rq)                           //if cutdown has been requested
+            if(cutdown_rq)                               //if cutdown has been requested
             {
-                ++cutdown_rq;                        //increment cutdown request counter
-                if(cutdown_rq == 4)                  //if the window for confirmation was missed
+                ++cutdown_rq;                            //increment cutdown request counter
+                if(cutdown_rq == 4)                      //if the window for confirmation was missed
                 {
-                    cutdown_rq = 0;                  //clear the cutdown request counter
-                    packet.norm.cutdown = FLAG_IDLE; //clear the cutdown flag
+                    cutdown_rq = 0;                      //clear the cutdown request counter
+                    packet.norm.cutdown = FLAG_IDLE;     //clear the cutdown flag
                 }
-                else                                 //if currently waiting for confirmation
-                    packet.norm.cutdown = FLAG_ACK;  //send cutdown acknowledge
+                else                                     //if currently waiting for confirmation
+                    packet.norm.cutdown = FLAG_ACK;      //send cutdown acknowledge
             }
-            else                                     //if cutdown not currently requested
+            else                                         //if cutdown not currently requested
             {
-                packet.norm.cutdown = CheckCutdown();//update cutdown status
+                packet.norm.cutdown = GetCutdownStatus();//update cutdown status
             }
-            if(ballast_rq)                           //if ballast has been requested
+            if(ballast_rq)                               //if ballast has been requested
             {
-                ++ballast_rq;                        //increment the ballast request counter
-                if(ballast_rq == 4)                  //if the window for confirmation was missed
+                ++ballast_rq;                            //increment the ballast request counter
+                if(ballast_rq == 4)                      //if the window for confirmation was missed
                 {
-                    ballast_rq = 0;                  //clear the ballast request counter
-                    packet.norm.ballast = FLAG_IDLE; //clear the ballast flag
+                    ballast_rq = 0;                      //clear the ballast request counter
+                    packet.norm.ballast = FLAG_IDLE;     //clear the ballast flag
                 }
-                else                                 //if currently waiting for confirmation
-                    packet.norm.ballast = FLAG_ACK;  //send ballast acknowledge
+                else                                     //if currently waiting for confirmation
+                    packet.norm.ballast = FLAG_ACK;      //send ballast acknowledge
             }
-            /*else
+            else
             {
-                packet.norm.ballast = BallastState();
-            }*/
+                packet.norm.ballast = GetBallastStatus();//update ballast status
+            }
             packet.norm.version=PACKET_VERSION; //Write version ID
             packet.norm.yikes=yikes.byte; //Write error flags to packet
             yikes.byte=0; //Clear error flags
