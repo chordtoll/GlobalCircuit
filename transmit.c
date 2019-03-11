@@ -3,6 +3,7 @@
 #include "proc\p32mx360f512l.h"
 #include "Timing.h"
 #include "Yikes.h"
+#include "RockBlock.h"
 volatile char gpsbuf[84];
 volatile uint8_t gpsbufi;
 
@@ -165,4 +166,17 @@ char rbstrcmp(volatile char *s1,uint16_t s1i,const char *s2) {
         s2++;
     }
     return 1;
+}
+
+void SafeDebugString(unsigned char* string)
+{
+    if(_rb_state == RB_IDLE)
+    {
+        SendChar_UART1('!');
+        while(*string != 0)
+        {
+            SendChar_UART1(*(string++));
+        }
+        SendChar_UART1('\r');
+    }
 }

@@ -9,22 +9,22 @@
 
 //ADC channel configs
 //Single Shot start, AIN0=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
-#define ADC1_V1 0xA28A //Correct readback: 128a or 128b
+#define ADC1_V1 0x92839283 //Correct readback: 128a or 128b
 
 //Single Shot start, AIN1=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
-#define ADC1_VD 0x928A //Correct readback: 228a or 228b
+#define ADC1_VD 0xA283A283 //Correct readback: 228a or 228b
 
 //Single Shot start, AIN2=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
-#define ADC1_H1 0xB28A //Correct readback: 328a or 328b
+#define ADC1_H1 0xB283B283 //Correct readback: 328a or 328b
 
 //Single Shot start, AIN0=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
-#define ADC2_HD 0xB28A //Correct readback: 128a or 128b
+#define ADC2_HD 0x92839283 //Correct readback: 128a or 128b
 
 //Single Shot start, AIN1=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
-#define ADC2_V2 0xA28A //Correct readback: 228a or 228b
+#define ADC2_V2 0xA283A283 //Correct readback: 228a or 228b
 
 //Single Shot start, AIN2=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
-#define ADC2_H2 0x928A //Correct readback: 328a or 328b
+#define ADC2_H2 0xB283B283 //Correct readback: 328a or 328b
 
 //starts an ADC conversion on the passed in channel, returns conversion result
 uint16_t ReadADC(uint8_t channel);

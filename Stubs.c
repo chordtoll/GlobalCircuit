@@ -3,11 +3,33 @@
 #include "MS5607.h"
 #include "transmit.h"
 #include "ADC.h"
+#include "Timing.h"
 #include "proc\p32mx360f512l.h"
 #include <stdlib.h>
 
 
-uint16_t ReadADC_S(uint8_t channel) {    
+uint16_t ReadADC_S(uint8_t channel) {
+    /*char buff[20];
+    uint16_t data = 0;
+    WaitUS(1000);
+    LATBbits.LATB2 = 0;      //set clock select (CS1) to poll conversion status
+    ReadADC(channel);
+    LATBbits.LATB2 = 1;      //reset clock select (CS1) to high
+    LATBbits.LATB2 = 0;      //set clock select (CS1) to poll conversion status
+    sprintf(buff, "ReadyBefor0: %d", PORTFbits.RF7);
+    SafeDebugString(buff);
+    while(PORTFbits.RF7);    //waiting for adc's DO/!R to be low
+    ReadADC(channel);
+    LATBbits.LATB2 = 1;      //reset clock select (CS1) to high
+    LATBbits.LATB2 = 0;      //set clock select (CS1) to poll conversion status
+    sprintf(buff, "ReadyBefor1: %d", PORTFbits.RF7);
+    SafeDebugString(buff);
+    while(PORTFbits.RF7);    //waiting for adc's DO/!R to be low
+    sprintf(buff, "ReadyAfter : %d", PORTFbits.RF7);
+    SafeDebugString(buff);
+    data = ReadADC(channel);
+    LATBbits.LATB2 = 1;      //reset clock select (CS1) to high
+    return data;*/
     return ReadADC(channel);
 }
 

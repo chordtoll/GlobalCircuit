@@ -7,7 +7,7 @@
 #include <proc/p32mx360f512l.h>
 #include "SPI.h"
 
-
+uint16_t adc_samples[6];
 
 
 //Initalize SPI1
@@ -40,8 +40,9 @@ void InitSPI1(void)
     SPI1BUF = 0;
 
     //FSCK = 10MHz
-    SPI1BRG = 3;
-
+    //SPI1BRG = 3;
+    SPI1BRG = 19;
+    
     //Clear overflow flag
     SPI1STATbits.SPIROV = 0;
 
