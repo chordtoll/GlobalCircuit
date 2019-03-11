@@ -32,7 +32,7 @@ void DeployBallast(uint8_t addr) {
     }
     ResetWatchdog();
     BALLAST_ARM();                            //arm the ballast
-    if(!WaitForSignal(10, 500000, 1, 1))      //if the ballast did not acknowledge arming in a 5 second window,
+    if(!WaitForSignal(10, 200000, 1, 1))      //if the ballast did not acknowledge arming in a 2 second window,
     {
         ba_flag = BAFLAG_NOACKARM;            //set ballast flag to no acknowledge arm
         BALLAST_IDLE();                       //set ballast idle
@@ -41,7 +41,7 @@ void DeployBallast(uint8_t addr) {
     WaitUS(2814300);                          //wait for 2.8143 seconds
     BALLAST_FIRE();                           //give fire signal
     ResetWatchdog();
-    if(!WaitForSignal(10, 500000, 0, 1))      //if the ballast did not acknowledge firing in a 5 second window,
+    if(!WaitForSignal(10, 200000, 0, 1))      //if the ballast did not acknowledge firing in a 2 second window,
         ba_flag = BAFLAG_NOACKFIRE;           //set flag to no acknowledge fire
     else                                      //if a acknowledge was received
         ba_flag = BAFLAG_SUCCESS;             //set flag to success
