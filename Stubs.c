@@ -30,6 +30,9 @@ uint16_t ReadADC_S(uint8_t channel) {
     data = ReadADC(channel);
     LATBbits.LATB2 = 1;      //reset clock select (CS1) to high
     return data;*/
+    WaitMS(20);
+    ReadADC(channel);
+    WaitMS(20);
     return ReadADC(channel);
 }
 

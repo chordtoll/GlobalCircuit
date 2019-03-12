@@ -71,6 +71,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 4:
+                        CS2 = 0;
 			WriteSPI1(ADC2_V2);         //start a conversion on ADC channel 4
 			while(!SPI1STATbits.SPIRBF);//wait for a result
 			bufferData = ReadSPI1();    //read in the result
@@ -80,6 +81,7 @@ uint16_t ReadADC(uint8_t channel)
 			return result;
 			break;
 		case 5:
+                        CS2 = 0;
 			WriteSPI1(ADC2_H2);         //start a conversion on ADC channel 5
 			while(!SPI1STATbits.SPIRBF);//wait for a result
 			bufferData = ReadSPI1();    //read in the result
