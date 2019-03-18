@@ -45,7 +45,7 @@
 #define FLAG_IDLE 0   //idle state for cutdown/ballast flags
 #define FLAG_ACK 0xFF //acknowledge state for cutdown/ballast flags
 
-//#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
+#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 
 
@@ -170,14 +170,12 @@ int main(void) {
     GPSready=1;
 
 #ifdef TEST_LOOP
+    StartKickTimer();
     while(1)
     {
-        int i;
-        //PORTDbits.RD6 = WaitForSignal(2000, 1000, PORTDbits.RD0)
-        PORTDbits.RD6 = 1;
-        WaitUS(10);
-        PORTDbits.RD6 = 0;
-        WaitUS(10);
+        ResetKickTimer();
+        while(!IFS0bits.T4IF){}
+        PORTDbits.RD6 = !PORTDbits.RD6;
         ResetWatchdog();
     }
     /*uint8_t data = SendChar_GPIO(0,0);

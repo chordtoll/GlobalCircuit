@@ -24,7 +24,11 @@ void InitTimer() {
     T2CONbits.T32 = 0;  //use a single 16-bit timer
     T2CONbits.TCKPS = 0;//1:1 prescalar
     PR2 = 799;          //set timer2 period to 10us
-
+    T4CONbits.ON = 0;   //Disable timer2
+    T4CONbits.TCS = 0;  //set internal clock as source
+    T4CONbits.T32 = 0;  //use a single 16-bit timer
+    T4CONbits.TCKPS = 3;//1:256 prescalar
+    PR2 = 0xFFFF;       //set timer2 period to 4.75s
 }
 
 char LT(uint64_t l, uint64_t r)
@@ -110,17 +114,37 @@ uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t in
     return 0;                             //return failure signal if goal was never met
 }
 
+void StartKickTimer()
+{
+    TMR4 = 0;
+    IFS0bits.T4IF = 0;
+    T4CONSET = 0x8000;
+}
+
+void ResetKickTimer()
+{
+    TMR4 = 0;
+    IFS0bits.T4IF = 0;
+}
+
+void StopKickTimer()
+{
+    T4CONCLR = 0x8000;
+}
+
 void InitLoopDelay() {
     loopstarttime=GetCoreTimer(); //set the starting loop time
 }
 
 void DelayLoopMS(uint32_t n) {
-    if (GetCoreTimer()>=loopstarttime+n*(tps/1000)) { //if the loop cycle took longer than it should have,
+    if (GetCoreTimer()>=loopstarttime+n*(tps/1000)) { //if the loop cycle took longer than it hould have,
         yikes.looprate=1;                             //set looprate yikes flag
     }
     while (GetCoreTimer()<loopstarttime+n*(tps/1000));//delay until the target time has passed
     loopstarttime+=n*(tps/1000);                      //move loop time to next target time
 }
+
+
 
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void)
 {

@@ -12,6 +12,7 @@
 #define BAFLAG_NOACKARM 0b100   //ballast did not receive an acknowledge after arming
 #define BAFLAG_NOACKFIRE 0b1000 //ballast did not receive an acknowledge after firing
 
+#define KICKED IFS0bits.T4IF
 uint8_t ba_flag = 0;            //holds current ballast status
 
 void AddrBallast(uint8_t addr) {
@@ -25,23 +26,31 @@ void DeployBallast(uint8_t addr) {
     ResetWatchdog();
     BALLAST_IDLE();                           //set ballast idle
     AddrBallast(addr);                        //set ballast address
-    if (!WaitForSignal(1000, 2000, 0, 0)) {   //if the ballast did not acknowledge our signal in a 2 second window,
-        ba_flag = BAFLAG_NOACKADDR;           //set ballast flag to no acknowledge address
+    StartKickTimer();
+    while(!PORTDbits.RD0 || !KICKED) {} //if the ballast did not acknowledge our signal in a 2 second window,
+    if(KICKED)
+    {
         BALLAST_IDLE();                       //set ballast idle
+        ba_flag = BAFLAG_NOACKADDR;           //set ballast flag to no acknowledge address
+        StopKickTimer();
         return;                               //break out of ballast deployment
     }
     ResetWatchdog();
+    ResetKickTimer();
     BALLAST_ARM();                            //arm the ballast
-    if(!WaitForSignal(10, 200000, 1, 1))      //if the ballast did not acknowledge arming in a 2 second window,
+    while(PORTDbits.RD1 || !KICKED){}   //if the ballast did not acknowledge arming in a 2 second window,
+    if(KICKED)
     {
-        ba_flag = BAFLAG_NOACKARM;            //set ballast flag to no acknowledge arm
         BALLAST_IDLE();                       //set ballast idle
+        ba_flag = BAFLAG_NOACKARM;            //set ballast flag to no acknowledge arm
         return;                               //break out of ballast deployment
     }
     WaitUS(2814300);                          //wait for 2.8143 seconds
     BALLAST_FIRE();                           //give fire signal
     ResetWatchdog();
-    if(!WaitForSignal(10, 200000, 0, 1))      //if the ballast did not acknowledge firing in a 2 second window,
+    ResetKickTimer();
+    while(!PORTDbits.RD1 || !KICKED){}  //if the ballast did not acknowledge firing in a 2 second window,
+    if(KICKED)
         ba_flag = BAFLAG_NOACKFIRE;           //set flag to no acknowledge fire
     else                                      //if a acknowledge was received
         ba_flag = BAFLAG_SUCCESS;             //set flag to success

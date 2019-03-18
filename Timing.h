@@ -42,6 +42,12 @@ void DelayLoopMS(uint32_t n);
 //returns 1 if "goal" was met within "cycles" attempts, 0 otherwise
 uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t index);
 
+void StartKickTimer();
+
+void ResetKickTimer();
+
+void StopKickTimer();
+
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void);
 void __attribute__((nomips16)) WriteCoreTimer(uint32_t timer);
 #endif	/* TIMING_H */
