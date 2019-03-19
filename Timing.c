@@ -28,7 +28,7 @@ void InitTimer() {
     T4CONbits.TCS = 0;  //set internal clock as source
     T4CONbits.T32 = 0;  //use a single 16-bit timer
     T4CONbits.TCKPS = 3;//1:256 prescalar
-    PR2 = 0xFFFF;       //set timer2 period to 4.75s
+    PR4 = 0xFFFF;       //set timer2 period to 4.75s
 }
 
 char LT(uint64_t l, uint64_t r)

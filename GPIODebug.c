@@ -23,7 +23,7 @@
 
 void InitGPIO() {
     TRISECLR=0x37;      //set port E pins 0-2, 4-5 to output
-    TRISESET=0xC8;      //set port E pins 3, 6-7 to input
+    TRISESET=0x1C8;      //set port E pins 3, 6-8 to input
     ODCECLR=0x1FF;      //disable open drain on port E pins 0-8
     OUT_TxEnable = 0;   //clear transmit enable
     
@@ -80,7 +80,8 @@ char ExchangeChar_GPIO(char c, char transmit) {
     WaitMS(CLK_PERIOD / 10);                                         //wait for 1/10 of clock period
     OUT_CLK1 = 1;                                                    //set clock to the idle state (10)
     OUT_CLK0 = 0;
-
+    OUT_DATA0 = 0;
+    OUT_DATA1 = 0;
     return result;                                                   //return the data received by the PIC16
 }
 void SendString_GPIO(char *s) {
