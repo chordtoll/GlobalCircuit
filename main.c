@@ -45,7 +45,7 @@
 #define FLAG_IDLE 0   //idle state for cutdown/ballast flags
 #define FLAG_ACK 0xFF //acknowledge state for cutdown/ballast flags
 
-#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
+//#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 
 
@@ -176,10 +176,11 @@ int main(void) {
     {
         PORTDbits.RD7 = 0;
         ResetKickTimer();
-        while(!IFS0bits.T4IF){}
+        PORTDbits.RD7 = 1;
+        while(!IFS0bits.T5IF){}
         PORTDbits.RD6 = 0;
         ResetKickTimer();
-        while(!IFS0bits.T4IF){}
+        while(!IFS0bits.T5IF){}
         PORTDbits.RD6 = 1;
         ResetWatchdog();
     }

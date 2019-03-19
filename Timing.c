@@ -9,26 +9,27 @@ volatile uint8_t tmancount;
 uint64_t loopstarttime;
 
 void InitTimer() {
-    T1CONbits.ON=0;     //Disable timer
-    T1CONbits.TCS=0;    //Source: PBCLK
-    T1CONbits.TCKPS=3;  //Prescale: 1/256
-    TMR1=0;             //Clear timer register
-    PR1=0xFFFF;         //Load period register
-    IFS0bits.T1IF=0;    //clear timer interrupt flag
-    IPC1bits.T1IP=7;    //set interrupt priority to 7 (max)
-    IPC1bits.T1IS=3;    //set interrupt subpriority to 3 (max)
-    IEC0bits.T1IE=1;    //enable external interrupt
-    T1CONbits.ON=1;     //enable timer
-    T2CONbits.ON = 0;   //Disable timer2
-    T2CONbits.TCS = 0;  //set internal clock as source
-    T2CONbits.T32 = 0;  //use a single 16-bit timer
-    T2CONbits.TCKPS = 0;//1:1 prescalar
-    PR2 = 799;          //set timer2 period to 10us
-    T4CONbits.ON = 0;   //Disable timer2
-    T4CONbits.TCS = 0;  //set internal clock as source
-    T4CONbits.T32 = 0;  //use a single 16-bit timer
-    T4CONbits.TCKPS = 3;//1:256 prescalar
-    PR4 = 0xFFFF;       //set timer2 period to 4.75s
+    T1CONbits.ON=0;      //Disable timer
+    T1CONbits.TCS=0;     //Source: PBCLK
+    T1CONbits.TCKPS=3;   //Prescale: 1/256
+    TMR1=0;              //Clear timer register
+    PR1=0xFFFF;          //Load period register
+    IFS0bits.T1IF=0;     //clear timer interrupt flag
+    IPC1bits.T1IP=7;     //set interrupt priority to 7 (max)
+    IPC1bits.T1IS=3;     //set interrupt subpriority to 3 (max)
+    IEC0bits.T1IE=1;     //enable external interrupt
+    T1CONbits.ON=1;      //enable timer
+    T2CONbits.ON = 0;    //Disable timer2
+    T2CONbits.TCS = 0;   //set internal clock as source
+    T2CONbits.T32 = 0;   //use a single 16-bit timer
+    T2CONbits.TCKPS = 0; //1:1 prescalar
+    PR2 = 799;           //set timer2 period to 10us
+    T4CONbits.ON = 0;    //Disable timer4
+    T4CONbits.TCS = 0;   //set internal clock as source
+    T4CONbits.T32 = 1;   //combine with timer5 period for a 32 bit timer
+    T4CONbits.TCKPS = 3; //1:256 prescalar
+    PR4 = 0xC620;        //set period to 4 seconds
+    PR5 = 0x025D;
 }
 
 char LT(uint64_t l, uint64_t r)
@@ -90,6 +91,8 @@ void WaitUS(uint32_t n) {
         IFS0bits.T2IF = 0;      //clear the period match flag
     }
     T2CONCLR = 0x8000;          //disable timer2
+    //uint64_t donetime=GetCoreTimer()+n*tps/1000000; //set the tick value to count to
+    //while (GetCoreTimer()<donetime);    //count to the tick value
 }
 
 void WaitMS(uint32_t n) {
@@ -103,7 +106,7 @@ void WaitS(uint32_t n) {
     while (GetCoreTimer()<donetime);        //count to the tick value
 }
 
-uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t index) {
+/*uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t index) {
     int i;
     for(i = 0; i < cycles; ++i)           //loop for number of cycles
     {                                     //if the signal matches goal
@@ -112,24 +115,26 @@ uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t in
         WaitUS(period);                   //wait for period microseconds
     }
     return 0;                             //return failure signal if goal was never met
-}
+}*/
 
 void StartKickTimer()
 {
-    TMR4 = 0;
-    IFS0bits.T4IF = 0;
-    T4CONSET = 0x8000;
+    TMR4 = 0;          //clear timer counters
+    TMR5 = 0;
+    IFS0bits.T5IF = 0; //clear period match flag
+    T4CONSET = 0x8000; //enable the timer
 }
 
 void ResetKickTimer()
 {
-    TMR4 = 0;
-    IFS0bits.T4IF = 0;
+    TMR4 = 0;          //clear timer counters
+    TMR5 = 0;
+    IFS0bits.T5IF = 0; //clear period match flag
 }
 
 void StopKickTimer()
 {
-    T4CONCLR = 0x8000;
+    T4CONCLR = 0x8000; //disable the timer
 }
 
 void InitLoopDelay() {

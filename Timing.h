@@ -40,12 +40,15 @@ void DelayLoopMS(uint32_t n);
 
 //checks for the "index" of PORTD to match "goal" every "period" microseconds, breaks after "cycle" reads
 //returns 1 if "goal" was met within "cycles" attempts, 0 otherwise
-uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t index);
+//uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t index);
 
+//starts the kick timer
 void StartKickTimer();
 
+//resets the kick timer
 void ResetKickTimer();
 
+//stops the kick timer
 void StopKickTimer();
 
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void);
