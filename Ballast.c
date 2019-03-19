@@ -49,7 +49,7 @@ void DeployBallast(uint8_t addr) {
     BALLAST_FIRE();                           //give fire signal
     ResetWatchdog();
     ResetKickTimer();
-    while(!PORTDbits.RD1 || !KICKED){}  //if the ballast did not acknowledge firing in a 2 second window,
+    while(!PORTDbits.RD1 || !KICKED){}        //if the ballast did not acknowledge firing in a 2 second window,
     if(KICKED)
         ba_flag = BAFLAG_NOACKFIRE;           //set flag to no acknowledge fire
     else                                      //if a acknowledge was received

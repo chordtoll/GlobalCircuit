@@ -171,11 +171,16 @@ int main(void) {
 
 #ifdef TEST_LOOP
     StartKickTimer();
+
     while(1)
     {
+        PORTDbits.RD7 = 0;
         ResetKickTimer();
         while(!IFS0bits.T4IF){}
-        PORTDbits.RD6 = !PORTDbits.RD6;
+        PORTDbits.RD6 = 0;
+        ResetKickTimer();
+        while(!IFS0bits.T4IF){}
+        PORTDbits.RD6 = 1;
         ResetWatchdog();
     }
     /*uint8_t data = SendChar_GPIO(0,0);
