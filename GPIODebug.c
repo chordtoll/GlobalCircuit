@@ -27,15 +27,15 @@ void InitGPIO() {
     ODCECLR=0x1FF;      //disable open drain on port E pins 0-8
     OUT_TxEnable = 0;   //clear transmit enable
     
-    TRISCbits.TRISC1=0; //set port C pins 1-3 to output
-    TRISCbits.TRISC2=0;
-    TRISCbits.TRISC3=0;
+    TRISGbits.TRISG6=0; //set port C pins 1-3 to output
+    TRISGbits.TRISG7=0;
+    TRISGbits.TRISG8=0;
     
-    ODCCbits.ODCC1=0;   //disable open drain on port C pins 1-3
-    ODCCbits.ODCC2=0;
-    ODCCbits.ODCC3=0;
+    ODCGbits.ODCG6=0;   //disable open drain on port C pins 1-3
+    ODCGbits.ODCG7=0;
+    ODCGbits.ODCG8=0;
     
-    PORTCbits.RC3=1;    //set a HIGH value on RC3
+    PORTGbits.RG3=1;    //set a HIGH value on RC3
     TRISDSET=0x03;      //set port D pins 0-1 to input
     TRISDCLR=0xFC;      //set port D pins 2-7 to output
     ODCDCLR=0xFF;       //disable open drain on all port D pins

@@ -155,7 +155,7 @@ int main(void) {
     InitAltimeter(ALT_ADDR);//intialize altimeter with correct address
 
     InitSPI1();             //initialize SPI 1
-    InitSPI2();             //initialize SPI 2
+    //InitSPI2();             //initialize SPI 2
 
     InitPICADC();           //initialize ADC
 
@@ -198,7 +198,7 @@ int main(void) {
     //SendChar_UART1('A');
 
     //=============================//
-    //          MAIN LOOP          //
+    //          MAIN LOOP          //s
     //=============================//
     while (1) {
         TickRB();   //Advance RockBlock state machine
