@@ -26,8 +26,14 @@
 //Single Shot start, AIN2=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
 #define ADC2_H2 0xB283B283 //Correct readback: 328a or 328b
 
-//starts an ADC conversion on the passed in channel, returns conversion result
-uint16_t ReadADC(uint8_t channel);
+//initialize PIC ADC
+void InitPICADC();
 
-#endif	/* PICADC_H */
+//trigger a read of a specific ADC channel and return the result
+uint16_t ReadPICADC(uint8_t channel);
+
+//starts an ADC conversion on the passed in channel, returns conversion result
+uint16_t ReadExtADC(uint8_t channel);
+
+#endif	/* ADC_H */
 

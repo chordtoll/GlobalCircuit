@@ -14,18 +14,19 @@
 #include <stdio.h>
 #include <sys/appio.h>
 #include <stdint.h>
-#include "GPIODebug.h"
+#include "GPIO.h"
 #include "transmit.h"
 #include "GPS.h"
 #include "MS5607.h"
 #include "MAG3310.h"
 #include "Timing.h"
 #include "Resets.h"
-#include "Stubs.h"
 #include "Packet.h"
 #include "RockBlock.h"
 #include "Yikes.h"
 #include "SPI.h"
+#include "ADC.h"
+#include "Cutdown.h"
 
 #define T_TICK_MS 100
 #define T_SECOND (1000/T_TICK_MS)
@@ -155,13 +156,11 @@ int main(void) {
     InitAltimeter(ALT_ADDR);//intialize altimeter with correct address
 
     InitSPI1();             //initialize SPI 1
-    //InitSPI2();             //initialize SPI 2
+    //InitSPI2();           //initialize SPI 2
 
     InitPICADC();           //initialize ADC
 
-    InitTimer();            //initialize timer for delays
-
-    InitPPS();              //initialize pulse per second
+    InitTiming();            //initialize timer for delays
 
     InitLoopDelay();        //initialize packet loop delays
 
@@ -198,7 +197,7 @@ int main(void) {
     //SendChar_UART1('A');
 
     //=============================//
-    //          MAIN LOOP          //s
+    //          MAIN LOOP          //
     //=============================//
     while (1) {
         TickRB();   //Advance RockBlock state machine
@@ -242,35 +241,35 @@ int main(void) {
         if (sequence%10<9) {
             //BEGIN every 5 seconds
             if (statetimer%T_FASTSAM_INTERVAL==0) { //Tick 0
-                TriggerMagneto_S(); //Trigger the magnetometer to begin measurement
+                TriggerMagneto(MAG_ADDR); //Trigger the magnetometer to begin measurement
             }
             if (statetimer%T_FASTSAM_INTERVAL==1) { //Tick 1
                 uint16_t mx;
                 uint16_t my;
                 uint16_t mz;
-                ReadMagneto_S(&mx,&my,&mz); //Read magnetometer values
+                ReadMagneto(MAG_ADDR, &mx,&my,&mz); //Read magnetometer values
                 packet.norm.compassX[(statetimer/T_FASTSAM_INTERVAL)%12]=mx; //Store magnetometer values in the packet
                 packet.norm.compassY[(statetimer/T_FASTSAM_INTERVAL)%12]=my;
-                uint16_t h1=ReadADC_S(2);
-                uint16_t h2=ReadADC_S(5);
+                uint16_t h1=ReadExtADC(2);
+                uint16_t h2=ReadExtADC(5);
                 packet.norm.horiz1[(statetimer/T_FASTSAM_INTERVAL)%12]=h1; //Store horizontal probe values in the packet
                 packet.norm.horiz2[(statetimer/T_FASTSAM_INTERVAL)%12]=h2;
             }
             if (statetimer%T_FASTSAM_INTERVAL==2) { //Tick 2
-                uint16_t hD=ReadADC_S(3);
+                uint16_t hD=ReadExtADC(3);
                 packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=hD;  //Store horizontal differential value in the packet
             }
             //END every 5 seconds
             //BEGIN every 60 seconds
             if (statetimer==3) { //Tick 3 (Starts at 3 so as not to conflict with ^^^)
-                packet.norm.vert1=ReadADC_S(0);  //Store vertical probe values in packet
-                packet.norm.vert2=ReadADC_S(4);
+                packet.norm.vert1=ReadExtADC(0);  //Store vertical probe values in packet
+                packet.norm.vert2=ReadExtADC(4);
             }
             if (statetimer==4) { //Tick 4
-                packet.norm.vertD=ReadADC_S(1);  //Store vertical differential value in packet
+                packet.norm.vertD=ReadExtADC(1);  //Store vertical differential value in packet
             }
             if (statetimer==5) {
-                ReadGPS_S(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
+                ReadGPS(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
                 packet.norm.time=gTime; //Store GPS time&location in packet
                 packet.norm.lat=gLat;
                 packet.norm.lon=gLon;
@@ -281,24 +280,24 @@ int main(void) {
             //Charge the probes in sequence
             switch (statetimer) {
                 case T_CON_CHG_BEGIN:
-                    ChargeProbe_S(GND);
+                    ChargeProbe(GND);
                     break;
                 case T_CON_CHG1_END:
-                    ChargeProbe_S(UP);
+                    ChargeProbe(UP);
                     break;
                 case T_CON_CHG2_END:
-                    ChargeProbe_S(NONE);
+                    ChargeProbe(NONE);
                     break;
             }
             if (statetimer==0) { //Tick 0
-                packet.norm.vert1=ReadADC_S(0); //Store vertical probe values
-                packet.norm.vert2=ReadADC_S(4); //(Before conductivity charging)
+                packet.norm.vert1=ReadExtADC(0); //Store vertical probe values
+                packet.norm.vert2=ReadExtADC(4); //(Before conductivity charging)
             }
             if (statetimer==1) {
-                packet.norm.vertD=ReadADC_S(1); //Store vertical differential value
+                packet.norm.vertD=ReadExtADC(1); //Store vertical differential value
             }
             if (statetimer==2) {
-                ReadGPS_S(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
+                ReadGPS(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
                 packet.norm.time=gTime; //Store GPS time&location in packet
                 packet.norm.lat=gLat;
                 packet.norm.lon=gLon;
@@ -306,25 +305,25 @@ int main(void) {
             }
             //While in conductivity measuring interval,
             if (statetimer>=T_CON_CHG_BEGIN && statetimer<T_CON_MEAS_END) {
-                cVert1[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(0); //Store vertical probe values in temporary array
-                cVert2[statetimer-T_CON_CHG_BEGIN]=ReadADC_S(4);
+                cVert1[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(0); //Store vertical probe values in temporary array
+                cVert2[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(4);
             }
             //Measure, store supervision values in temp variables
             switch (statetimer) {
                 case 0:
-                    TriggerAltimeter_Temperature_S();
+                    TriggerAltimeter_Temperature(ALT_ADDR);
                     supIl0=ReadPICADC(4);
                     break;
                 case 1:
-                    supTemperature=ReadAltimeter_S();
+                    ReadAltimeter_ADC(ALT_ADDR, &supTemperature);
                     supIl1=ReadPICADC(8);
                     break;
                 case 2:
-                    TriggerAltimeter_Pressure_S();
+                    TriggerAltimeter_Pressure(ALT_ADDR);
                     supIl2=ReadPICADC(10);
                     break;
                 case 3:
-                    supPressure=ReadAltimeter_S();
+                    ReadAltimeter_ADC(ALT_ADDR, &supPressure);
                     supIh0=ReadPICADC(5);
                     break;
                 case 4:
@@ -382,7 +381,7 @@ int main(void) {
             yikes.byte=0; //Clear error flags
             packet.norm.seq=sequence; //Write sequence ID
             sequence++;
-            RockSend_S(packet.bytes); //Send packet
+            SendString_RB(packet.bytes); //Send packet
             clearPacket(&packet); //Clear packet buffer
             statetimer=0; //Reset state timer for start of next packet
         }

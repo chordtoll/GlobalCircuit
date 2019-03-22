@@ -8,7 +8,8 @@ volatile uint8_t tmancount;
 
 uint64_t loopstarttime;
 
-void InitTimer() {
+void InitTiming() {
+    //Timers
     T1CONbits.ON=0;      //Disable timer
     T1CONbits.TCS=0;     //Source: PBCLK
     T1CONbits.TCKPS=3;   //Prescale: 1/256
@@ -30,6 +31,18 @@ void InitTimer() {
     T4CONbits.TCKPS = 3; //1:256 prescalar
     PR4 = 0xC620;        //set period to 4 seconds
     PR5 = 0x025D;
+
+    //PPS
+    uint8_t i;
+    TRISDbits.TRISD14=1;
+    CNCONbits.ON=1;
+    CNENbits.CNEN20=1;
+    PORTD;
+    IPC6bits.CNIP=7;
+    IPC6bits.CNIS=3;
+    IFS1bits.CNIF=0;
+    IEC1bits.CNIE=1;
+    ctt_valid=0;
 }
 
 char LT(uint64_t l, uint64_t r)
@@ -59,6 +72,33 @@ void  __attribute__((vector(_TIMER_1_VECTOR), interrupt(IPL7SRS), nomips16)) TIM
         yikes.gpstick=1;
     }
     IFS0bits.T1IF = 0; //clear interrupt flag status for Timer 1
+}
+
+void  __attribute__((vector(_CHANGE_NOTICE_VECTOR), interrupt(IPL7SRS), nomips16)) CN_ISR(void) {
+    if (PORTDbits.RD14) {
+
+        if (ReadCoreTimer()<TPS_MAX) {
+            // BEGIN TIMING CRITICAL DO NOT SPLIT
+            uint32_t ctt=ReadCoreTimer();
+            WriteCoreTimer(0);
+            timer_accum+=ctt;
+            // END TIMING CRITICAL DO NOT SPLIT
+            if (ctt>TPS_MIN && ctt_valid) {
+                tps*=9;
+                tps+=ctt;
+                tps/=10;
+            } else {
+                yikes.gpstick=1;
+            }
+            ctt_valid=1;
+        } else {
+            yikes.gpstick=1;
+        }
+
+
+
+    }
+    IFS1bits.CNIF=0;
 }
 
 uint64_t GetCoreTimer() {

@@ -10,9 +10,6 @@
 
 #include "RockBlock.h"
 
-volatile char GPSready;
-volatile char GPSnew;
-volatile char GPSdata[84];
 
 volatile char _rb_cmdbuf[340];
 volatile char RBRXbuf[270];

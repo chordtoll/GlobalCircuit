@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c Resets.c PICADC.c Stubs.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c PPS.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c Timing.c Resets.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c GPIO.c Cutdown.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o ${OBJECTDIR}/PICADC.o ${OBJECTDIR}/Stubs.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/PPS.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/transmit.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/GPIODebug.o.d ${OBJECTDIR}/Timing.o.d ${OBJECTDIR}/Resets.o.d ${OBJECTDIR}/PICADC.o.d ${OBJECTDIR}/Stubs.o.d ${OBJECTDIR}/Watchdog.o.d ${OBJECTDIR}/RockBlock.o.d ${OBJECTDIR}/ADC.o.d ${OBJECTDIR}/SPI.o.d ${OBJECTDIR}/Ballast.o.d ${OBJECTDIR}/PPS.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/GPIO.o ${OBJECTDIR}/Cutdown.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/transmit.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/Timing.o.d ${OBJECTDIR}/Resets.o.d ${OBJECTDIR}/Watchdog.o.d ${OBJECTDIR}/RockBlock.o.d ${OBJECTDIR}/ADC.o.d ${OBJECTDIR}/SPI.o.d ${OBJECTDIR}/Ballast.o.d ${OBJECTDIR}/GPIO.o.d ${OBJECTDIR}/Cutdown.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/GPIODebug.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o ${OBJECTDIR}/PICADC.o ${OBJECTDIR}/Stubs.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/PPS.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/transmit.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Resets.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/GPIO.o ${OBJECTDIR}/Cutdown.o
 
 # Source Files
-SOURCEFILES=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c GPIODebug.c Timing.c Resets.c PICADC.c Stubs.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c PPS.c
+SOURCEFILES=main.c I2C.c transmit.c MAG3310.c MS5607.c GPS.c Timing.c Resets.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c GPIO.c Cutdown.c
 
 
 CFLAGS=
@@ -127,12 +127,6 @@ ${OBJECTDIR}/GPS.o: GPS.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/GPS.o 
 	@${FIXDEPS} "${OBJECTDIR}/GPS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/GPS.o.d" -o ${OBJECTDIR}/GPS.o GPS.c    -Wno-error=implicit-function-declaration
 	
-${OBJECTDIR}/GPIODebug.o: GPIODebug.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/GPIODebug.o.d 
-	@${RM} ${OBJECTDIR}/GPIODebug.o 
-	@${FIXDEPS} "${OBJECTDIR}/GPIODebug.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/GPIODebug.o.d" -o ${OBJECTDIR}/GPIODebug.o GPIODebug.c    -Wno-error=implicit-function-declaration
-	
 ${OBJECTDIR}/Timing.o: Timing.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/Timing.o.d 
@@ -144,18 +138,6 @@ ${OBJECTDIR}/Resets.o: Resets.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Resets.o.d 
 	@${RM} ${OBJECTDIR}/Resets.o 
 	@${FIXDEPS} "${OBJECTDIR}/Resets.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Resets.o.d" -o ${OBJECTDIR}/Resets.o Resets.c    -Wno-error=implicit-function-declaration
-	
-${OBJECTDIR}/PICADC.o: PICADC.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/PICADC.o.d 
-	@${RM} ${OBJECTDIR}/PICADC.o 
-	@${FIXDEPS} "${OBJECTDIR}/PICADC.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PICADC.o.d" -o ${OBJECTDIR}/PICADC.o PICADC.c    -Wno-error=implicit-function-declaration
-	
-${OBJECTDIR}/Stubs.o: Stubs.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/Stubs.o.d 
-	@${RM} ${OBJECTDIR}/Stubs.o 
-	@${FIXDEPS} "${OBJECTDIR}/Stubs.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Stubs.o.d" -o ${OBJECTDIR}/Stubs.o Stubs.c    -Wno-error=implicit-function-declaration
 	
 ${OBJECTDIR}/Watchdog.o: Watchdog.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -187,11 +169,17 @@ ${OBJECTDIR}/Ballast.o: Ballast.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Ballast.o 
 	@${FIXDEPS} "${OBJECTDIR}/Ballast.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Ballast.o.d" -o ${OBJECTDIR}/Ballast.o Ballast.c    -Wno-error=implicit-function-declaration
 	
-${OBJECTDIR}/PPS.o: PPS.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/GPIO.o: GPIO.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/PPS.o.d 
-	@${RM} ${OBJECTDIR}/PPS.o 
-	@${FIXDEPS} "${OBJECTDIR}/PPS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PPS.o.d" -o ${OBJECTDIR}/PPS.o PPS.c    -Wno-error=implicit-function-declaration
+	@${RM} ${OBJECTDIR}/GPIO.o.d 
+	@${RM} ${OBJECTDIR}/GPIO.o 
+	@${FIXDEPS} "${OBJECTDIR}/GPIO.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/GPIO.o.d" -o ${OBJECTDIR}/GPIO.o GPIO.c    -Wno-error=implicit-function-declaration
+	
+${OBJECTDIR}/Cutdown.o: Cutdown.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Cutdown.o.d 
+	@${RM} ${OBJECTDIR}/Cutdown.o 
+	@${FIXDEPS} "${OBJECTDIR}/Cutdown.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Cutdown.o.d" -o ${OBJECTDIR}/Cutdown.o Cutdown.c    -Wno-error=implicit-function-declaration
 	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
@@ -230,12 +218,6 @@ ${OBJECTDIR}/GPS.o: GPS.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/GPS.o 
 	@${FIXDEPS} "${OBJECTDIR}/GPS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/GPS.o.d" -o ${OBJECTDIR}/GPS.o GPS.c    -Wno-error=implicit-function-declaration
 	
-${OBJECTDIR}/GPIODebug.o: GPIODebug.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/GPIODebug.o.d 
-	@${RM} ${OBJECTDIR}/GPIODebug.o 
-	@${FIXDEPS} "${OBJECTDIR}/GPIODebug.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/GPIODebug.o.d" -o ${OBJECTDIR}/GPIODebug.o GPIODebug.c    -Wno-error=implicit-function-declaration
-	
 ${OBJECTDIR}/Timing.o: Timing.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/Timing.o.d 
@@ -247,18 +229,6 @@ ${OBJECTDIR}/Resets.o: Resets.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Resets.o.d 
 	@${RM} ${OBJECTDIR}/Resets.o 
 	@${FIXDEPS} "${OBJECTDIR}/Resets.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Resets.o.d" -o ${OBJECTDIR}/Resets.o Resets.c    -Wno-error=implicit-function-declaration
-	
-${OBJECTDIR}/PICADC.o: PICADC.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/PICADC.o.d 
-	@${RM} ${OBJECTDIR}/PICADC.o 
-	@${FIXDEPS} "${OBJECTDIR}/PICADC.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PICADC.o.d" -o ${OBJECTDIR}/PICADC.o PICADC.c    -Wno-error=implicit-function-declaration
-	
-${OBJECTDIR}/Stubs.o: Stubs.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/Stubs.o.d 
-	@${RM} ${OBJECTDIR}/Stubs.o 
-	@${FIXDEPS} "${OBJECTDIR}/Stubs.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Stubs.o.d" -o ${OBJECTDIR}/Stubs.o Stubs.c    -Wno-error=implicit-function-declaration
 	
 ${OBJECTDIR}/Watchdog.o: Watchdog.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -290,11 +260,17 @@ ${OBJECTDIR}/Ballast.o: Ballast.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/Ballast.o 
 	@${FIXDEPS} "${OBJECTDIR}/Ballast.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Ballast.o.d" -o ${OBJECTDIR}/Ballast.o Ballast.c    -Wno-error=implicit-function-declaration
 	
-${OBJECTDIR}/PPS.o: PPS.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/GPIO.o: GPIO.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/PPS.o.d 
-	@${RM} ${OBJECTDIR}/PPS.o 
-	@${FIXDEPS} "${OBJECTDIR}/PPS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/PPS.o.d" -o ${OBJECTDIR}/PPS.o PPS.c    -Wno-error=implicit-function-declaration
+	@${RM} ${OBJECTDIR}/GPIO.o.d 
+	@${RM} ${OBJECTDIR}/GPIO.o 
+	@${FIXDEPS} "${OBJECTDIR}/GPIO.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/GPIO.o.d" -o ${OBJECTDIR}/GPIO.o GPIO.c    -Wno-error=implicit-function-declaration
+	
+${OBJECTDIR}/Cutdown.o: Cutdown.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Cutdown.o.d 
+	@${RM} ${OBJECTDIR}/Cutdown.o 
+	@${FIXDEPS} "${OBJECTDIR}/Cutdown.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Cutdown.o.d" -o ${OBJECTDIR}/Cutdown.o Cutdown.c    -Wno-error=implicit-function-declaration
 	
 endif
 

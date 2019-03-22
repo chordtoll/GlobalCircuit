@@ -1,4 +1,9 @@
 #include <proc/p32mx360f512l.h>
+#include "GPS.h"
+#include <stdlib.h>
+
+volatile char gpsbuf[84];
+volatile uint8_t gpsbufi;
 
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti) {
     uint8_t field=0;          //selects which field is currently being updated
@@ -81,4 +86,52 @@ void InitGPS(void) {
         U2TXREG=InitString[i];
         while (U2STAbits.TRMT == 0);//wait for the full message to be sent
     }
+}
+
+void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
+    char nTime[20];
+    char nLati[20];
+    char nLong[20];
+    char nAlti[20];
+    char nLatD;
+    char nLonD;
+    if (GPSnew) {
+        GPSnew=0;
+    if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
+        ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti);
+        *time=atof(nTime);
+        *lat=(atof(nLati)*10000);
+        if (nLatD=='S')
+            *lat|=0x80000000;
+        *lon=(atof(nLong)*10000);
+        if (nLonD=='W')
+            *lon|=0x80000000;
+        *alt=(atof(nAlti)*10);
+    }
+    }
+    GPSready=1;
+}
+
+void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
+{
+    char receivedChar = U2RXREG; //get char from uart1rec line
+
+    if (gpsbufi>=80) {
+        gpsbufi=0;
+    }
+    if (receivedChar=='$') {
+        gpsbufi=0;
+        gpsbuf[gpsbufi++]=receivedChar;
+    } else if (receivedChar==0x0A) {
+        gpsbuf[gpsbufi++]=receivedChar;
+        gpsbuf[gpsbufi++]=0;
+        if (GPSready) {
+            strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
+            GPSready=0;
+            GPSnew=1;
+        }
+    } else {
+        gpsbuf[gpsbufi++]=receivedChar;
+    }
+    IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
 }

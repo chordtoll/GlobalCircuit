@@ -4,8 +4,6 @@
 #include "Timing.h"
 #include "Yikes.h"
 #include "RockBlock.h"
-volatile char gpsbuf[84];
-volatile uint8_t gpsbufi;
 
 void InitUART()
 {
@@ -78,30 +76,6 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         }
     }
     IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
-}
-
-void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
-{
-    char receivedChar = U2RXREG; //get char from uart1rec line
-
-    if (gpsbufi>=80) {
-        gpsbufi=0;
-    }
-    if (receivedChar=='$') {
-        gpsbufi=0;
-        gpsbuf[gpsbufi++]=receivedChar;
-    } else if (receivedChar==0x0A) {
-        gpsbuf[gpsbufi++]=receivedChar;
-        gpsbuf[gpsbufi++]=0;
-        if (GPSready) {
-            strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
-            GPSready=0;
-            GPSnew=1;
-        }
-    } else {
-        gpsbuf[gpsbufi++]=receivedChar;
-    }
-    IFS1bits.U2RXIF = 0; //clear interrupt flag status for UART1 receive
 }
 
 void SendString_UART1(unsigned char* string)

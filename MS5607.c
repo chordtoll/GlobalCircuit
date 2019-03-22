@@ -47,7 +47,6 @@ uint8_t ReadAltimeter_ADC(uint8_t addr, uint32_t* val) {
     *val|=ReadI2C()&0xFF;           //store least significant byte of ADC value
     NAckI2C();                      //send a NAck
     StopI2C();                      //stop I2C communication
-    //*val&=0x00FFFFFF;
     return ack;                     //return acknowledge status
 }
 
