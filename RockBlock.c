@@ -1,12 +1,9 @@
 #include <stdint.h>
 #include "RockBlock.h"
-#include "transmit.h"
+#include "UART.h"
 #include "Yikes.h"
 #include "Ballast.h"
 
-//#define TEST
-
-//char OKARR[340];
 char _rb_reqsend;       //flag indicating that a request to send data was made
 uint16_t _rb_idletimer; //timer that keeps track of number of ticks RB has been busy consecutively
 
@@ -19,11 +16,6 @@ void InitRB() {
     _rb_cmdbuf[340]=0;  //clear the rockblock command buffer
     _rb_reqsend=0;      //clear reqsend flag
     _rb_idletimer=0;    //reset idle timer
-  /*OKARR[0]='D';
-    OKARR[1]='O';
-    OKARR[2]='N';
-    OKARR[3]='E';
-    OKARR[4]=0x00;*/
 }
 
 void TickRB() {
@@ -184,24 +176,6 @@ void TickRB() {
                 RBRXbuf[msglen]=0;              //add a 0 terminator to the end of the message
                 uint16_t csumr=*rbuf++<<8;      //pull the checksum out of the message buffer
                 csumr|=*rbuf;
-                //SendString_UART1("!");
-                //SendBuffer_UART1(RBRXbuf,0,20);
-                //SendString_UART1("!\r");
-#ifdef TEST
-                if (RBRXbuf[2]=='T' && RBRXbuf[3]=='E' && RBRXbuf[4]=='S' && RBRXbuf[5]=='T') { //if "TEST" was the received message,
-                    DeployBallast(0);  //begin ballast deployment
-                    //SendString_RB(OKARR);
-                    _rb_state=RB_IDLE; //set the rockblock to idle state
-                }
-                else if (RBRXbuf[2]=='C' && RBRXbuf[3]=='U' && RBRXbuf[4]=='T') { //if "CUT" was the received message
-                    //SendString_GPIO("\xE2\x9C\x82\x20");
-                    ResetWatchdog();
-                    InitiateCutdown(); //initiate a cutdown sequence
-                    //SendString_RB(OKARR);
-                    _rb_state=RB_IDLE;
-                }
-#endif
-#ifndef TEST
                 if(!ballast_rq && BALLAST && REQUEST)          //if a ballast request has come in
                 {
                     ballast_rq = 1;                            //set ballast_rq flag
@@ -224,10 +198,9 @@ void TickRB() {
                      cutdown_rq = 0;                           //clear the cutdown_rq flag
                      _rb_state=RB_IDLE;                        //rockblock is now idle
                 }
-#endif
                 else {                        //if none of the above messages were received
                     SendString_UART1("AT\r"); //send an empty AT command
-                    _rb_state=SENT_ACKAT;     //update state to SEND ACKAT
+                    _rb_state=SENT_ACKAT;     //update state to SENT ACKAT
                     _rb_status=RB_BUSY;       //indicate that the rockblock is busy
                 }
             }

@@ -5,10 +5,11 @@
  * Created on August 4, 2016, 3:46 PM
  */
 
-#ifndef _TRANSMIT_H_
-#define	_TRANSMIT_H_
+#ifndef _UART_H_
+#define	_UART_H_
 
 #include "RockBlock.h"
+#include "Packet.h"
 
 
 volatile char _rb_cmdbuf[340];
@@ -30,4 +31,7 @@ void SafeDebugString(unsigned char* string);
 void Send16_UART1(uint16_t i);
 
 char rbstrcmp(volatile char *s1,uint16_t s1i,const char *s2);
-#endif	/* _TRANSMIT_H_ */
+
+void clearPacket(packet_u *pack);
+void printPacket(packet_u pack);
+#endif	/* _UART_H_ */

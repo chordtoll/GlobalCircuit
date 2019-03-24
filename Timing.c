@@ -1,6 +1,6 @@
 #include "Timing.h"
 #include "Yikes.h"
-#include "transmit.h"
+#include "UART.h"
 #include <proc/p32mx360f512l.h>
 
 #define USPERR 1.00019543
@@ -121,23 +121,20 @@ void WaitTicks(uint64_t n) {
 }
 
 void WaitUS(uint32_t n) {
-    TMR2 = 0;           //clear the timer2 counter
-    int i;              //looping variable
-    n /= USPERR;        //adjust for timing error per microsecond
-    T2CONSET = 0x8000;  //start timer2
+    TMR2 = 0;                   //clear the timer2 counter
+    int i;                      //looping variable
+    n /= USPERR;                //adjust for timing error per microsecond
+    T2CONSET = 0x8000;          //start timer2
     for(i = 0; i < n / 10; ++i) //count microseconds
     {
         while(!IFS0bits.T2IF){} //when 10 microseconds have passed
         IFS0bits.T2IF = 0;      //clear the period match flag
     }
     T2CONCLR = 0x8000;          //disable timer2
-    //uint64_t donetime=GetCoreTimer()+n*tps/1000000; //set the tick value to count to
-    //while (GetCoreTimer()<donetime);    //count to the tick value
 }
 
 void WaitMS(uint32_t n) {
-    //uint64_t donetime=GetCoreTimer()+n*(tps/1000); //THIS DOESN'T WORK
-    uint64_t donetime=GetCoreTimer()+(n*tps)/1000; //TRY THIS
+    uint64_t donetime=GetCoreTimer()+(n*tps)/1000;
     while (GetCoreTimer()<donetime);               //count to the tick value
 }
 
@@ -145,17 +142,6 @@ void WaitS(uint32_t n) {
     uint64_t donetime=GetCoreTimer()+n*tps; //set the tick value to count to
     while (GetCoreTimer()<donetime);        //count to the tick value
 }
-
-/*uint8_t WaitForSignal(uint32_t period, uint32_t cycles, uint8_t goal, uint8_t index) {
-    int i;
-    for(i = 0; i < cycles; ++i)           //loop for number of cycles
-    {                                     //if the signal matches goal
-        if((index == 0 && PORTDbits.RD0 == goal) || (index == 1 && PORTDbits.RD1 == goal))
-            return 1;                     //return success signal
-        WaitUS(period);                   //wait for period microseconds
-    }
-    return 0;                             //return failure signal if goal was never met
-}*/
 
 void StartKickTimer()
 {

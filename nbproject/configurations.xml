@@ -16,8 +16,6 @@
       <itemPath>GPS.h</itemPath>
       <itemPath>I2C.c</itemPath>
       <itemPath>I2C.h</itemPath>
-      <itemPath>transmit.c</itemPath>
-      <itemPath>transmit.h</itemPath>
       <itemPath>MAG3310.c</itemPath>
       <itemPath>MAG3310.h</itemPath>
       <itemPath>MS5607.c</itemPath>
@@ -25,8 +23,6 @@
       <itemPath>GPS.c</itemPath>
       <itemPath>Timing.c</itemPath>
       <itemPath>Timing.h</itemPath>
-      <itemPath>Resets.c</itemPath>
-      <itemPath>Resets.h</itemPath>
       <itemPath>Packet.h</itemPath>
       <itemPath>Watchdog.c</itemPath>
       <itemPath>Watchdog.h</itemPath>
@@ -44,6 +40,8 @@
       <itemPath>GPIO.h</itemPath>
       <itemPath>Cutdown.c</itemPath>
       <itemPath>Cutdown.h</itemPath>
+      <itemPath>UART.c</itemPath>
+      <itemPath>UART.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -69,10 +67,15 @@
           <linkerLibItems>
           </linkerLibItems>
         </linkerTool>
+        <archiverTool>
+        </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
+        <subordinates>
+        </subordinates>
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
@@ -107,6 +110,9 @@
         <property key="use-indirect-calls" value="false"/>
         <appendMe value="-Wno-error=implicit-function-declaration"/>
       </C32>
+      <C32-AR>
+        <property key="additional-options-chop-files" value="false"/>
+      </C32-AR>
       <C32-AS>
         <property key="assembler-symbols" value=""/>
         <property key="enable-symbols" value="true"/>

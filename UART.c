@@ -1,9 +1,8 @@
 #include <string.h>
-#include "transmit.h"
+#include "UART.h"
 #include "proc\p32mx360f512l.h"
 #include "Timing.h"
 #include "Yikes.h"
-#include "RockBlock.h"
 
 void InitUART()
 {
@@ -153,4 +152,35 @@ void SafeDebugString(unsigned char* string)
         }
         SendChar_UART1('\r');
     }
+}
+
+//clear all packet bits
+void clearPacket(packet_u *pack) {
+    uint16_t i;
+    for (i=0;i<sizeof(*pack);i++)
+        (*pack).bytes[i]=0;
+}
+
+//send packet data over UART1
+void printPacket(packet_u pack) {
+    uint16_t i;
+    SendChar_UART1('\n');
+    for (i=0;i<sizeof(pack);i++) {
+        //send hex value of least significant 4 bits, '.' if 0 or negative
+        if ((pack.bytes[i]&0xF)>9)
+            SendChar_UART1((pack.bytes[i]&0xF)+'A'-10);
+        else if ((pack.bytes[i]&0xF)>0)
+            SendChar_UART1((pack.bytes[i]&0xF)+'0');
+        else
+            SendChar_UART1('.');
+
+        //send hex value of most significant 4 bits, '.' if 0 or negative
+        if (((pack.bytes[i]>>4)&0xF)>9)
+            SendChar_UART1(((pack.bytes[i]>>4)&0xF)+'A'-10);
+        else if (((pack.bytes[i]>>4)&0xF)>0)
+            SendChar_UART1(((pack.bytes[i]>>4)&0xF)+'0');
+        else
+            SendChar_UART1('.');
+    }
+    SendChar_UART1('\n');
 }

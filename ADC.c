@@ -9,6 +9,10 @@
 #include "ADC.h"
 #include "SPI.h"
 
+//Chip select is the pins latch register bit
+#define CS1 LATBbits.LATB2
+#define CS2 LATGbits.LATG9
+
 void InitPICADC() {
     AD1PCFGbits.PCFG0 = 0;//Enable analog on AN0
 

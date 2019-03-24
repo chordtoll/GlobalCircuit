@@ -15,12 +15,11 @@
 #include <sys/appio.h>
 #include <stdint.h>
 #include "GPIO.h"
-#include "transmit.h"
+#include "UART.h"
 #include "GPS.h"
 #include "MS5607.h"
 #include "MAG3310.h"
 #include "Timing.h"
-#include "Resets.h"
 #include "Packet.h"
 #include "RockBlock.h"
 #include "Yikes.h"
@@ -99,48 +98,15 @@ uint16_t sequence;   //counter for alternating packet contents
 
 packet_u packet;     //packet for storing measurements
 
-//clear all packet bits
-void clearPacket(packet_u *pack) {
-    uint16_t i;
-    for (i=0;i<sizeof(*pack);i++)
-        (*pack).bytes[i]=0;
-}
-
-//send packet data over UART1
-void printPacket(packet_u pack) {
-    uint16_t i;
-    SendChar_UART1('\n');
-    for (i=0;i<sizeof(pack);i++) {
-        //send hex value of least significant 4 bits, '.' if 0 or negative
-        if ((pack.bytes[i]&0xF)>9)
-            SendChar_UART1((pack.bytes[i]&0xF)+'A'-10);
-        else if ((pack.bytes[i]&0xF)>0)
-            SendChar_UART1((pack.bytes[i]&0xF)+'0');
-        else
-            SendChar_UART1('.');
-
-        //send hex value of most significant 4 bits, '.' if 0 or negative
-        if (((pack.bytes[i]>>4)&0xF)>9)
-            SendChar_UART1(((pack.bytes[i]>>4)&0xF)+'A'-10);
-        else if (((pack.bytes[i]>>4)&0xF)>0)
-            SendChar_UART1(((pack.bytes[i]>>4)&0xF)+'0');
-        else
-            SendChar_UART1('.');
-    }
-    SendChar_UART1('\n');
-}
-
-uint32_t i,j;
-
 int main(void) {
     //=============================//
     //       INITIALIZATION        //
     //=============================//
-    yikes.byte=0;            //clear error flags
-    yikes.reset=1;           //set reset flag
+    yikes.byte=0;           //clear error flags
+    yikes.reset=1;          //set reset flag
 
-    sequence=0;              //reset sequence counter
-    statetimer=0;            //reset state counter
+    sequence=0;             //reset sequence counter
+    statetimer=0;           //reset state counter
 
     InitGPIO();             //initialize GPIO
 
@@ -156,7 +122,6 @@ int main(void) {
     InitAltimeter(ALT_ADDR);//intialize altimeter with correct address
 
     InitSPI1();             //initialize SPI 1
-    //InitSPI2();           //initialize SPI 2
 
     InitPICADC();           //initialize ADC
 
@@ -169,28 +134,8 @@ int main(void) {
     GPSready=1;
 
 #ifdef TEST_LOOP
-    StartKickTimer();
-
-    while(1)
-    {
-        PORTDbits.RD7 = 0;
-        ResetKickTimer();
-        PORTDbits.RD7 = 1;
-        while(!IFS0bits.T5IF){}
-        PORTDbits.RD6 = 0;
-        ResetKickTimer();
-        while(!IFS0bits.T5IF){}
-        PORTDbits.RD6 = 1;
-        ResetWatchdog();
-    }
-    /*uint8_t data = SendChar_GPIO(0,0);
-    while(1)
-        ResetWatchdog();
-        data = SendChar_GPIO(data, 1);
-        if(data == 85)
-            WaitS(5);
-        
-    }*/
+//TEST CODE HERE
+    
 #endif
 
 #ifndef TEST_LOOP
