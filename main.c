@@ -133,6 +133,8 @@ int main(void) {
 
     GPSready=1;
 
+    ChargeProbe(NONE);
+
 #ifdef TEST_LOOP
 //TEST CODE HERE
     
@@ -150,21 +152,26 @@ int main(void) {
             switch (sequence%10) {  //Send supervision data, rotated based on sequence number
                 case 0: //temperature
                     packet.norm.sup._1u32=supTemperature;
+                    //ChargeProbe(NONE);
                     break;
                 case 1: //pressure
                     packet.norm.sup._1u32=supPressure;
+                    //ChargeProbe(UP);
                     break;
                 case 2: //PICADC channels 4 and 8
                     packet.norm.sup._2u16.a=supIl0;
                     packet.norm.sup._2u16.b=supIl1;
+                    //ChargeProbe(DOWN);
                     break;
                 case 3: //PICADC channels 10 and 5
                     packet.norm.sup._2u16.a=supIl2;
                     packet.norm.sup._2u16.b=supIh0;
+                    //ChargeProbe(GND);
                     break;
                 case 4: //PICADC channels 9 and 11
                     packet.norm.sup._2u16.a=supIh1;
                     packet.norm.sup._2u16.b=supIh2;
+                    //ChargeProbe(NONE);
                     break;
                 case 5: //PICADC channels 0 and 1
                     packet.norm.sup._2u16.a=supT0;

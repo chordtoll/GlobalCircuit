@@ -7,6 +7,10 @@
 #ifndef ADC_H
 #define	ADC_H
 
+//Chip select is the pins latch register bit
+#define CS1 LATBbits.LATB2
+#define CS2 LATGbits.LATG9
+
 //ADC channel configs
 //Single Shot start, AIN0=p, AIN3=n, Gain = +-4.096, Continuous conversion, 128SPS, ADC Mode, Pullup, Write to config register
 #define ADC1_V1 0x92839283 //Correct readback: 128a or 128b

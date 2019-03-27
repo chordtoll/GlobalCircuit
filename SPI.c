@@ -6,6 +6,7 @@
  */
 #include <proc/p32mx360f512l.h>
 #include "SPI.h"
+#include "ADC.h"
 
 //Initalize SPI1
 void InitSPI1(void)
@@ -18,6 +19,11 @@ void InitSPI1(void)
     TRISFbits.TRISF7 = 1;  // SDI1 is input RC04 (RF7)
     TRISFbits.TRISF8 = 0;  // SDO1 is output RD00 (RF8)
     TRISBbits.TRISB2 = 0;  // CHIP SELECT1 IS O/P output RD09 (RB2)
+
+    TRISGbits.TRISG9 = 0;  // CHIP SELECT2 IS O/P output RD09 (RG9)
+
+    CS1 = 1;
+    CS2 = 1;
 
     //SPI interrupts disabled
     IEC0bits.SPI1EIE = 0;
