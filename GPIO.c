@@ -20,7 +20,7 @@ void InitGPIO() {
     ODCGbits.ODCG7=0;
     ODCGbits.ODCG8=0;
     
-    PORTGbits.RG3=1;    //set a HIGH value on RC3
+    //PORTGbits.RG3=1;    //set a HIGH value on RC3
     TRISDSET=0x03;      //set port D pins 0-1 to input
     TRISDCLR=0xFC;      //set port D pins 2-7 to output
     ODCDCLR=0xFF;       //disable open drain on all port D pins
