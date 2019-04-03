@@ -4,7 +4,7 @@
 #include "yikes.h"
 #include "GPIO.h"
 
-#define CLK_PERIOD 100  //clock period in microseconds
+#define CLK_PERIOD 10  //clock period in milliseconds
 
 void InitGPIO() {
     TRISECLR=0x37;      //set port E pins 0-2, 4-5 to output
@@ -41,7 +41,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     OUT_TxEnable = 1; //set transmit enable pin
     if(!transmit)     //if we are not sending any information
     {
-        WaitUS(CLK_PERIOD / 10); //wait for 1/10 clock period
+        WaitMS(CLK_PERIOD / 10); //wait for 1/10 clock period
         OUT_TxEnable = 0;        //clear transmit enable pin
     }
     OUT_CLK0 = 0;     //set clock to represent 0th quarter-byte
@@ -51,7 +51,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     {
         OUT_DATA0 = (c & (1 << (qByte * 2))) >> (qByte * 2);         //set 0th bit of current quarter-byte
         OUT_DATA1 = (c & (1 << (1 + qByte * 2))) >> (1 + qByte * 2); //set 1st bit of current quarter-byte
-        WaitUS(CLK_PERIOD);                                          //wait for some clock time
+        WaitMS(CLK_PERIOD);                                          //wait for some clock time
         if(IN_TxEnable)                                              //if the PIC16 is sending information
         {
             //store the received information into the proper quarter-byte of result
@@ -61,7 +61,7 @@ char ExchangeChar_GPIO(char c, char transmit) {
     }
 
     OUT_TxEnable = 0;                                                //clear transmit enable pin
-    WaitUS(CLK_PERIOD / 10);                                         //wait for 1/10 of clock period
+    WaitMS(CLK_PERIOD / 10);                                         //wait for 1/10 of clock period
     OUT_CLK1 = 1;                                                    //set clock to the idle state (10)
     OUT_CLK0 = 0;
 

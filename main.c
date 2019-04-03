@@ -137,7 +137,14 @@ int main(void) {
 
 #ifdef TEST_LOOP
 //TEST CODE HERE
-    
+    while(1)
+    {
+        PORTDbits.RD6 = 1;
+        WaitUS(2813300);
+        PORTDbits.RD6 = 0;
+        WaitUS(2813300);
+        ResetWatchdog();
+    }
 #endif
 
 #ifndef TEST_LOOP

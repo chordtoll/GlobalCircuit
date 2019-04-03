@@ -3,7 +3,7 @@
 #include "UART.h"
 #include <proc/p32mx360f512l.h>
 
-#define USPERR 1.00019543
+#define USPERR 1.00075
 volatile uint8_t tmancount;
 
 uint64_t loopstarttime;
