@@ -7,10 +7,13 @@
 #define CLK_PERIOD 10  //clock period in milliseconds
 
 void InitGPIO() {
-    TRISECLR=0x37;      //set port E pins 0-2, 4-5 to output
+    TRISECLR=0x37;     //set port E pins 0-2, 4-5, 8 to output
     TRISESET=0xC8;      //set port E pins 3, 6-7 to input
     ODCECLR=0x1FF;      //disable open drain on port E pins 0-8
+    TRISEbits.TRISE8 = 0;
+
     OUT_TxEnable = 0;   //clear transmit enable
+    WAKE_PIN = 0;       //keep PIC16 asleep
     
     TRISGbits.TRISG6=0; //set port C pins 1-3 to output
     TRISGbits.TRISG7=0;
@@ -34,11 +37,18 @@ void TickClock()
         OUT_CLK1 = !(OUT_CLK1); //change state of bit1
     OUT_CLK0 = !(OUT_CLK0);     //change state of bit0
 }
+
+void WakePIC16()
+{
+    WAKE_PIN = 1;
+    WaitMS(100);
+}
 char ExchangeChar_GPIO(char c, char transmit) {
     uint8_t qByte;    //initialize quarter-byte counter
     char result = 0;  //data received from PIC16
 
     OUT_TxEnable = 1; //set transmit enable pin
+    WakePIC16();
     if(!transmit)     //if we are not sending any information
     {
         WaitMS(CLK_PERIOD / 10); //wait for 1/10 clock period

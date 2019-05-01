@@ -34,6 +34,8 @@ pin17 | RA2  <->  pin18  | RE8  - UNUSED
 #define IN_DATA0 PORTEbits.RE6      //bit 0 of Rx data
 #define IN_DATA1 PORTEbits.RE7      //bit 1 of Rx data
 
+#define WAKE_PIN PORTEbits.RE8      //pin to wake up PIC16
+
 #define CDFLAG_SUCCESS 1            //cutdown was a success
 #define CDFLAG_INPROGRESS 0b10      //cutdown in progress
 #define CDFLAG_NORSP16 0b100        //cutdown failed due to no response from PIC16
