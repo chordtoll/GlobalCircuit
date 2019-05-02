@@ -21,7 +21,13 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
 //start the GPS
 void InitGPS(void);
 
-void ReadGPS_S(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt);
+void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt);
+
+//put the GPS to sleep
+void SleepGPS();
+
+//wake the GPS up (hot start time: 1 second)
+void WakeGPS();
 
 #endif
 

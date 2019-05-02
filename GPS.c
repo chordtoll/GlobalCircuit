@@ -1,5 +1,6 @@
 #include <proc/p32mx360f512l.h>
 #include "GPS.h"
+#include "GPIO.h"
 #include <stdlib.h>
 
 volatile char gpsbuf[84];
@@ -110,6 +111,16 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
     }
     }
     GPSready=1;
+}
+
+void SleepGPS()
+{
+    GPS_SLEEP = 0;
+}
+
+void WakeGPS()
+{
+    GPS_SLEEP = 1;
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)

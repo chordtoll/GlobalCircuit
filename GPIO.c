@@ -11,9 +11,11 @@ void InitGPIO() {
     TRISESET=0xC8;      //set port E pins 3, 6-7 to input
     ODCECLR=0x1FF;      //disable open drain on port E pins 0-8
     TRISEbits.TRISE8 = 0;
+    TRISEbits.TRISE9 = 0;
 
     OUT_TxEnable = 0;   //clear transmit enable
-    WAKE_PIN = 0;       //keep PIC16 asleep
+    PIC16_SLEEP = 0;       //keep PIC16 asleep
+    GPS_SLEEP = 1;
     
     TRISGbits.TRISG6=0; //set port C pins 1-3 to output
     TRISGbits.TRISG7=0;
@@ -40,9 +42,10 @@ void TickClock()
 
 void WakePIC16()
 {
-    WAKE_PIN = 1;
+    PIC16_SLEEP = 1;
     WaitMS(100);
 }
+
 char ExchangeChar_GPIO(char c, char transmit) {
     uint8_t qByte;    //initialize quarter-byte counter
     char result = 0;  //data received from PIC16

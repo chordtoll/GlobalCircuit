@@ -16,7 +16,7 @@ pin14 | RC2  <-  pin98  | RE2   - PIC32_TxEnable
 pin15 | RC1  <-  pin94  | RE1   - PIC32_DATA1
 pin16 | RC0  <-  pin93  | RE0   - PIC32_DATA0
 
-pin17 | RA2  <->  pin18  | RE8  - UNUSED
+pin17 | RA2  <-  pin18  | RE8   - PIC16_SLEEP
 */
 
 #ifndef GPIO_H
@@ -34,7 +34,8 @@ pin17 | RA2  <->  pin18  | RE8  - UNUSED
 #define IN_DATA0 PORTEbits.RE6      //bit 0 of Rx data
 #define IN_DATA1 PORTEbits.RE7      //bit 1 of Rx data
 
-#define WAKE_PIN PORTEbits.RE8      //pin to wake up PIC16
+#define PIC16_SLEEP PORTEbits.RE8   //pin to wake/sleep PIC
+#define GPS_SLEEP PORTEbits.RE9     //pin to wake/sleep GPS (PIN MIGHT NEED TO BE CHANGED)
 
 #define CDFLAG_SUCCESS 1            //cutdown was a success
 #define CDFLAG_INPROGRESS 0b10      //cutdown in progress
@@ -60,4 +61,5 @@ void SendString_GPIO(char *s);
 
 //charge probes to the specified state
 void ChargeProbe(chgst_t state);
+
 #endif	/* GPIO_H */
