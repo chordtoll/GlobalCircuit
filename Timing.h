@@ -14,6 +14,8 @@
 #define TPS_MAX     60000000
 #define TPS_MIN     30000000
 
+#define KICKED IFS0bits.T5IF
+
 volatile uint64_t timer_accum;
 volatile uint32_t tps=TPS_DEFAULT;
 volatile uint8_t ctt_valid;

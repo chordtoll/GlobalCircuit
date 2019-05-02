@@ -37,16 +37,7 @@ pin17 | RA2  <-  pin18  | RE8   - PIC16_SLEEP
 #define PIC16_SLEEP PORTEbits.RE8   //pin to wake/sleep PIC
 #define GPS_SLEEP PORTEbits.RE9     //pin to wake/sleep GPS (PIN MIGHT NEED TO BE CHANGED)
 
-#define CDFLAG_SUCCESS 1            //cutdown was a success
-#define CDFLAG_INPROGRESS 0b10      //cutdown in progress
-#define CDFLAG_NORSP16 0b100        //cutdown failed due to no response from PIC16
-#define CDFLAG_NORSPCD 0b1000       //cutdown failed due to no response from cutdown apparatus
-#define CDFLAG_BADRSP 0b10000       //cutdown failed due to a bad response from cutdown apparatus
-
 typedef enum chgst {NONE,GND,UP,DOWN} chgst_t;
-
-//flag indicating whether or not the cutdown procedure has been completed
-char cutdown_ip = 0;
 
 //initialize GPIO settings
 void InitGPIO();

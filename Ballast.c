@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "proc\p32mx360f512l.h"
-
+#include "Timing.h"
+#include "Ballast.h"
 
 #define BALLAST_IDLE()   PORTDbits.RD6=0; PORTDbits.RD7=0
 #define BALLAST_ARM()    PORTDbits.RD6=1; PORTDbits.RD7=0
@@ -8,11 +9,10 @@
 #define BALLAST_DISARM() PORTDbits.RD6=1; PORTDbits.RD7=1
 
 #define BAFLAG_SUCCESS 1        //ballast was completed successfully
-#define BAFLAG_NOACKADDR 0b10   //ballast did not receive an acknowledge after addressing
-#define BAFLAG_NOACKARM 0b100   //ballast did not receive an acknowledge after arming
-#define BAFLAG_NOACKFIRE 0b1000 //ballast did not receive an acknowledge after firing
+#define BAFLAG_NOACKADDR 2      //ballast did not receive an acknowledge after addressing
+#define BAFLAG_NOACKARM 3       //ballast did not receive an acknowledge after arming
+#define BAFLAG_NOACKFIRE 4      //ballast did not receive an acknowledge after firing
 
-#define KICKED IFS0bits.T5IF
 uint8_t ba_flag = 0;            //holds current ballast status
 
 void AddrBallast(uint8_t addr) {
@@ -61,7 +61,21 @@ void DeployBallast(uint8_t addr) {
 
 uint8_t GetBallastStatus()
 {
-    uint8_t temp = ba_flag; //store current value of ballast flag
-    ba_flag = 0;            //clear ballast flag
-    return temp;            //return ballast status
+    if(ballast_rq)              //if ballast has been requested
+    {
+        ++ballast_rq;           //increment the ballast request counter
+        if(ballast_rq == 4)     //if the window for confirmation was missed
+        {
+            ballast_rq = 0;     //clear the ballast request counter
+            return 0;           //clear the ballast flag
+        }
+        else                    //if currently waiting for confirmation
+            return 0xAC;        //send ballast acknowledge
+    }
+    else
+    {
+        uint8_t temp = ba_flag; //store current value of ballast flag
+        ba_flag = 0;            //clear ballast flag
+        return temp;            //return ballast status
+    }
 }

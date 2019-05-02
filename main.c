@@ -45,10 +45,6 @@
 #define FLAG_IDLE 0   //idle state for cutdown/ballast flags
 #define FLAG_ACK 0xFF //acknowledge state for cutdown/ballast flags
 
-//#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
-
-
-
 unsigned char SBDnormal[512] = {0};
 
 char nTime[20];
@@ -134,6 +130,8 @@ int main(void) {
     GPSready=1;
 
     ChargeProbe(NONE);
+
+//#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 #ifdef TEST_LOOP
 //TEST CODE HERE
@@ -305,36 +303,8 @@ int main(void) {
         statetimer++;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
-            if(cutdown_rq)                               //if cutdown has been requested
-            {
-                ++cutdown_rq;                            //increment cutdown request counter
-                if(cutdown_rq == 4)                      //if the window for confirmation was missed
-                {
-                    cutdown_rq = 0;                      //clear the cutdown request counter
-                    packet.norm.cutdown = FLAG_IDLE;     //clear the cutdown flag
-                }
-                else                                     //if currently waiting for confirmation
-                    packet.norm.cutdown = FLAG_ACK;      //send cutdown acknowledge
-            }
-            else                                         //if cutdown not currently requested
-            {
-                packet.norm.cutdown = GetCutdownStatus();//update cutdown status
-            }
-            if(ballast_rq)                               //if ballast has been requested
-            {
-                ++ballast_rq;                            //increment the ballast request counter
-                if(ballast_rq == 4)                      //if the window for confirmation was missed
-                {
-                    ballast_rq = 0;                      //clear the ballast request counter
-                    packet.norm.ballast = FLAG_IDLE;     //clear the ballast flag
-                }
-                else                                     //if currently waiting for confirmation
-                    packet.norm.ballast = FLAG_ACK;      //send ballast acknowledge
-            }
-            else
-            {
-                packet.norm.ballast = GetBallastStatus();//update ballast status
-            }
+            packet.norm.cutdown = GetCutdownStatus();
+            packet.norm.ballast = GetBallastStatus();//update ballast status
             packet.norm.version=PACKET_VERSION; //Write version ID
             packet.norm.yikes=yikes.byte; //Write error flags to packet
             yikes.byte=0; //Clear error flags

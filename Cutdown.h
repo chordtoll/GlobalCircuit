@@ -8,6 +8,8 @@
 #ifndef CUTDOWN_H
 #define	CUTDOWN_H
 
+char cutdown_rq = 0;         //flag for cutdown dealings
+
 //try a cutdown with the PIC16, returns 1 on success, 0 on failure
 void InitiateCutdown();
 

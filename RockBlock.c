@@ -3,6 +3,7 @@
 #include "UART.h"
 #include "Yikes.h"
 #include "Ballast.h"
+#include "Cutdown.h"
 
 char _rb_reqsend;       //flag indicating that a request to send data was made
 uint16_t _rb_idletimer; //timer that keeps track of number of ticks RB has been busy consecutively

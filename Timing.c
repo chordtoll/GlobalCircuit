@@ -147,7 +147,7 @@ void StartKickTimer()
 {
     TMR4 = 0;          //clear timer counters
     TMR5 = 0;
-    IFS0bits.T5IF = 0; //clear period match flag
+    KICKED = 0; //clear period match flag
     T4CONSET = 0x8000; //enable the timer
 }
 
@@ -155,7 +155,7 @@ void ResetKickTimer()
 {
     TMR4 = 0;          //clear timer counters
     TMR5 = 0;
-    IFS0bits.T5IF = 0; //clear period match flag
+    KICKED = 0; //clear period match flag
 }
 
 void StopKickTimer()
