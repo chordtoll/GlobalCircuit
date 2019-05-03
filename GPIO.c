@@ -7,11 +7,11 @@
 #define CLK_PERIOD 10  //clock period in milliseconds
 
 void InitGPIO() {
-    TRISECLR=0x37;     //set port E pins 0-2, 4-5, 8 to output
-    TRISESET=0xC8;      //set port E pins 3, 6-7 to input
-    ODCECLR=0x1FF;      //disable open drain on port E pins 0-8
+    TRISECLR=0x37;        //set port E pins 0-2, 4-5, 8 to output
+    TRISESET=0xC8;        //set port E pins 3, 6-7 to input
+    ODCECLR=0x1FF;        //disable open drain on port E pins 0-8
     TRISEbits.TRISE8 = 0;
-    TRISEbits.TRISE9 = 0;
+    TRISDbits.TRISD8 = 0; //MOVE TO RD8
 
     OUT_TxEnable = 0;   //clear transmit enable
     PIC16_SLEEP = 0;       //keep PIC16 asleep

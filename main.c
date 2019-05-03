@@ -130,17 +130,16 @@ int main(void) {
     GPSready=1;
 
     ChargeProbe(NONE);
-
 //#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 #ifdef TEST_LOOP
 //TEST CODE HERE
     while(1)
     {
-        PORTDbits.RD6 = 1;
-        WaitUS(2813300);
-        PORTDbits.RD6 = 0;
-        WaitUS(2813300);
+        WakeGPS();
+        WaitS(1);
+        SleepGPS();
+        WaitS(1);
         ResetWatchdog();
     }
 #endif
@@ -303,18 +302,18 @@ int main(void) {
         statetimer++;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
-            packet.norm.cutdown = GetCutdownStatus();
-            packet.norm.ballast = GetBallastStatus();//update ballast status
-            packet.norm.version=PACKET_VERSION; //Write version ID
-            packet.norm.yikes=yikes.byte; //Write error flags to packet
-            yikes.byte=0; //Clear error flags
-            packet.norm.seq=sequence; //Write sequence ID
+            packet.norm.cutdown = GetCutdownStatus(); //update cutdown status
+            packet.norm.ballast = GetBallastStatus(); //update ballast status
+            packet.norm.version=PACKET_VERSION;       //Write version ID
+            packet.norm.yikes=yikes.byte;             //Write error flags to packet
+            yikes.byte=0;                             //Clear error flags
+            packet.norm.seq=sequence;                 //Write sequence ID
             sequence++;
-            SendString_RB(packet.bytes); //Send packet
-            clearPacket(&packet); //Clear packet buffer
-            statetimer=0; //Reset state timer for start of next packet
+            SendString_RB(packet.bytes);              //Send packet
+            clearPacket(&packet);                     //Clear packet buffer
+            statetimer=0;                             //Reset state timer for start of next packet
         }
-        ResetWatchdog(); //Clear watchdog timer
+        ResetWatchdog();        //Clear watchdog timer
         DelayLoopMS(T_TICK_MS); //Delay to maintain constant tick rate
     }
 #endif

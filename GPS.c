@@ -5,6 +5,7 @@
 
 volatile char gpsbuf[84];
 volatile uint8_t gpsbufi;
+uint8_t Sleepready;
 
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti) {
     uint8_t field=0;          //selects which field is currently being updated
@@ -54,6 +55,23 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
     }
 }
 
+char PosFix(char *data)
+{
+    uint8_t field = 0;
+    uint8_t index = 0;
+    if(strncmp(data, "$GPGGA", 6) == 0)
+        while(field != 6 && index < 80)
+        {
+            if(data[index] == ',')
+                ++field;
+            ++index;
+        }
+        if(index < 80)
+            return data[index];
+        else
+            return '0';
+}
+
 void InitGPS(void) {
     /*
      * GGA Interval: 1 second
@@ -89,7 +107,18 @@ void InitGPS(void) {
     }
 }
 
+void SleepGPS()
+{
+    GPS_SLEEP = 0;
+}
+
+void WakeGPS()
+{
+    GPS_SLEEP = 1;
+}
+
 void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
+    //WAIT >1 second
     char nTime[20];
     char nLati[20];
     char nLong[20];
@@ -110,17 +139,10 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
         *alt=(atof(nAlti)*10);
     }
     }
+    WakeGPS();
     GPSready=1;
-}
-
-void SleepGPS()
-{
-    GPS_SLEEP = 0;
-}
-
-void WakeGPS()
-{
-    GPS_SLEEP = 1;
+    if(Sleepready < 2)
+        ++Sleepready;
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
@@ -139,7 +161,12 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         if (GPSready) {
             strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
             GPSready=0;
-            GPSnew=1;
+        }
+        if(PosFix(gpsbuf) != '0' && Sleepready == 2)
+        {
+                //strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
+                GPSnew=1;
+                SleepGPS();
         }
     } else {
         gpsbuf[gpsbufi++]=receivedChar;
