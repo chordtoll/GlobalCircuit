@@ -5,7 +5,7 @@
 
 volatile char gpsbuf[84];
 volatile uint8_t gpsbufi;
-uint8_t Sleepready;
+uint8_t locked = 0;
 
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti) {
     uint8_t field=0;          //selects which field is currently being updated
@@ -55,21 +55,21 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
     }
 }
 
-char PosFix(char *data)
+void CheckPosFix(char *data)
 {
     uint8_t field = 0;
     uint8_t index = 0;
     if(strncmp(data, "$GPGGA", 6) == 0)
+    {
         while(field != 6 && index < 80)
         {
             if(data[index] == ',')
                 ++field;
             ++index;
         }
-        if(index < 80)
-            return data[index];
-        else
-            return '0';
+        if(data[index] == '1')
+            locked = 1;
+    }
 }
 
 void InitGPS(void) {
@@ -141,8 +141,6 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
     }
     WakeGPS();
     GPSready=1;
-    if(Sleepready < 2)
-        ++Sleepready;
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
@@ -162,10 +160,11 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
             strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
             GPSready=0;
         }
-        if(PosFix(gpsbuf) != '0' && Sleepready == 2)
+        CheckPosFix(gpsbuf);
+        if(locked)
         {
-                //strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
                 GPSnew=1;
+                locked = 0;
                 SleepGPS();
         }
     } else {
