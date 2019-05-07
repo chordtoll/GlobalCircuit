@@ -10,6 +10,19 @@
 #ifndef PACKET_H
 #define	PACKET_H
 
+//SUPERVISION VALUES
+uint32_t supTemperature=0; //temperature
+uint32_t supPressure=0;    //pressure
+uint16_t supIl0=0;         //PICADC channel 4
+uint16_t supIl1;           //PICADC channel 8
+uint16_t supIl2;           //PICADC channel 10
+uint16_t supIh0;           //PICADC channel 5
+uint16_t supIh1;           //PICADC channel 9
+uint16_t supIh2;           //PICADC channel 11
+uint16_t supT0;            //PICADC channel 0
+uint16_t supT1;            //PICADC channel 1
+uint16_t supT2;            //PICADC channel 3
+
 //PACKET CHANGELOG:
 //1->2:Add rbtime field to yikes byte
 
@@ -57,6 +70,26 @@ typedef union u_packet
     char bytes[340];
     struct s_packet_norm norm;
 } packet_u;
+
+
+//update SUP field of packet with supervision value, rotated based on sequence number
+void Pack_Supervision(packet_u *pack, uint16_t sequence);
+
+//update conductivity fields of packet with 1/10 of conductivity data, slice based on sequence
+void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2);
+
+//update GPS fields of packet with GPS data
+void Pack_GPS(packet_u *pack, uint32_t time, uint32_t lat, uint32_t lon, uint32_t alt);
+
+//update vertical probe fields of packet with vertical probe data
+void Pack_Vert(packet_u *pack, uint16_t vert1, uint16_t vert2, uint16_t vertD);
+
+//update given index of horizontal probe fields of packet with horizontal probe data
+void Pack_Horiz(packet_u *pack, uint16_t index, uint16_t h1, uint16_t h2, uint16_t hD);
+
+//update given index of magnetometer fields of packet with magnetometer data
+void Pack_Mag(packet_u *pack, uint16_t index, uint16_t mx, uint16_t my);
+
 
 #endif	/* PACKET_H */
 

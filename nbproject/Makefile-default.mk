@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c I2C.c MAG3310.c MS5607.c GPS.c Timing.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c GPIO.c Cutdown.c UART.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c I2C.c MAG3310.c MS5607.c GPS.c Timing.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c GPIO.c Cutdown.c UART.c Packet.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/GPIO.o ${OBJECTDIR}/Cutdown.o ${OBJECTDIR}/UART.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/Timing.o.d ${OBJECTDIR}/Watchdog.o.d ${OBJECTDIR}/RockBlock.o.d ${OBJECTDIR}/ADC.o.d ${OBJECTDIR}/SPI.o.d ${OBJECTDIR}/Ballast.o.d ${OBJECTDIR}/GPIO.o.d ${OBJECTDIR}/Cutdown.o.d ${OBJECTDIR}/UART.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/GPIO.o ${OBJECTDIR}/Cutdown.o ${OBJECTDIR}/UART.o ${OBJECTDIR}/Packet.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/I2C.o.d ${OBJECTDIR}/MAG3310.o.d ${OBJECTDIR}/MS5607.o.d ${OBJECTDIR}/GPS.o.d ${OBJECTDIR}/Timing.o.d ${OBJECTDIR}/Watchdog.o.d ${OBJECTDIR}/RockBlock.o.d ${OBJECTDIR}/ADC.o.d ${OBJECTDIR}/SPI.o.d ${OBJECTDIR}/Ballast.o.d ${OBJECTDIR}/GPIO.o.d ${OBJECTDIR}/Cutdown.o.d ${OBJECTDIR}/UART.o.d ${OBJECTDIR}/Packet.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/GPIO.o ${OBJECTDIR}/Cutdown.o ${OBJECTDIR}/UART.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/I2C.o ${OBJECTDIR}/MAG3310.o ${OBJECTDIR}/MS5607.o ${OBJECTDIR}/GPS.o ${OBJECTDIR}/Timing.o ${OBJECTDIR}/Watchdog.o ${OBJECTDIR}/RockBlock.o ${OBJECTDIR}/ADC.o ${OBJECTDIR}/SPI.o ${OBJECTDIR}/Ballast.o ${OBJECTDIR}/GPIO.o ${OBJECTDIR}/Cutdown.o ${OBJECTDIR}/UART.o ${OBJECTDIR}/Packet.o
 
 # Source Files
-SOURCEFILES=main.c I2C.c MAG3310.c MS5607.c GPS.c Timing.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c GPIO.c Cutdown.c UART.c
+SOURCEFILES=main.c I2C.c MAG3310.c MS5607.c GPS.c Timing.c Watchdog.c RockBlock.c ADC.c SPI.c Ballast.c GPIO.c Cutdown.c UART.c Packet.c
 
 
 CFLAGS=
@@ -175,6 +175,12 @@ ${OBJECTDIR}/UART.o: UART.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/UART.o 
 	@${FIXDEPS} "${OBJECTDIR}/UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/UART.o.d" -o ${OBJECTDIR}/UART.o UART.c    -Wno-error=implicit-function-declaration
 	
+${OBJECTDIR}/Packet.o: Packet.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Packet.o.d 
+	@${RM} ${OBJECTDIR}/Packet.o 
+	@${FIXDEPS} "${OBJECTDIR}/Packet.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Packet.o.d" -o ${OBJECTDIR}/Packet.o Packet.c    -Wno-error=implicit-function-declaration
+	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -259,6 +265,12 @@ ${OBJECTDIR}/UART.o: UART.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/UART.o.d 
 	@${RM} ${OBJECTDIR}/UART.o 
 	@${FIXDEPS} "${OBJECTDIR}/UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/UART.o.d" -o ${OBJECTDIR}/UART.o UART.c    -Wno-error=implicit-function-declaration
+	
+${OBJECTDIR}/Packet.o: Packet.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Packet.o.d 
+	@${RM} ${OBJECTDIR}/Packet.o 
+	@${FIXDEPS} "${OBJECTDIR}/Packet.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Packet.o.d" -o ${OBJECTDIR}/Packet.o Packet.c    -Wno-error=implicit-function-declaration
 	
 endif
 

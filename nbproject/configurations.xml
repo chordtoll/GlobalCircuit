@@ -42,6 +42,7 @@
       <itemPath>Cutdown.h</itemPath>
       <itemPath>UART.c</itemPath>
       <itemPath>UART.h</itemPath>
+      <itemPath>Packet.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
