@@ -157,8 +157,18 @@ void SafeDebugString(unsigned char* string)
 //clear all packet bits
 void clearPacket(packet_u *pack) {
     uint16_t i;
-    for (i=0;i<sizeof(*pack);i++)
-        (*pack).bytes[i]=0;
+    for (i=0;i<sizeof(*pack);i++)      //loop through each byte of pack
+    {
+        switch(i%2)                    //fill packet with DEAD
+        {
+            case 1:
+                (*pack).bytes[i]=0xDE;
+                break;
+            case 0:
+                (*pack).bytes[i]=0xAD;
+                break;
+        }
+    }
 }
 
 //send packet data over UART1

@@ -101,6 +101,7 @@ int main(void) {
     yikes.byte=0;           //clear error flags
     yikes.reset=1;          //set reset flag
 
+    uint8_t conductivityDone = 0;
     sequence=0;             //reset sequence counter
     statetimer=0;           //reset state counter
 
@@ -130,6 +131,7 @@ int main(void) {
     GPSready=1;
 
     ChargeProbe(NONE);
+    clearPacket(&packet);                     //Clear packet buffer
 //#define TEST_LOOP //COMMENT FOR NORMAL RUNNING, UNCOMMENT FOR TESTING LOOP
 
 #ifdef TEST_LOOP
@@ -151,120 +153,92 @@ int main(void) {
     //          MAIN LOOP          //
     //=============================//
     while (1) {
-        TickRB();   //Advance RockBlock state machine
-        if (statetimer==0) { //If we're at the start of a packet,
-            switch (sequence%10) {  //Send supervision data, rotated based on sequence number
-                case 0: //temperature
-                    packet.norm.sup._1u32=supTemperature;
-                    //ChargeProbe(NONE);
-                    break;
-                case 1: //pressure
-                    packet.norm.sup._1u32=supPressure;
-                    //ChargeProbe(UP);
-                    break;
-                case 2: //PICADC channels 4 and 8
-                    packet.norm.sup._2u16.a=supIl0;
-                    packet.norm.sup._2u16.b=supIl1;
-                    //ChargeProbe(DOWN);
-                    break;
-                case 3: //PICADC channels 10 and 5
-                    packet.norm.sup._2u16.a=supIl2;
-                    packet.norm.sup._2u16.b=supIh0;
-                    //ChargeProbe(GND);
-                    break;
-                case 4: //PICADC channels 9 and 11
-                    packet.norm.sup._2u16.a=supIh1;
-                    packet.norm.sup._2u16.b=supIh2;
-                    //ChargeProbe(NONE);
-                    break;
-                case 5: //PICADC channels 0 and 1
-                    packet.norm.sup._2u16.a=supT0;
-                    packet.norm.sup._2u16.b=supT1;
-                    break;
-                case 6: //PICADC channel 3
-                    packet.norm.sup._2u16.a=supT2;
-                    packet.norm.sup._2u16.b=0;
-                    break;
-            }
+        TickRB();                                          //Advance RockBlock state machine
+        if (statetimer==0) {                               //If we're at the start of a packet,
+            if(sequence > 9)
+            {
+                switch (sequence%10) {                         //Send supervision data, rotated based on sequence number
+                    case 0: //temperature
+                        packet.norm.sup._1u32=supTemperature;
+                        break;
+                    case 1: //pressure
+                        packet.norm.sup._1u32=supPressure;
+                        break;
+                    case 2: //PICADC channels 4 and 8
+                        packet.norm.sup._2u16.a=supIl0;
+                        packet.norm.sup._2u16.b=supIl1;
+                        break;
+                    case 3: //PICADC channels 10 and 5
+                        packet.norm.sup._2u16.a=supIl2;
+                        packet.norm.sup._2u16.b=supIh0;
+                        break;
+                    case 4: //PICADC channels 9 and 11
+                        packet.norm.sup._2u16.a=supIh1;
+                        packet.norm.sup._2u16.b=supIh2;
+                        //ChargeProbe(NONE);
+                        break;
+                    case 5: //PICADC channels 0 and 1
+                        packet.norm.sup._2u16.a=supT0;
+                        packet.norm.sup._2u16.b=supT1;
+                        break;
+                    case 6: //PICADC channel 3
+                        packet.norm.sup._2u16.a=supT2;
+                        packet.norm.sup._2u16.b=0;
+                        break;
+                }
 
-            //Copy slice of conductivity data into the packet.
-            //15 of 150 samples are sent per packet
-            memcpy(packet.norm.cVert1,cVert1+(sequence%10)*15,15*2);
-            memcpy(packet.norm.cVert2,cVert2+(sequence%10)*15,15*2);
+                //Copy slice of conductivity data into the packet.
+                //15 of 150 samples are sent per packet
+                memcpy(packet.norm.cVert1,cVert1+(sequence%10)*15,15*2);
+                memcpy(packet.norm.cVert2,cVert2+(sequence%10)*15,15*2);
+            }
         }
-
-        //We perform normal voltage measurements for the first 9/10 intervals
-        if (sequence%10<9) {
-            //BEGIN every 5 seconds
-            if (statetimer%T_FASTSAM_INTERVAL==0) { //Tick 0
-                TriggerMagneto(MAG_ADDR); //Trigger the magnetometer to begin measurement
-            }
-            if (statetimer%T_FASTSAM_INTERVAL==1) { //Tick 1
-                uint16_t mx;
-                uint16_t my;
-                uint16_t mz;
-                ReadMagneto(MAG_ADDR, &mx,&my,&mz); //Read magnetometer values
-                packet.norm.compassX[(statetimer/T_FASTSAM_INTERVAL)%12]=mx; //Store magnetometer values in the packet
-                packet.norm.compassY[(statetimer/T_FASTSAM_INTERVAL)%12]=my;
-                uint16_t h1=ReadExtADC(2);
-                uint16_t h2=ReadExtADC(5);
-                packet.norm.horiz1[(statetimer/T_FASTSAM_INTERVAL)%12]=h1; //Store horizontal probe values in the packet
-                packet.norm.horiz2[(statetimer/T_FASTSAM_INTERVAL)%12]=h2;
-            }
-            if (statetimer%T_FASTSAM_INTERVAL==2) { //Tick 2
-                uint16_t hD=ReadExtADC(3);
-                packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=hD;  //Store horizontal differential value in the packet
-            }
-            //END every 5 seconds
-            //BEGIN every 60 seconds
-            if (statetimer==3) { //Tick 3 (Starts at 3 so as not to conflict with ^^^)
+        switch(statetimer)
+        {
+            case 9:
                 packet.norm.vert1=ReadExtADC(0);  //Store vertical probe values in packet
                 packet.norm.vert2=ReadExtADC(4);
-            }
-            if (statetimer==4) { //Tick 4
+                break;
+            case 10:
                 packet.norm.vertD=ReadExtADC(1);  //Store vertical differential value in packet
-            }
-            if (statetimer==5) {
+                break;
+            case 11:
                 ReadGPS(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
                 packet.norm.time=gTime; //Store GPS time&location in packet
                 packet.norm.lat=gLat;
                 packet.norm.lon=gLon;
                 packet.norm.alt=gAlt;
-            }
-        //We perform a conductivity measurement on packet 10/10
-        } else {
-            //Charge the probes in sequence
-            switch (statetimer) {
-                case T_CON_CHG_BEGIN:
-                    ChargeProbe(GND);
+                break;
+        }
+        if(sequence%10<9 || conductivityDone)
+        {
+            switch(statetimer % T_FASTSAM_INTERVAL) //begins every 5 seconds
+            {
+                case 0:
+                    TriggerMagneto(MAG_ADDR);
                     break;
-                case T_CON_CHG1_END:
-                    ChargeProbe(UP);
+                case 1:
+                    ;
+                    uint16_t mx;
+                    uint16_t my;
+                    uint16_t mz;
+                    ReadMagneto(MAG_ADDR, &mx,&my,&mz); //Read magnetometer values
+                    packet.norm.compassX[(statetimer/T_FASTSAM_INTERVAL)%12]=mx; //Store magnetometer values in the packet
+                    packet.norm.compassY[(statetimer/T_FASTSAM_INTERVAL)%12]=my;
+                    uint16_t h1=ReadExtADC(2);
+                    uint16_t h2=ReadExtADC(5);
+                    packet.norm.horiz1[(statetimer/T_FASTSAM_INTERVAL)%12]=h1;  //Store horizontal probe values in the packet
+                    packet.norm.horiz2[(statetimer/T_FASTSAM_INTERVAL)%12]=h2;
                     break;
-                case T_CON_CHG2_END:
-                    ChargeProbe(NONE);
+                case 2:
+                    ;
+                    uint16_t hD=ReadExtADC(3);
+                    packet.norm.horizD[(statetimer/T_FASTSAM_INTERVAL)%12]=hD;  //Store horizontal differential value in the packet
                     break;
             }
-            if (statetimer==0) { //Tick 0
-                packet.norm.vert1=ReadExtADC(0); //Store vertical probe values
-                packet.norm.vert2=ReadExtADC(4); //(Before conductivity charging)
-            }
-            if (statetimer==1) {
-                packet.norm.vertD=ReadExtADC(1); //Store vertical differential value
-            }
-            if (statetimer==2) {
-                ReadGPS(&gTime, &gLat, &gLon, &gAlt); //Read our GPS time and location
-                packet.norm.time=gTime; //Store GPS time&location in packet
-                packet.norm.lat=gLat;
-                packet.norm.lon=gLon;
-                packet.norm.alt=gAlt;
-            }
-            //While in conductivity measuring interval,
-            if (statetimer>=T_CON_CHG_BEGIN && statetimer<T_CON_MEAS_END) {
-                cVert1[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(0); //Store vertical probe values in temporary array
-                cVert2[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(4);
-            }
-            //Measure, store supervision values in temp variables
+        }
+        else
+        {
             switch (statetimer) {
                 case 0:
                     TriggerAltimeter_Temperature(ALT_ADDR);
@@ -297,7 +271,22 @@ int main(void) {
                 case 8:
                     supT2=ReadPICADC(3);
                     break;
+                case T_CON_CHG_BEGIN:
+                    ChargeProbe(GND);
+                    break;
+                case T_CON_CHG1_END:
+                    ChargeProbe(UP);
+                    break;
+                case T_CON_CHG2_END:
+                    ChargeProbe(NONE);
+                    conductivityDone = 1;
+                    break;
                 }
+            //While in conductivity measuring interval,
+            if (statetimer>=T_CON_CHG_BEGIN && statetimer<T_CON_MEAS_END) {
+                cVert1[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(0); //Store vertical probe values in temporary array
+                cVert2[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(4);
+            }
         }
         statetimer++;
         //If it's time to send a packet,
@@ -312,6 +301,7 @@ int main(void) {
             SendString_RB(packet.bytes);              //Send packet
             clearPacket(&packet);                     //Clear packet buffer
             statetimer=0;                             //Reset state timer for start of next packet
+            conductivityDone=0;
         }
         ResetWatchdog();        //Clear watchdog timer
         DelayLoopMS(T_TICK_MS); //Delay to maintain constant tick rate
