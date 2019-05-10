@@ -3,23 +3,31 @@
 #include "UART.h"
 #include <proc/p32mx360f512l.h>
 
-#define USPERR 1.00075
+#define USPERR 1.001
 volatile uint8_t tmancount;
 
 uint64_t loopstarttime;
 
 void InitTiming() {
     //Timers
-    T1CONbits.ON=0;      //Disable timer
-    T1CONbits.TCS=0;     //Source: PBCLK
-    T1CONbits.TCKPS=3;   //Prescale: 1/256
-    TMR1=0;              //Clear timer register
-    PR1=0xFFFF;          //Load period register
-    IFS0bits.T1IF=0;     //clear timer interrupt flag
-    IPC1bits.T1IP=7;     //set interrupt priority to 7 (max)
-    IPC1bits.T1IS=3;     //set interrupt subpriority to 3 (max)
-    IEC0bits.T1IE=1;     //enable external interrupt
-    T1CONbits.ON=1;      //enable timer
+    T1CONbits.ON=0;
+    T1CONbits.TCS=0;
+    T1CONbits.TCKPS=3;
+    /*IFS0bits.T1IF=0;
+    IPC1bits.T1IP = 7;
+    IPC1bits.T1IS = 3;
+    IEC0bits.T1IE = 1;*/
+
+    T3CONbits.ON=0;      //Disable timer
+    T3CONbits.TCS=0;     //Source: PBCLK
+    T3CONbits.TCKPS=3;   //Prescale: 1/256
+    TMR3=0;              //Clear timer register
+    PR3=0xFFFF;          //Load period register
+    IFS0bits.T3IF=0;     //clear timer interrupt flag
+    IPC3bits.T3IP=7;     //set interrupt priority to 7 (max)
+    IPC3bits.T3IS=3;     //set interrupt subpriority to 3 (max)
+    IEC0bits.T3IE=1;     //enable external interrupt
+    T3CONbits.ON=1;      //enable timer
     T2CONbits.ON = 0;    //Disable timer2
     T2CONbits.TCS = 0;   //set internal clock as source
     T2CONbits.T32 = 0;   //use a single 16-bit timer
@@ -33,7 +41,6 @@ void InitTiming() {
     PR5 = 0x025D;
 
     //PPS
-    uint8_t i;
     TRISDbits.TRISD14=1;
     CNCONbits.ON=1;
     CNENbits.CNEN20=1;
@@ -44,22 +51,7 @@ void InitTiming() {
     IEC1bits.CNIE=1;
     ctt_valid=0;
 }
-
-char LT(uint64_t l, uint64_t r)
-{
-    uint32_t lH = l >> 32;          //split left and right 64 bit values into two 32 bit values
-    uint32_t lL = (l << 32 ) >> 32;
-    uint32_t rH = r >> 32;
-    uint32_t rL = (r <<32 ) >> 32;
-    if(lH < rH)
-        return 1;
-    else if(lH == rH && lL < rL)
-        return 1;
-    else
-        return 0;
-}
-
-void  __attribute__((vector(_TIMER_1_VECTOR), interrupt(IPL7SRS), nomips16)) TIMER1_ISR(void)
+void  __attribute__((vector(_TIMER_3_VECTOR), interrupt(IPL7SRS), nomips16)) TIMER3_ISR(void)
 {
     
     if (ReadCoreTimer()>TPS_MAX) { 
@@ -71,7 +63,7 @@ void  __attribute__((vector(_TIMER_1_VECTOR), interrupt(IPL7SRS), nomips16)) TIM
         ctt_valid=0;
         yikes.gpstick=1;
     }
-    IFS0bits.T1IF = 0; //clear interrupt flag status for Timer 1
+    IFS0bits.T3IF = 0; //clear interrupt flag status for Timer 1
 }
 
 void  __attribute__((vector(_CHANGE_NOTICE_VECTOR), interrupt(IPL7SRS), nomips16)) CN_ISR(void) {
@@ -131,11 +123,18 @@ void WaitUS(uint32_t n) {
         IFS0bits.T2IF = 0;      //clear the period match flag
     }
     T2CONCLR = 0x8000;          //disable timer2
+    IFS0bits.T2IF = 0;
 }
 
 void WaitMS(uint32_t n) {
-    uint64_t donetime=GetCoreTimer()+(n*tps)/1000;
+    uint32_t i;
+    uint64_t donetime=GetCoreTimer()+((n%70)*tps)/1000;
     while (GetCoreTimer()<donetime);               //count to the tick value
+    for(i = 0; i < n/70; ++i)
+    {
+        uint64_t donetime=GetCoreTimer()+(70*tps)/1000;
+        while(GetCoreTimer()<donetime);
+    }
 }
 
 void WaitS(uint32_t n) {
@@ -175,7 +174,23 @@ void DelayLoopMS(uint32_t n) {
     loopstarttime+=n*(tps/1000);                      //move loop time to next target time
 }
 
-
+void Idle(uint16_t time)
+{
+    PR1 = time * 120;
+    TMR1 = 0;
+    IFS0bits.T1IF = 0;
+    /*SYSKEY = 0xAA996655; // Write Key1 to SYSKEY
+    SYSKEY = 0x556699AA;   // Write Key2 to SYSKEY
+    OSCCONbits.PLLODIV = 0b111;
+    SYSKEY = 0;*/
+    T1CONSET = 0x8000;
+    while(!IFS0bits.T1IF){}
+    T1CONCLR = 0x8000;
+    /*SYSKEY = 0xAA996655; // Write Key1 to SYSKEY
+    SYSKEY = 0x556699AA; // Write Key2 to SYSKEY
+    OSCCONbits.PLLODIV = 0;
+    SYSKEY = 0;*/
+}
 
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void)
 {

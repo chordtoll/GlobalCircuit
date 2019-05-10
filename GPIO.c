@@ -15,7 +15,7 @@ void InitGPIO() {
 
     OUT_TxEnable = 0;   //clear transmit enable
     PIC16_SLEEP = 0;       //keep PIC16 asleep
-    GPS_SLEEP = 1;
+    GPS_EN = 1;
     
     TRISGbits.TRISG6=0; //set port C pins 1-3 to output
     TRISGbits.TRISG7=0;

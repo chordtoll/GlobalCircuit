@@ -49,6 +49,8 @@ void ResetKickTimer();
 //stops the kick timer
 void StopKickTimer();
 
+void Idle(uint16_t time);
+
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void);
 void __attribute__((nomips16)) WriteCoreTimer(uint32_t timer);
 #endif	/* TIMING_H */

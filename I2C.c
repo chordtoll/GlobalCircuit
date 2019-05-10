@@ -4,7 +4,7 @@
 
 void InitI2C(void)
 {
-    I2C1BRG = 0x0184; //Set the bit rate to about 100kHz.
+    I2C1BRG = 0x0184;     //Set the bit rate to about 100kHz.
     //Turn on the I2C module by setting the ON bit (I2CxCON<15>) to '1'.
     I2C1CONbits.ON = 1;
 }

@@ -50,7 +50,7 @@ void InitSPI1(void)
     //Framed SPI support is disabled
     SPI1CONbits.FRMEN = 0;
 
-    //Continue operation in IDLE mode
+    //continue operation in IDLE mode
     SPI1CONbits.SIDL = 0;
 
     //SDO1 pin is controlled by the module

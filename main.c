@@ -126,10 +126,12 @@ int main(void) {
     while(1)
     {
         WakeGPS();
+        //ResetWatchdog();
         WaitS(1);
         SleepGPS();
-        WaitS(1);
-        ResetWatchdog();
+        //ResetWatchdog();
+        while(1){}
+        //Idle(50);
     }
 #endif
 
@@ -146,24 +148,6 @@ int main(void) {
                 Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
                 Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
         }
-        switch(statetimer)                                             //rotate readings based on statetimer tick (1 tick = 100ms)
-        {
-            uint16_t vert1;                                            //temporary vertical probe variables
-            uint16_t vert2;
-            uint16_t vertD;
-            case 9:                                                    //if 0.9s into packet
-                vert1=ReadExtADC(0);                                   //read vertical probe values
-                vert2=ReadExtADC(4);
-                break;
-            case 10:                                                   //if 1s into packet
-                vertD=ReadExtADC(1);                                   //read vertical differential value
-                break;
-            case 11:                                                   //if 1.1s into packet
-                Pack_Vert(&packet, vert1, vert2, vertD);               //store vertical probe values into packet
-                ReadGPS(&gTime, &gLat, &gLon, &gAlt);                  //Read our GPS time and location
-                Pack_GPS(&packet, gTime, gLat, gLon, gAlt);            //store GPS data into packet
-                break;
-        }
         if(sequence%(SEQUENCE_CYCLE+1) < SEQUENCE_CYCLE || conductivityDone) //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)
@@ -171,6 +155,9 @@ int main(void) {
                 uint16_t h1;                                                 //temporary horizontal probe variables
                 uint16_t h2;
                 uint16_t hD;
+                uint16_t vert1;
+                uint16_t vert2;
+                uint16_t vertD;
                 case 0:                                                      //if 0s into packet
                     TriggerMagneto(MAG_ADDR);                                //trigger the magnetometor for reading
                     break;
@@ -188,12 +175,57 @@ int main(void) {
                     hD=ReadExtADC(3);                                        //read horizontal differential value
                     Pack_Horiz(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, h1, h2, hD); //store horizontal probe values into packet
                     break;
-            }
+                case 3:
+                    if(statetimer == 3)
+                    {
+                        vert1=ReadExtADC(0);
+                        vert2=ReadExtADC(4);
+                    }
+                    break;
+                case 4:
+                    if(statetimer == 4)
+                    {
+                        vertD=ReadExtADC(1);
+                    }
+                    break;
+                case 5:
+                    if(statetimer == 5)
+                    {
+                        Pack_Vert(&packet, vert1, vert2, vertD);
+                        ReadGPS(&gTime, &gLat, &gLon, &gAlt);
+                        Pack_GPS(&packet, gTime, gLat, gLon, gAlt);
+                    }
+                    break;
+                /*case 6:
+                    if(!GPS_EN && _rb_state == RB_IDLE)
+                    {
+                        /*U1MODEbits.ON = 0;
+                        U2MODEbits.ON = 0;
+                        SPI1CONbits.ON = 0;
+                        I2C1CONbits.ON = 0;
+                        AD1CON1bits.ON = 0;
+                        WDTCONbits.ON = 1;
+                        //ResetWatchdog();
+                        //Idle(T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL));
+                        WaitMS((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL))*100);
+                        statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 1;
+                        WDTCONbits.ON = 1;
+                        U1MODEbits.ON = 1;
+                        U2MODEbits.ON = 1;
+                        SPI1CONbits.ON = 1;
+                        I2C1CONbits.ON = 1;
+                        AD1CON1bits.ON = 1;
+                        break;
+                     }*/
+               }
         }
         else                                                       //if on conductivity packet
         {
             switch (statetimer)                                    //alternate readings based on statetimer
             {
+                uint16_t vert1;                                    //temporary vertical probe variables
+                uint16_t vert2;
+                uint16_t vertD;
                 case 0:                                            //if 0s into packet
                     TriggerAltimeter_Temperature(ALT_ADDR);        //trigger altimeter for temperature reading
                     supIl0=ReadPICADC(4);                          //store PICADC4 value
@@ -224,6 +256,18 @@ int main(void) {
                     break;
                 case 8:                                            //if 0.8s into packet
                     supT2=ReadPICADC(3);                           //store PICADC3 value
+                    break;
+                case 9:                                                    //if 0.9s into packet
+                    vert1=ReadExtADC(0);                                   //read vertical probe values
+                    vert2=ReadExtADC(4);
+                    break;
+                case 10:                                                   //if 1s into packet
+                    vertD=ReadExtADC(1);                                   //read vertical differential value
+                    break;
+                case 11:                                                   //if 1.1s into packet
+                    Pack_Vert(&packet, vert1, vert2, vertD);               //store vertical probe values into packet
+                    ReadGPS(&gTime, &gLat, &gLon, &gAlt);                  //Read our GPS time and location
+                    Pack_GPS(&packet, gTime, gLat, gLon, gAlt);            //store GPS data into packet
                     break;
                 case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (2s into packet)
                     ChargeProbe(GND);                              //charge probes to ground
