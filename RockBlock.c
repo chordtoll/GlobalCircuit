@@ -36,7 +36,7 @@ void TickRB() {
         yikes.rbtime=1;                        //set the rbtime yikes flag
     }
     if (_rb_idletimer==RB_IDLE_HARD_TIMEOUT) { //if the rockblock has reached a hard timeout
-        //while(1);                              //wait until the watchdog resets the PIC
+        while(1);                              //wait until the watchdog resets the PIC
     }
     switch (_rb_state){                        
         case RB_INIT:                          //if in initialization state,

@@ -139,13 +139,11 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
     }
     }
     WakeGPS();
-    GPSready=1;
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
 {
     char receivedChar = U2RXREG; //get char from uart1rec line
-
     if (gpsbufi>=80) {
         gpsbufi=0;
     }
@@ -155,13 +153,10 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
     } else if (receivedChar==0x0A) {
         gpsbuf[gpsbufi++]=receivedChar;
         gpsbuf[gpsbufi++]=0;
-        if (GPSready) {
-            strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
-            GPSready=0;
-        }
         CheckPosFix(gpsbuf);
         if(locked)
         {
+                strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
                 GPSnew=1;
                 locked = 0;
                 SleepGPS();

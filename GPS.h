@@ -11,7 +11,6 @@
 
 #include <stdint.h>
 
-volatile char GPSready;
 volatile char GPSnew;
 volatile char GPSdata[84];
 

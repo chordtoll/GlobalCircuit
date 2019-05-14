@@ -174,22 +174,32 @@ void DelayLoopMS(uint32_t n) {
     loopstarttime+=n*(tps/1000);                      //move loop time to next target time
 }
 
+void SetClockPLL(uint8_t val)
+{
+    SYSKEY = 0xAA996655;       //unlock OSCCON register
+    SYSKEY = 0x556699AA;
+    OSCCONbits.NOSC = 0;       //set source to FRC
+    OSCCONbits.OSWEN = 1;      //initiate source switch
+    while(OSCCONbits.OSWEN){}  //wait for switch to complete
+    OSCCONbits.PLLODIV = val;  //set PLL output divisor to new value
+    OSCCONbits.NOSC = 0b011;   //set source to Primary Internal Oscillator with PLL
+    OSCCONbits.OSWEN = 1;      //initiate source switch
+    while(OSCCONbits.OSWEN){}  //wait for switch to complete
+    SYSKEY = 0;                //lock OSCCON register
+}
+
 void Idle(uint16_t time)
 {
-    PR1 = time * 120;
-    TMR1 = 0;
-    IFS0bits.T1IF = 0;
-    /*SYSKEY = 0xAA996655; // Write Key1 to SYSKEY
-    SYSKEY = 0x556699AA;   // Write Key2 to SYSKEY
-    OSCCONbits.PLLODIV = 0b111;
-    SYSKEY = 0;*/
-    T1CONSET = 0x8000;
-    while(!IFS0bits.T1IF){}
-    T1CONCLR = 0x8000;
-    /*SYSKEY = 0xAA996655; // Write Key1 to SYSKEY
-    SYSKEY = 0x556699AA; // Write Key2 to SYSKEY
-    OSCCONbits.PLLODIV = 0;
-    SYSKEY = 0;*/
+    __builtin_disable_interrupts(); //disable interrupts
+    PR1 = time * 120;               //set timer period to 100ms*time
+    TMR1 = 0;                       //clear timer counter
+    IFS0bits.T1IF = 0;              //clear timer match flag
+    SetClockPLL(0b111);             //set PLL to 1:256
+    T1CONSET = 0x8000;              //start the timer
+    while(!IFS0bits.T1IF){}         //wait for period match
+    T1CONCLR = 0x8000;              //stop the timer
+    SetClockPLL(0);                 //set PLL to 1:1
+    __builtin_enable_interrupts();  //enable interrupts
 }
 
 uint32_t __attribute__((nomips16)) ReadCoreTimer(void)
