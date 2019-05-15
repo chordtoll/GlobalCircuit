@@ -21,7 +21,6 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
         case 4: //PICADC channels 9 and 11
             (*pack).norm.sup._2u16.a=supIh1;
             (*pack).norm.sup._2u16.b=supIh2;
-            //ChargeProbe(NONE);
             break;
         case 5: //PICADC channels 0 and 1
             (*pack).norm.sup._2u16.a=supT0;
@@ -29,8 +28,11 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
             break;
         case 6: //PICADC channel 3
             (*pack).norm.sup._2u16.a=supT2;
-            (*pack).norm.sup._2u16.b=0;
+            (*pack).norm.sup._2u16.b=0; //Tmag
             break;
+        case 7:
+            (*pack).norm.sup._2u16.a=0; //TADC1
+            (*pack).norm.sup._2u16.b=0; //TADC2
     }
 }
 
@@ -48,11 +50,11 @@ void Pack_GPS(packet_u *pack, uint32_t time, uint32_t lat, uint32_t lon, uint32_
     (*pack).norm.alt = alt;
 }
 
-void Pack_Vert(packet_u *pack, uint16_t vert1, uint16_t vert2, uint16_t vertD)
+void Pack_Vert(packet_u *pack, uint16_t index, uint16_t vert1, uint16_t vert2, uint16_t vertD)
 {
-    (*pack).norm.vert1 = vert1;
-    (*pack).norm.vert2 = vert2;
-    (*pack).norm.vertD = vertD;
+    (*pack).norm.vert1[index] = vert1;
+    (*pack).norm.vert2[index] = vert2;
+    (*pack).norm.vertD[index] = vertD;
 }
 
 void Pack_Horiz(packet_u *pack, uint16_t index, uint16_t h1, uint16_t h2, uint16_t hD)
@@ -62,8 +64,9 @@ void Pack_Horiz(packet_u *pack, uint16_t index, uint16_t h1, uint16_t h2, uint16
     (*pack).norm.horizD[index] = hD;
 }
 
-void Pack_Mag(packet_u *pack, uint16_t index, uint16_t mx, uint16_t my)
+void Pack_Mag(packet_u *pack, uint16_t index, uint16_t mx, uint16_t my, uint16_t mz)
 {
     (*pack).norm.compassX[index] = mx;
     (*pack).norm.compassY[index] = my;
+    (*pack).norm.compassZ[index] = mz;
 }

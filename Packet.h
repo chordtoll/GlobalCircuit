@@ -22,6 +22,9 @@ uint16_t supIh2;           //PICADC channel 11
 uint16_t supT0;            //PICADC channel 0
 uint16_t supT1;            //PICADC channel 1
 uint16_t supT2;            //PICADC channel 3
+uint16_t supTmag;          //PICADC channel ?
+uint16_t supTadc1;         //PICADC channel ?
+uint16_t supTadc2;         //PICADC channel ?
 
 //PACKET CHANGELOG:
 //1->2:Add rbtime field to yikes byte
@@ -53,11 +56,12 @@ struct __attribute__((packed)) s_packet_norm {
     uint16_t horiz1[12];    //Horizontal probe 1 electric field- raw adc value, 1 per 5 seconds
     uint16_t horiz2[12];    //Horizontal probe 2 electric field- raw adc value, 1 per 5 seconds
     uint16_t horizD[12];    //Horizontal delta electric field- raw adc value
-    uint16_t vert1;         //Vertical probe 1 electric field- raw adc value
-    uint16_t vert2;         //Vertical probe 2 electric field- raw adc value
-    uint16_t vertD;         //Vertical delta electric field- raw adc value
+    uint16_t vert1[12];     //Vertical probe 1 electric field- raw adc value
+    uint16_t vert2[12];     //Vertical probe 2 electric field- raw adc value
+    uint16_t vertD[12];     //Vertical delta electric field- raw adc value
     uint16_t compassX[12];  //Magnetic field x component- raw compass value, 1 per 5 seconds
     uint16_t compassY[12];  //Magnetic field y component- raw compass value, 1 per 5 seconds
+    uint16_t compassZ[12];  //Magnetic field z component- raw compass value, 1 per 5 seconds
     uint16_t cVert1[15];    //Vertical probe 1 conductivity data- raw adc value
     uint16_t cVert2[15];    //Vertical probe 2 conductivity data- raw adc value,
     sup_t sup;              //Supervision Field
@@ -82,13 +86,13 @@ void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint
 void Pack_GPS(packet_u *pack, uint32_t time, uint32_t lat, uint32_t lon, uint32_t alt);
 
 //update vertical probe fields of packet with vertical probe data
-void Pack_Vert(packet_u *pack, uint16_t vert1, uint16_t vert2, uint16_t vertD);
+void Pack_Vert(packet_u *pack, uint16_t index, uint16_t vert1, uint16_t vert2, uint16_t vertD);
 
 //update given index of horizontal probe fields of packet with horizontal probe data
 void Pack_Horiz(packet_u *pack, uint16_t index, uint16_t h1, uint16_t h2, uint16_t hD);
 
 //update given index of magnetometer fields of packet with magnetometer data
-void Pack_Mag(packet_u *pack, uint16_t index, uint16_t mx, uint16_t my);
+void Pack_Mag(packet_u *pack, uint16_t index, uint16_t mx, uint16_t my, uint16_t mz);
 
 
 #endif	/* PACKET_H */

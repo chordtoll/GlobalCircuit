@@ -52,7 +52,7 @@ int main(void) {
     uint16_t cVert1[150];       //conductivity data 1
     uint16_t cVert2[150];       //conductivity data 2
 
-    uint32_t gTime=0;             //GPS data
+    uint32_t gTime=0;           //GPS data
     uint32_t gLat=0;
     uint32_t gLon=0;
     uint32_t gAlt=0;
@@ -78,8 +78,8 @@ int main(void) {
     InitInterrupt();            //initialize interrupts
 
     InitI2C();                  //initialize I2C
-    InitMagneto(MAG_ADDR);      //initialize magnetometer with correct address
-    InitAltimeter(ALT_ADDR);    //intialize altimeter with correct address
+    InitMagneto(MAG_ADDR);      //initialize magnetometer
+    InitAltimeter(ALT_ADDR);    //intialize altimeter
 
     InitSPI1();                 //initialize SPI 1
 
@@ -136,7 +136,7 @@ int main(void) {
                     uint16_t my;
                     uint16_t mz;
                     ReadMagneto(MAG_ADDR, &mx,&my,&mz);                      //Read magnetometer values
-                    Pack_Mag(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, mx, my);       //store magnetometor values into packet
+                    Pack_Mag(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, mx, my, mz);       //store magnetometor values into packet
                     h1=ReadExtADC(2);                                        //read horizontal probe values
                     h2=ReadExtADC(5);
                     break;
@@ -144,23 +144,17 @@ int main(void) {
                     hD=ReadExtADC(3);                                        //read horizontal differential value
                     Pack_Horiz(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, h1, h2, hD); //store horizontal probe values into packet
                     break;
-                case 3:
-                    if(statetimer == 3)                                      //if 0.3s into packet
-                    {
-                        vert1=ReadExtADC(0);                                 //read vertical probe values
-                        vert2=ReadExtADC(4);
-                    }
+                case 3:                                                      //if 0.3s into packet
+                    vert1=ReadExtADC(0);                                     //read vertical probe values
+                    vert2=ReadExtADC(4);
                     break;
-                case 4:
-                    if(statetimer == 4)                                      //if 0.4s into packet
-                    {
-                        vertD=ReadExtADC(1);                                 //read vertical differential value
-                    }
+                case 4:                                                      //if 0.4s into packet
+                    vertD=ReadExtADC(1);                                     //read vertical differential value
+                    Pack_Vert(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, vert1, vert2, vertD);
                     break;
-                case 5:
-                    if(statetimer == 5)                                      //if 0.5s into packet
+                case 5:                                                      //if 0.5s into packet
+                    if(statetimer == 5)
                     {
-                        Pack_Vert(&packet, vert1, vert2, vertD);             //store vertical values into packet
                         ReadGPS(&gTime, &gLat, &gLon, &gAlt);                //read GPS values
                         Pack_GPS(&packet, gTime, gLat, gLon, gAlt);          //store GPS values into packet
                     }
@@ -214,14 +208,23 @@ int main(void) {
                     supT2=ReadPICADC(3);                           //store PICADC3 value
                     break;
                 case 9:                                            //if 0.9s into packet
+                    supTmag=0;//ReadPICADC(?);                     //store temperature of magnetometer
+                    break;
+                case 10:                                           //if 1s into packet
+                    supTadc1=0;//ReadPICADC(?);                    //store temperature of ADC1
+                    break;
+                case 11:                                           //if 1.1s into packet
+                    supTadc2=0;//ReadPICADC(?);                    //store temperature of ADC2
+                    break;
+                case 12:                                            //if 1.2s into packet
                     vert1=ReadExtADC(0);                           //read vertical probe values
                     vert2=ReadExtADC(4);
                     break;
-                case 10:                                           //if 1s into packet
+                case 13:                                           //if 1.3s into packet
                     vertD=ReadExtADC(1);                           //read vertical differential value
                     break;
-                case 11:                                           //if 1.1s into packet
-                    Pack_Vert(&packet, vert1, vert2, vertD);       //store vertical probe values into packet
+                case 14:                                           //if 1.4s into packet
+                    Pack_Vert(&packet, 0, vert1, vert2, vertD);    //store vertical probe values into packet
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt);          //Read our GPS time and location
                     Pack_GPS(&packet, gTime, gLat, gLon, gAlt);    //store GPS data into packet
                     break;
