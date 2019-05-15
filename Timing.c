@@ -13,10 +13,6 @@ void InitTiming() {
     T1CONbits.ON=0;
     T1CONbits.TCS=0;
     T1CONbits.TCKPS=3;
-    /*IFS0bits.T1IF=0;
-    IPC1bits.T1IP = 7;
-    IPC1bits.T1IS = 3;
-    IEC0bits.T1IE = 1;*/
 
     T3CONbits.ON=0;      //Disable timer
     T3CONbits.TCS=0;     //Source: PBCLK

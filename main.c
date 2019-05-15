@@ -52,6 +52,11 @@ int main(void) {
     uint16_t cVert1[150];       //conductivity data 1
     uint16_t cVert2[150];       //conductivity data 2
 
+    uint32_t gTime=0;             //GPS data
+    uint32_t gLat=0;
+    uint32_t gLon=0;
+    uint32_t gAlt=0;
+
     uint8_t conductivityDone=0; //flag indicating state of conductivity measurements
     
     uint16_t sequence=0;        //packet number
@@ -155,10 +160,6 @@ int main(void) {
                 case 5:
                     if(statetimer == 5)                                      //if 0.5s into packet
                     {
-                        uint32_t gTime;                                      //temporary GPS values
-                        uint32_t gLat;  
-                        uint32_t gLon; 
-                        uint32_t gAlt;  
                         Pack_Vert(&packet, vert1, vert2, vertD);             //store vertical values into packet
                         ReadGPS(&gTime, &gLat, &gLon, &gAlt);                //read GPS values
                         Pack_GPS(&packet, gTime, gLat, gLon, gAlt);          //store GPS values into packet
@@ -220,11 +221,6 @@ int main(void) {
                     vertD=ReadExtADC(1);                           //read vertical differential value
                     break;
                 case 11:                                           //if 1.1s into packet
-                    ;
-                    uint32_t gTime;
-                    uint32_t gLat;
-                    uint32_t gLon;
-                    uint32_t gAlt;
                     Pack_Vert(&packet, vert1, vert2, vertD);       //store vertical probe values into packet
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt);          //Read our GPS time and location
                     Pack_GPS(&packet, gTime, gLat, gLon, gAlt);    //store GPS data into packet
