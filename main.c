@@ -166,7 +166,7 @@ int main(void) {
                     }
                     break;
                 case 6:                                                      //if 0.6s into interval
-                    if(!GPS_EN && _rb_state == RB_IDLE)                      //if GPS is asleep and RB is idle
+                    if(GPS_S_EN && _rb_state == RB_IDLE)                      //if GPS is asleep and RB is idle
                     {
                         ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
                         Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));

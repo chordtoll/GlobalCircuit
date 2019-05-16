@@ -11,11 +11,13 @@ void InitGPIO() {
     TRISESET=0xC8;        //set port E pins 3, 6-7 to input
     ODCECLR=0x1FF;        //disable open drain on port E pins 0-8
     TRISEbits.TRISE8 = 0;
-    TRISDbits.TRISD8 = 0; //MOVE TO RD8
+    TRISDbits.TRISD8 = 0;
+    TRISDbits.TRISD9 = 0;
 
     OUT_TxEnable = 0;   //clear transmit enable
     PIC16_SLEEP = 0;       //keep PIC16 asleep
-    GPS_EN = 1;
+    GPS_S_EN = 0;
+    GPS_BAT_EN = 0;
     
     TRISGbits.TRISG6=0; //set port C pins 1-3 to output
     TRISGbits.TRISG7=0;
