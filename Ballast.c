@@ -27,7 +27,7 @@ void DeployBallast(uint8_t addr) {
     BALLAST_IDLE();                           //set ballast idle
     AddrBallast(addr);                        //set ballast address
     StartKickTimer();
-    while(!PORTDbits.RD0 && !KICKED) {}       //wait for the correct signal, or break if waiting for too long
+    while(PORTDbits.RD0 && !KICKED) {}        //wait for the correct signal, or break if waiting for too long
     if(KICKED)                                //if waiing for signal timed out,
     {
         BALLAST_IDLE();                       //set ballast idle
@@ -38,7 +38,7 @@ void DeployBallast(uint8_t addr) {
     ResetWatchdog();
     ResetKickTimer();
     BALLAST_ARM();                            //arm the ballast
-    while(PORTDbits.RD1 && !KICKED){}         //wait for correct response, or break if waiting for too long
+    while(!PORTDbits.RD1 && !KICKED){}        //wait for correct response, or break if waiting for too long
     if(KICKED)                                //if waiting for signal timed out,
     {
         BALLAST_IDLE();                       //set ballast idle
@@ -50,7 +50,7 @@ void DeployBallast(uint8_t addr) {
     BALLAST_FIRE();                           //give fire signal
     ResetWatchdog();
     ResetKickTimer();
-    while(!PORTDbits.RD1 && !KICKED){}        //wait for correct response, or break if waiting for too long
+    while(PORTDbits.RD1 && !KICKED){}         //wait for correct response, or break if waiting for too long
     if(KICKED)                                //if waiting for signal timed out,
         ba_flag = BAFLAG_NOACKFIRE;           //set flag to no acknowledge fire
     else                                      //if a acknowledge was received
