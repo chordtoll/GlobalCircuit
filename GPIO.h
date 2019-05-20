@@ -35,7 +35,7 @@ pin17 | RA2  <-  pin18  | RE8   - PIC16_SLEEP
 #define IN_DATA1 PORTEbits.RE7      //bit 1 of Rx data
 
 #define PIC16_SLEEP PORTEbits.RE8   //pin to wake/sleep PIC
-#define GPS_EN PORTDbits.RD8     //pin to wake/sleep GPS (PIN MIGHT NEED TO BE CHANGED)
+#define GPS_EN PORTDbits.RD9        //pin to wake/sleep GPS (PIN MIGHT NEED TO BE CHANGED)
 
 typedef enum chgst {NONE,GND,UP,DOWN} chgst_t;
 

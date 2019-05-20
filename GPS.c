@@ -109,12 +109,12 @@ void InitGPS(void) {
 
 void SleepGPS()
 {
-    GPS_EN = 0;
+    GPS_EN = 1;
 }
 
 void WakeGPS()
 {
-    GPS_EN = 1;
+    GPS_EN = 0;
 }
 
 void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {

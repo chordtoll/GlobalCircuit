@@ -12,6 +12,7 @@ void InitGPIO() {
     ODCECLR=0x1FF;        //disable open drain on port E pins 0-8
     TRISEbits.TRISE8 = 0;
     TRISDbits.TRISD8 = 0; //MOVE TO RD8
+    TRISDbits.TRISD9 = 0;
 
     OUT_TxEnable = 0;   //clear transmit enable
     PIC16_SLEEP = 0;       //keep PIC16 asleep

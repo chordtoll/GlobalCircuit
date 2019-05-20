@@ -28,8 +28,12 @@ uint16_t supTadc2;         //PICADC channel ?
 
 //PACKET CHANGELOG:
 //1->2:Add rbtime field to yikes byte
+//2->3:Add vertical fields to match horizontal fields
+//     Add CompassZ field
+//     Add supTmag, supTadc1, and supTadc2 to SUP field on sequence 6 and 7
+//     Conductivity values now sent in an interweaved pattern.
 
-#define PACKET_VERSION 255
+#define PACKET_VERSION 3
 
 typedef union u_sup {
     uint32_t _1u32;
