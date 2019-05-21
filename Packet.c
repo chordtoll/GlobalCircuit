@@ -38,8 +38,12 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)
 {
-    memcpy((*pack).norm.cVert1,cVert1+(sequence%10)*15,15*2);
-    memcpy((*pack).norm.cVert2,cVert2+(sequence%10)*15,15*2);
+    int i;
+    for(i = 0; i < 15; ++i)
+    {
+        (*pack).norm.cVert1[i] = cVert1[i*10+(sequence%10)];
+        (*pack).norm.cVert2[i] = cVert2[i*10+(sequence%10)];
+    }
 }
 
 void Pack_GPS(packet_u *pack, uint32_t time, uint32_t lat, uint32_t lon, uint32_t alt)

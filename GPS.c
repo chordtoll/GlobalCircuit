@@ -1,6 +1,7 @@
 #include <proc/p32mx360f512l.h>
 #include "GPS.h"
 #include "GPIO.h"
+#include "Yikes.h"
 #include <stdlib.h>
 
 volatile char gpsbuf[84];
@@ -138,6 +139,8 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
         *alt=(atof(nAlti)*10);
     }
     }
+    else
+        yikes.gpslock = 1;
     WakeGPS();
 }
 

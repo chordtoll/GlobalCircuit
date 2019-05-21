@@ -17,7 +17,8 @@ typedef union {
     uint8_t gpstick  :1; //GPS ticking has gone out of expected bounds
     uint8_t rberror  :1; //RockBlock ran into an error
     uint8_t rbtime   :1; //RockBlock timed out
-    uint8_t idk      :3; //¯\_(ツ)_/¯
+    uint8_t gpslock  :1; //GPS did not lock within a minute
+    uint8_t idk      :2; //¯\_(ツ)_/¯
   };
   struct {
     uint8_t byte:8; //full flag byte
