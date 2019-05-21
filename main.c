@@ -58,7 +58,7 @@ int main(void) {
     uint32_t gAlt=0;
 
     uint8_t conductivityDone=0; //flag indicating state of conductivity measurements
-
+    
     uint16_t sequence=0;        //packet number
 
     uint32_t statetimer=0;      //packet tick
@@ -136,13 +136,13 @@ int main(void) {
                     uint16_t my;
                     uint16_t mz;
                     ReadMagneto(MAG_ADDR, &mx,&my,&mz);                      //Read magnetometer values
-                    Pack_Mag(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, mx, my, mz);              //store magnetometor values into packet
+                    Pack_Mag(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, mx, my, mz);       //store magnetometor values into packet
                     h1=ReadExtADC(2);                                        //read horizontal probe values
                     h2=ReadExtADC(5);
                     break;
                 case 2:                                                      //if 0.2s into interval
                     hD=ReadExtADC(3);                                        //read horizontal differential value
-                    Pack_Horiz(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, h1, h2, hD);            //store horizontal probe values into packet
+                    Pack_Horiz(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, h1, h2, hD); //store horizontal probe values into packet
                     break;
                 case 3:
                         vert1=ReadExtADC(0);                                 //read vertical probe values
@@ -150,7 +150,8 @@ int main(void) {
                     break;
                 case 4:
                         vertD=ReadExtADC(1);                                 //read vertical differential value
-                        Pack_Vert(&packet,(statetimer/T_FASTSAM_INTERVAL)%12, vert1, vert2, vertD); //store vertical values into packet
+                        Pack_Vert(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, vert1, vert2, vertD);             //store vertical values into packet
+
                     break;
                 case 5:
                     if(statetimer == 5)                                      //if 0.5s into packet
@@ -160,7 +161,7 @@ int main(void) {
                     }
                     break;
                 case 6:                                                      //if 0.6s into interval
-                    if(GPS_EN && _rb_state == RB_IDLE)                      //if GPS is asleep and RB is idle
+                    if(GPS_S_EN && _rb_state == RB_IDLE)                      //if GPS is asleep and RB is idle
                     {
                         ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
                         Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));

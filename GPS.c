@@ -99,7 +99,7 @@ void InitGPS(void) {
 
 //if mosfet is being used for GPS reset, reset is active high
 #ifdef MOSFET_GPS_RESET
-    PORTDbits.RD9=0; //take GPS out of reset
+    //PORTDbits.RD9=0; //take GPS out of reset
 #endif
 
     for (i=0;i<16;i++) {            //send initialization string to GPS
@@ -110,12 +110,12 @@ void InitGPS(void) {
 
 void SleepGPS()
 {
-    GPS_EN = 1;
+    GPS_S_EN = 1;
 }
 
 void WakeGPS()
 {
-    GPS_EN = 0;
+    GPS_S_EN = 0;
 }
 
 void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
