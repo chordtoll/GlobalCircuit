@@ -175,9 +175,6 @@ int main(void) {
         {
             switch (statetimer)                                    //alternate readings based on statetimer
             {
-                uint16_t vert1;                                    //temporary vertical probe variables
-                uint16_t vert2;
-                uint16_t vertD;
                 case 0:                                            //if 0s into packet
                     TriggerAltimeter_Temperature(ALT_ADDR);        //trigger altimeter for temperature reading
                     supIl0=ReadPICADC(4);                          //store PICADC4 value
