@@ -33,7 +33,7 @@ uint16_t supTadc2;         //PICADC channel ?
 //     Add supTmag, supTadc1, and supTadc2 to SUP field on sequence 6 and 7
 //     Conductivity values now sent in an interweaved pattern.
 
-#define PACKET_VERSION 3
+#define PACKET_VERSION 4
 
 typedef union u_sup {
     uint32_t _1u32;
