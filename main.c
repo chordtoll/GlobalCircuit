@@ -32,11 +32,12 @@
 #define T_SECOND (1000/T_TICK_MS)                     //ticks per second
 #define T_MINUTE (T_SECOND*60)                        //ticks per minute
 #define T_NORM_LEN (T_MINUTE*9)                       //ticks where normal measurements are taken
-#define T_CON_LEN (T_MINUTE)                          //ticks where conductivity measurements are taken
-#define T_CON_CHG_BEGIN  (T_SECOND*2)                 //ticks to begin probe charging
+#define T_CON_CHG_BEGIN  (T_SECOND)                   //ticks to begin probe charging
 #define T_CON_CHG1_END  (T_CON_CHG_BEGIN+T_SECOND*2)  //ticks to finish first charging stage
 #define T_CON_CHG2_END  (T_CON_CHG1_END+T_SECOND*3)   //ticks to finish second charging stage
 #define T_CON_MEAS_END (T_CON_CHG2_END+T_SECOND*10)   //ticks to finishing conductivity measurements
+#define T_CON_LEN (T_CON_MEAS_END - T_CON_CHG_BEGIN)  //ticks where conductivity measurements are taken
+
 
 #define T_FASTSAM_INTERVAL (T_SECOND*5)               //ticks in one interval of normal measurements
 #define T_SLOWSAM_INTERVAL (T_FASTSAM_INTERVAL*12)    //ticks per packet
@@ -161,7 +162,7 @@ int main(void) {
                     }
                     break;
                 case 6:                                                      //if 0.6s into interval
-                    if(GPS_S_EN && _rb_state == RB_IDLE)                      //if GPS is asleep and RB is idle
+                    if(GPS_S_EN && _rb_state == RB_IDLE)                     //if GPS is asleep and RB is idle
                     {
                         ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
                         Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
@@ -195,40 +196,25 @@ int main(void) {
                     break;
                 case 4:                                            //if 0.4s into packet
                     supIh1=ReadPICADC(9);                          //store PICADC9 value
-                    break;
-                case 5:                                            //if 0.5s into packet
                     supIh2=ReadPICADC(11);                         //store PICADC11 value
                     break;
-                case 6:                                            //if 0.6s into packet
+                case 5:                                            //if 0.5s into packet
                     supT0=ReadPICADC(0);                           //store PICADC0 value
-                    break;
-                case 7:                                            //if 0.7s into packet
                     supT1=ReadPICADC(1);                           //store PICADC1 value
                     break;
-                case 8:                                            //if 0.8s into packet
+                case 6:                                            //if 0.6s into packet
                     supT2=ReadPICADC(3);                           //store PICADC3 value
-                    break;
-                case 9:                                            //if 0.9s into packet
-                    vert1=ReadExtADC(0);                           //read vertical probe values
-                    vert2=ReadExtADC(4);
-                    break;
-                case 10:                                           //if 1s into packet
-                    vertD=ReadExtADC(1);                           //read vertical differential value
-                    break;
-                case 11:                                           //if 1.1s into packet
-                    Pack_Vert(&packet, 0, vert1, vert2, vertD);    //store vertical probe values into packet
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt);          //Read our GPS time and location
                     Pack_GPS(&packet, gTime, gLat, gLon, gAlt);    //store GPS data into packet
                     break;
-                case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (2s into packet)
+                case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (1s into packet)
                     ChargeProbe(GND);                              //charge probes to ground
                     break;
-                case T_CON_CHG1_END:                               //if first charging cycle is complete (4s into packet)
+                case T_CON_CHG1_END:                               //if first charging cycle is complete (3s into packet)
                     ChargeProbe(UP);                               //charge probes up
                     break;
-                case T_CON_CHG2_END:                               //if second charging cycle is complete (7s into packet)
+                case T_CON_CHG2_END:                               //if second charging cycle is complete (6s into packet)
                     ChargeProbe(NONE);                             //stop charging probes
-                    conductivityDone = 1;                          //signal that conductivity measurements
                     break;
                 }
             //While in conductivity measuring interval,
@@ -236,6 +222,8 @@ int main(void) {
                 cVert1[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(0); //Store vertical probe values over course of conductivity charging, 150 samples total
                 cVert2[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(4);
             }
+            else if(statetimer == T_CON_MEAS_END)
+                conductivityDone = 1;
         }
         ++statetimer;
         //If it's time to send a packet,
