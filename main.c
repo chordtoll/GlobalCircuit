@@ -102,7 +102,7 @@ int main(void) {
 //TEST CODE HERE
     while(1)
     {
-
+        ChargeProbe(DOWN);
     }
 #endif
 
@@ -161,15 +161,13 @@ int main(void) {
                         Pack_GPS(&packet, gTime, gLat, gLon, gAlt);          //store GPS values into packet
                     }
                     break;
-                case 6:                                                      //if 0.6s into interval
-                    if(GPS_S_EN && _rb_state == RB_IDLE)                     //if GPS is asleep and RB is idle
-                    {
-                        ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
-                        Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
-                        statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 2;
-                    }
-                        break;
-               }
+                }                                                    //if 0.6s into interval
+            if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 5 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND) //if GPS is asleep and RB is idle
+            {
+                ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
+                Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
+                statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 2;
+            }
         }
         else                                                       //if on conductivity packet
         {
