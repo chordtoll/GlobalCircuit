@@ -182,9 +182,12 @@ void TickRB() {
                     ballast_rq = 1;                            //set ballast_rq flag
                     _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(ballast_rq == 3 && BALLAST && CONFIRM) //if a ballast acknowledge is expected and was received
+                else if(ballast_rq == 3 && BALLAST && CONFIRM && ((RBRXbuf[8] >= '0' && RBRXbuf[8] <= '9') || (RBRXbuf[8] >= 'A' && RBRXbuf[8] <= 'F'))) //if a ballast acknowledge is expected and was received
                 {
-                    DeployBallast(0);                          //begin ballast deployment
+                    if(RBRXbuf[8] <= '9')
+                        DeployBallast(RBRXbuf[8] - '0');                          //begin ballast deployment
+                    else
+                        DeployBallast(RBRXbuf[8] - 'A' + 10);
                     ballast_rq = 0;                            //clear ballast_rq flag
                     _rb_state=RB_IDLE;                         //rockblock is now idle
                 }

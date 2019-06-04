@@ -100,9 +100,12 @@ int main(void) {
 
 #ifdef TEST_LOOP
 //TEST CODE HERE
+    int i = 0;
     while(1)
     {
-        ChargeProbe(DOWN);
+        AddrBallast(i++);
+        WaitS(5);
+        ResetWatchdog();
     }
 #endif
 
