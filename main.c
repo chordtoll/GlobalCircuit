@@ -81,7 +81,7 @@ int main(void) {
     InitI2C();                  //initialize I2C
     InitMagneto(MAG_ADDR);      //initialize magnetometer
     InitAltimeter(ALT_ADDR);    //intialize altimeter
-
+    
     InitSPI1();                 //initialize SPI 1
 
     InitPICADC();               //initialize ADC
@@ -115,13 +115,8 @@ int main(void) {
     //          MAIN LOOP          //
     //=============================//
     while (1) {
-        TickRB();                                                      //Advance RockBlock state machine
-        if (statetimer==0 && sequence > SEQUENCE_CYCLE)                //If we're at the start of a packet and supervision/conductivity data is available
-        {
-                Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
-                Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
-        }
-        if(sequence%(SEQUENCE_CYCLE+1) < SEQUENCE_CYCLE || conductivityDone) //if not on conductivity packet, or conductivity readings have been finished
+        TickRB();                                                            //Advance RockBlock state machine
+        if(sequence%(SEQUENCE_CYCLE+1) || conductivityDone)                  //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)
             {
@@ -140,7 +135,7 @@ int main(void) {
                     uint16_t my;
                     uint16_t mz;
                     ReadMagneto(MAG_ADDR, &mx,&my,&mz);                      //Read magnetometer values
-                    Pack_Mag(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, mx, my, mz);       //store magnetometor values into packet
+                    Pack_Mag(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, mx, my, mz);   //store magnetometor values into packet
                     h1=ReadExtADC(2);                                        //read horizontal probe values
                     h2=ReadExtADC(5);
                     break;
@@ -148,13 +143,13 @@ int main(void) {
                     hD=ReadExtADC(3);                                        //read horizontal differential value
                     Pack_Horiz(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, h1, h2, hD); //store horizontal probe values into packet
                     break;
-                case 3:
+                case 3:                                                      //if 0.3s into interval
                         vert1=ReadExtADC(0);                                 //read vertical probe values
                         vert2=ReadExtADC(4);
                     break;
-                case 4:
+                case 4:                                                      //if 0.4s into interval
                         vertD=ReadExtADC(1);                                 //read vertical differential value
-                        Pack_Vert(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, vert1, vert2, vertD);             //store vertical values into packet
+                        Pack_Vert(&packet, (statetimer/T_FASTSAM_INTERVAL)%12, vert1, vert2, vertD); //store vertical values into packet
 
                     break;
                 case 5:
@@ -164,8 +159,9 @@ int main(void) {
                         Pack_GPS(&packet, gTime, gLat, gLon, gAlt);          //store GPS values into packet
                     }
                     break;
-                }                                                    //if 0.6s into interval
-            if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 5 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND) //if GPS is asleep and RB is idle
+                }
+            //if GPS is asleep, RockBlock is idle, we're done with this cycle of measurements, and there is more than 1 second until the next cycle
+            if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 4 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND)
             {
                 ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
                 Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
@@ -226,6 +222,8 @@ int main(void) {
         ++statetimer;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
+            Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
+            Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
             packet.norm.cutdown = GetCutdownStatus(); //update cutdown status
             packet.norm.ballast = GetBallastStatus(); //update ballast status
             packet.norm.version=PACKET_VERSION;       //Write version ID
