@@ -66,5 +66,7 @@ uint8_t CheckMagneto(uint8_t addr);
 //read the data from the magnetometer
 uint8_t ReadMagneto(uint8_t addr, uint16_t* x, uint16_t* y, uint16_t* z);
 
+//read temperature from the magnetometer
+uint8_t ReadMagTemp(uint8_t addr, uint8_t *temp);
 #endif	/* MAG3310_H */
 

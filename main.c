@@ -205,6 +205,9 @@ int main(void) {
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt);          //Read our GPS time and location
                     Pack_GPS(&packet, gTime, gLat, gLon, gAlt);    //store GPS data into packet
                     break;
+                case 7:                                            //if 0.7s into packet
+                    ReadMagTemp(MAG_ADDR, &supTmag);               //store magnetometer temperature
+                    break;
                 case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (1s into packet)
                     ChargeProbe(GND);                              //charge probes to ground
                     break;

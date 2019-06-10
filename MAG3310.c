@@ -66,3 +66,17 @@ uint8_t ReadMagneto(uint8_t addr, uint16_t* x, uint16_t* y, uint16_t* z) {
     StopI2C();                      //stop I2C communication
     return ack;                     //return acknowledge status
 }
+
+uint8_t ReadMagTemp(uint8_t addr, uint8_t *temp)
+{
+    uint8_t ack=0;
+    StartI2C();                      //start I2C communication
+    ack |= WriteI2C(addr << 1);      //request data from DIE_TEMP register
+    ack |= WriteI2C(MAG_REG_TMP);
+    RestartI2C();                    //restart condition
+    ack |= WriteI2C((addr << 1)+1);  //read in data from DIE_TEMP register
+    *temp=ReadI2C();
+    NAckI2C();                       //send a NAck
+    StopI2C();                       //stop I2C communication
+    return ack;                      //return acknowledge status
+}

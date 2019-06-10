@@ -22,16 +22,17 @@ uint16_t supIh2;           //PICADC channel 11
 uint16_t supT0;            //PICADC channel 0
 uint16_t supT1;            //PICADC channel 1
 uint16_t supT2;            //PICADC channel 3
-uint16_t supTmag;          //PICADC channel ?
-uint16_t supTadc1;         //PICADC channel ?
-uint16_t supTadc2;         //PICADC channel ?
+uint8_t supTmag;           //magnetometer temperature
+uint16_t supTadc1;         //external ADC1 temperature
+uint16_t supTadc2;         //external ADC2 temperature
 
 //PACKET CHANGELOG:
 //1->2:Add rbtime field to yikes byte
 //2->3:Add vertical fields to match horizontal fields
 //     Add CompassZ field
 //     Add supTmag, supTadc1, and supTadc2 to SUP field on sequence 6 and 7
-//     Conductivity values now sent in an interweaved pattern.
+//3->4:Add Ballast and Cutdown status fields
+//     Conductivity values now sent in an interweaved pattern
 
 #define PACKET_VERSION 4
 

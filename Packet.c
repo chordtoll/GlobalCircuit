@@ -28,7 +28,7 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
             break;
         case 6: //PICADC channel 3
             (*pack).norm.sup._2u16.a=supT2;
-            (*pack).norm.sup._2u16.b=0; //Tmag
+            (*pack).norm.sup._2u16.b=supTmag;
             break;
         case 7:
             (*pack).norm.sup._2u16.a=0; //TADC1
