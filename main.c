@@ -236,7 +236,8 @@ int main(void) {
             yikes.byte=0;                             //Clear error flags
             packet.norm.seq=sequence;                 //Write sequence ID
             ++sequence;                               //update sequence counter
-            SendString_RB(packet.bytes);              //Send packet
+            if((sequence-1)%9 == 0)
+                SendString_RB(packet.bytes);              //Send packet
             clearPacket(&packet);                     //Clear packet buffer
             statetimer=0;                             //Reset state timer for start of next packet
             conductivityDone=0;                       //reset conductivity flag
