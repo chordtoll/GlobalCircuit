@@ -34,6 +34,22 @@ void InitGPIO() {
     PORTDCLR=0xC0;      //set a LOW value on RD2-3
     TRISDbits.TRISD9=0; //set port D pin 9 to output
     PORTDbits.RD9=0;    //set a LOW value on RD9
+
+    //UNUSED PINS
+    TRISACLR = 0xC6FF; //RA0,1,2,3,4,5,6,9,10,14,15
+    PORTACLR = 0xC6FF;
+    TRISBCLR = 0xC000; //RB14,15
+    PORTBCLR = 0xC000;
+    TRISCCLR = 0xE000; //RC13,14,15
+    PORTCCLR = 0xE000;
+    TRISDCLR = 0xBC00; //RD10,11,12,13,15
+    PORTDCLR = 0xBC00;
+    TRISECLR = 0x0200; //RE9
+    PORTECLR = 0x0200;
+    TRISFCLR = 0x3003; //RF0,1,12,13
+    PORTFCLR = 0x3003;
+    TRISGCLR = 0xF003; //RG0,1,12,13,14,15
+    PORTGCLR = 0xF003;
 }
 void TickClock()
 {
