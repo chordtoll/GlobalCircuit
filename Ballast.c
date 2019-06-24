@@ -46,7 +46,7 @@ void DeployBallast(uint8_t addr) {
         StopKickTimer();                      //stop the kick timer
         return;                               //break out of ballast deployment
     }
-    WaitUS(2814400);                          //wait for 2.8124 seconds (2.813950 - 2.815500)
+    WaitUS(2814725);                          //wait for 2.8124 seconds (2.813950 - 2.815500)
     BALLAST_FIRE();                           //give fire signal
     ResetWatchdog();
     ResetKickTimer();
