@@ -33,9 +33,9 @@
 #define T_MINUTE (T_SECOND*60)                        //ticks per minute
 #define T_NORM_LEN (T_MINUTE*9)                       //ticks where normal measurements are taken
 #define T_CON_CHG_BEGIN  (T_SECOND)                   //ticks to begin probe charging
-#define T_CON_CHG1_END  (T_CON_CHG_BEGIN+T_SECOND*2)  //ticks to finish first charging stage
-#define T_CON_CHG2_END  (T_CON_CHG1_END+T_SECOND*3)   //ticks to finish second charging stage
-#define T_CON_MEAS_END (T_CON_CHG2_END+T_SECOND*10)   //ticks to finishing conductivity measurements
+#define T_CON_CHG1_END  (T_CON_CHG_BEGIN+T_SECOND*1)  //ticks to finish first charging stage
+#define T_CON_CHG2_END  (T_CON_CHG1_END+T_SECOND*1)   //ticks to finish second charging stage
+#define T_CON_MEAS_END (T_CON_CHG2_END+T_SECOND*13)   //ticks to finishing conductivity measurements
 #define T_CON_LEN (T_CON_MEAS_END - T_CON_CHG_BEGIN)  //ticks where conductivity measurements are taken
 
 
@@ -211,10 +211,10 @@ int main(void) {
                 case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (1s into packet)
                     ChargeProbe(GND);                              //charge probes to ground
                     break;
-                case T_CON_CHG1_END:                               //if first charging cycle is complete (3s into packet)
+                case T_CON_CHG1_END:                               //if first charging cycle is complete (2s into packet)
                     ChargeProbe(UP);                               //charge probes up
                     break;
-                case T_CON_CHG2_END:                               //if second charging cycle is complete (6s into packet)
+                case T_CON_CHG2_END:                               //if second charging cycle is complete (3s into packet)
                     ChargeProbe(NONE);                             //stop charging probes
                     break;
                 }
