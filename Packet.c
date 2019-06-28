@@ -33,6 +33,11 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
         case 7:
             (*pack).norm.sup._2u16.a=0; //TADC1
             (*pack).norm.sup._2u16.b=0; //TADC2
+            break;
+        case 8:
+            (*pack).norm.sup._2u16.a=supText;
+            (*pack).norm.sup._2u16.b=supTRB;
+            break;
     }
 }
 

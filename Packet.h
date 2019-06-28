@@ -25,6 +25,8 @@ uint16_t supT2;            //PICADC channel 3
 uint8_t supTmag;           //magnetometer temperature
 uint16_t supTadc1;         //external ADC1 temperature
 uint16_t supTadc2;         //external ADC2 temperature
+uint16_t supText;          //external payload temperature
+uint16_t supTRB;           //RockBlock temperature
 
 //PACKET CHANGELOG:
 //1->2:Add rbtime field to yikes byte

@@ -60,7 +60,8 @@ int main(void) {
     uint32_t gAlt=0;
 
     uint8_t conductivityDone=0; //flag indicating state of conductivity measurements
-    
+    uint16_t conductivityDir=0; //direction of probe charging for conductivity measurements, odd=up, even=down
+
     uint16_t sequence=0;        //packet number
 
     uint32_t statetimer=0;      //packet tick
@@ -117,6 +118,8 @@ int main(void) {
     //=============================//
     while (1) {
         TickRB();                                                      //Advance RockBlock state machine
+        if (statetimer==0)                                             //if at the start of a packet,
+            conductivityDone = 0;                                      //reset conductivityDone flag
         if (statetimer==0 && sequence > SEQUENCE_CYCLE)                //If we're at the start of a packet and supervision/conductivity data is available
         {
                 Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
@@ -179,41 +182,48 @@ int main(void) {
             {
                 case 0:                                            //if 0s into packet
                     TriggerAltimeter_Temperature(ALT_ADDR);        //trigger altimeter for temperature reading
-                    supIl0=ReadPICADC(4);                          //store PICADC4 value
+                    supIl0=ReadPICADC(4);                          //store current0 low value
                     break;
                 case 1:                                            //if 0.1s into packet
                     ReadAltimeter_ADC(ALT_ADDR, &supTemperature);  //read altimeter temperature
-                    supIl1=ReadPICADC(8);                          //store PICADC8 value
+                    supIl1=ReadPICADC(8);                          //store current1 low value
                     break;
                 case 2:                                            //if 0.2s into packet
                     TriggerAltimeter_Pressure(ALT_ADDR);           //trigger altimeter for pressure reading
-                    supIl2=ReadPICADC(10);                         //store PICADC10 value
+                    supIl2=ReadPICADC(10);                         //store current2 low value
                     break;
                 case 3:                                            //if 0.3s into packet
                     ReadAltimeter_ADC(ALT_ADDR, &supPressure);     //read altimeter pressure
-                    supIh0=ReadPICADC(5);                          //store PICADC5 value
+                    supIh0=ReadPICADC(5);                          //store current0 high value
                     break;
                 case 4:                                            //if 0.4s into packet
-                    supIh1=ReadPICADC(9);                          //store PICADC9 value
-                    supIh2=ReadPICADC(11);                         //store PICADC11 value
+                    supIh1=ReadPICADC(9);                          //store current1 high value
+                    supIh2=ReadPICADC(11);                         //store current2 high value
                     break;
                 case 5:                                            //if 0.5s into packet
-                    supT0=ReadPICADC(0);                           //store PICADC0 value
-                    supT1=ReadPICADC(1);                           //store PICADC1 value
+                    supT0=ReadPICADC(0);                           //store temperature0 value
+                    supT1=ReadPICADC(1);                           //store temperature1 value
                     break;
                 case 6:                                            //if 0.6s into packet
-                    supT2=ReadPICADC(3);                           //store PICADC3 value
+                    supT2=ReadPICADC(3);                           //store store temperature2 value
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt);          //Read our GPS time and location
                     Pack_GPS(&packet, gTime, gLat, gLon, gAlt);    //store GPS data into packet
                     break;
                 case 7:                                            //if 0.7s into packet
+                    supText = ReadPICADC(12);                      //store external termperature value
+                    supTRB = ReadPICADC(13);                       //store rockblock temperature value
+                    break;
+                case 8:                                            //if 0.8s into packet
                     ReadMagTemp(MAG_ADDR, &supTmag);               //store magnetometer temperature
                     break;
                 case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (1s into packet)
                     ChargeProbe(GND);                              //charge probes to ground
                     break;
                 case T_CON_CHG1_END:                               //if first charging cycle is complete (2s into packet)
-                    ChargeProbe(UP);                               //charge probes up
+                    if(conductivityDir++ % 2)                      //if on an odd interval,
+                        ChargeProbe(DOWN);                         //charge probes down
+                    else                                           //if on an even interval,
+                        ChargeProbe(UP);                           //charge probes up
                     break;
                 case T_CON_CHG2_END:                               //if second charging cycle is complete (3s into packet)
                     ChargeProbe(NONE);                             //stop charging probes
