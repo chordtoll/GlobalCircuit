@@ -38,11 +38,18 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)
 {
+    #define COND_INTERWEAVE
     int i;
     for(i = 0; i < 15; ++i)
     {
-        (*pack).norm.cVert1[i] = cVert1[i*10+(sequence%10)];
-        (*pack).norm.cVert2[i] = cVert2[i*10+(sequence%10)];
+        #ifdef COND_INTERWEAVE
+            (*pack).norm.cVert1[i] = cVert1[i*10+(sequence%10)];
+            (*pack).norm.cVert2[i] = cVert2[i*10+(sequence%10)];
+        #else
+            (*pack).norm.cVert1[i] = cVert1[i+15*(sequence%10)];
+            (*pack).norm.cVert2[i] = cVert2[i+15*(sequence%10)];
+        #endif
+
     }
 }
 

@@ -64,7 +64,7 @@ uint8_t GetBallastStatus()
     if(ballast_rq)              //if ballast has been requested
     {
         ++ballast_rq;           //increment the ballast request counter
-        if(ballast_rq == 4)     //if the window for confirmation was missed
+        if(ballast_rq == 8)     //if the window for confirmation was missed
         {
             ballast_rq = 0;     //clear the ballast request counter
             return 0;           //clear the ballast flag

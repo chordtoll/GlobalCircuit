@@ -27,6 +27,7 @@
 #include "SPI.h"
 #include "ADC.h"
 #include "Cutdown.h"
+#include "ballast.h"
 
 #define T_TICK_MS 100                                 //number of milliseconds per tick
 #define T_SECOND (1000/T_TICK_MS)                     //ticks per second
