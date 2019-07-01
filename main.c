@@ -119,14 +119,7 @@ int main(void) {
     //=============================//
     while (1) {
         TickRB();                                                      //Advance RockBlock state machine
-        if (statetimer==0)                                             //if at the start of a packet,
-            conductivityDone = 0;                                      //reset conductivityDone flag
-        if (statetimer==0 && sequence > SEQUENCE_CYCLE)                //If we're at the start of a packet and supervision/conductivity data is available
-        {
-                Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
-                Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
-        }
-        if(sequence%(SEQUENCE_CYCLE+1) < SEQUENCE_CYCLE || conductivityDone) //if not on conductivity packet, or conductivity readings have been finished
+        if(sequence%(SEQUENCE_CYCLE+1) || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)
             {
@@ -243,17 +236,19 @@ int main(void) {
         ++statetimer;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
-            packet.norm.cutdown = GetCutdownStatus(); //update cutdown status
-            packet.norm.ballast = GetBallastStatus(); //update ballast status
-            packet.norm.version=PACKET_VERSION;       //Write version ID
-            packet.norm.yikes=yikes.byte;             //Write error flags to packet
-            yikes.byte=0;                             //Clear error flags
-            packet.norm.seq=sequence;                 //Write sequence ID
-            ++sequence;                               //update sequence counter
-            SendString_RB(packet.bytes);              //Send packet
-            clearPacket(&packet);                     //Clear packet buffer
-            statetimer=0;                             //Reset state timer for start of next packet
-            conductivityDone=0;                       //reset conductivity flag
+            Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
+            Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
+            packet.norm.cutdown = GetCutdownStatus();              //update cutdown status
+            packet.norm.ballast = GetBallastStatus();              //update ballast status
+            packet.norm.version=PACKET_VERSION;                    //Write version ID
+            packet.norm.yikes=yikes.byte;                          //Write error flags to packet
+            yikes.byte=0;                                          //Clear error flags
+            packet.norm.seq=sequence;                              //Write sequence ID
+            ++sequence;                                            //update sequence counter
+            SendString_RB(packet.bytes);                           //Send packet
+            clearPacket(&packet);                                  //Clear packet buffer
+            statetimer=0;                                          //Reset state timer for start of next packet
+            conductivityDone=0;                                    //reset conductivity flag
         }
         ResetWatchdog();        //Clear watchdog timer
         DelayLoopMS(T_TICK_MS); //Delay to maintain constant tick rate
