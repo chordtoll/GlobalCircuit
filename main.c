@@ -215,7 +215,6 @@ int main(void) {
                     ChargeProbe(GND);                              //charge probes to ground
                     break;
                 case T_CON_CHG1_END:                               //if first charging cycle is complete (2s into packet)
-                    yikes.condpol = conductivityDir % 2;
                     if(conductivityDir++ % 2)                      //if on an odd interval,
                         ChargeProbe(DOWN);                         //charge probes down
                     else                                           //if on an even interval,
@@ -242,6 +241,7 @@ int main(void) {
             packet.norm.ballast = GetBallastStatus();              //update ballast status
             packet.norm.version=PACKET_VERSION;                    //Write version ID
             packet.norm.yikes=yikes.byte;                          //Write error flags to packet
+            yikes.condpol = conductivityDir % 2;
             yikes.byte=0;                                          //Clear error flags
             packet.norm.seq=sequence;                              //Write sequence ID
             ++sequence;                                            //update sequence counter
