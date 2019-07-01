@@ -43,7 +43,7 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)
 {
-    #define COND_INTERWEAVE
+    //#define COND_INTERWEAVE
     int i;
     for(i = 0; i < 15; ++i)
     {
@@ -58,9 +58,10 @@ void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint
     }
 }
 
-void Pack_GPS(packet_u *pack, uint32_t time, uint32_t lat, uint32_t lon, uint32_t alt)
+void Pack_GPS(packet_u *pack, uint32_t time, uint32_t Ctime, uint32_t lat, uint32_t lon, uint32_t alt)
 {
     (*pack).norm.time = time;
+    (*pack).norm.Ctime = Ctime;
     (*pack).norm.lat = lat;
     (*pack).norm.lon = lon;
     (*pack).norm.alt = alt;

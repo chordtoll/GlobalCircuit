@@ -55,6 +55,7 @@ int main(void) {
     uint16_t cVert2[150];       //conductivity data 2
 
     uint32_t gTime=0;             //GPS data
+    uint32_t gCondTime=0xDEAD;
     uint32_t gLat=0;
     uint32_t gLon=0;
     uint32_t gAlt=0;
@@ -165,7 +166,7 @@ int main(void) {
                     if(statetimer == 5)                                      //if 0.5s into packet
                     {
                         ReadGPS(&gTime, &gLat, &gLon, &gAlt);                //read GPS values
-                        Pack_GPS(&packet, gTime, gLat, gLon, gAlt);          //store GPS values into packet
+                        Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt);          //store GPS values into packet
                     }
                     break;
                 }                                                    //if 0.6s into interval
@@ -207,7 +208,8 @@ int main(void) {
                 case 6:                                            //if 0.6s into packet
                     supT2=ReadPICADC(3);                           //store store temperature2 value
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt);          //Read our GPS time and location
-                    Pack_GPS(&packet, gTime, gLat, gLon, gAlt);    //store GPS data into packet
+                    gCondTime = gTime;
+                    Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt);    //store GPS data into packet
                     break;
                 case 7:                                            //if 0.7s into packet
                     supText = ReadPICADC(12);                      //store external termperature value
@@ -220,6 +222,7 @@ int main(void) {
                     ChargeProbe(GND);                              //charge probes to ground
                     break;
                 case T_CON_CHG1_END:                               //if first charging cycle is complete (2s into packet)
+                    yikes.condpol = conductivityDir % 2;
                     if(conductivityDir++ % 2)                      //if on an odd interval,
                         ChargeProbe(DOWN);                         //charge probes down
                     else                                           //if on an even interval,

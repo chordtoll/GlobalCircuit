@@ -35,8 +35,9 @@ uint16_t supTRB;           //RockBlock temperature
 //     Add supTmag, supTadc1, and supTadc2 to SUP field on sequence 6 and 7
 //3->4:Add Ballast and Cutdown status fields
 //     Conductivity values now sent in an interweaved pattern
-
-#define PACKET_VERSION 4
+//4->5:Add Ctime field
+//     Add conpol yikes bit
+#define PACKET_VERSION 5
 
 typedef union u_sup {
     uint32_t _1u32;
@@ -74,6 +75,7 @@ struct __attribute__((packed)) s_packet_norm {
     sup_t sup;              //Supervision Field
     uint8_t ballast;        //Ballast status flags
     uint8_t cutdown;        //Cutdown status flags
+    uint32_t Ctime;         //GPS time of conductivity measurement
 };
 
 typedef union u_packet
@@ -90,7 +92,7 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence);
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2);
 
 //update GPS fields of packet with GPS data
-void Pack_GPS(packet_u *pack, uint32_t time, uint32_t lat, uint32_t lon, uint32_t alt);
+void Pack_GPS(packet_u *pack, uint32_t time, uint32_t Ctime, uint32_t lat, uint32_t lon, uint32_t alt);
 
 //update vertical probe fields of packet with vertical probe data
 void Pack_Vert(packet_u *pack, uint16_t index, uint16_t vert1, uint16_t vert2, uint16_t vertD);
