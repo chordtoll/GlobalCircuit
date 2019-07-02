@@ -43,7 +43,7 @@ void Pack_Supervision(packet_u *pack, uint16_t sequence)
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)
 {
-    //#define COND_INTERWEAVE
+    #define COND_INTERWEAVE
     int i;
     for(i = 0; i < 15; ++i)
     {

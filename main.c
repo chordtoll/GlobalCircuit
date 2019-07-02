@@ -240,8 +240,8 @@ int main(void) {
             packet.norm.cutdown = GetCutdownStatus();              //update cutdown status
             packet.norm.ballast = GetBallastStatus();              //update ballast status
             packet.norm.version=PACKET_VERSION;                    //Write version ID
+            yikes.condpol = (conductivityDir-1)%2;
             packet.norm.yikes=yikes.byte;                          //Write error flags to packet
-            yikes.condpol = conductivityDir % 2;
             yikes.byte=0;                                          //Clear error flags
             packet.norm.seq=sequence;                              //Write sequence ID
             ++sequence;                                            //update sequence counter
