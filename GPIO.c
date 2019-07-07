@@ -14,6 +14,8 @@ void InitGPIO() {
     TRISDbits.TRISD8 = 0;
     TRISDbits.TRISD9 = 0;
 
+    TRISBbits.TRISB12 = 1;
+    TRISBbits.TRISB13 = 1;
     OUT_TxEnable = 0;   //clear transmit enable
     PIC16_SLEEP = 0;       //keep PIC16 asleep
     GPS_S_EN = 0;

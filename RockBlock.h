@@ -14,15 +14,15 @@
 #define RB_IDLE_FIRM_TIMEOUT 4500
 #define RB_IDLE_HARD_TIMEOUT 6000
 
-//#define BALLAST RBRXbuf[2]==0xF0&&RBRXbuf[3]==0x9F&&RBRXbuf[4]==0x92&&RBRXbuf[5]==0xB0
-//#define CUTDOWN RBRXbuf[2]==0xE2&&RBRXbuf[3]==0x9C&&RBRXbuf[4]==0x82&&RBRXbuf[5]==0x20
-//#define REQUEST RBRXbuf[6]==0xF0&&RBRXbuf[7]==0x9F&&RBRXbuf[8]==0x99&&RBRXbuf[9]==0x83
-//#define CONFIRM RBRXbuf[6]==0xF0&&RBRXbuf[7]==0x9F&&RBRXbuf[8]==0x91&&RBRXbuf[9]==0x8D
+#define BALLAST RBRXbuf[2]==0xF0&&RBRXbuf[3]==0x9F&&RBRXbuf[4]==0x92&&RBRXbuf[5]==0xB0
+#define CUTDOWN RBRXbuf[2]==0xE2&&RBRXbuf[3]==0x9C&&RBRXbuf[4]==0x82&&RBRXbuf[5]==0x20
+#define REQUEST RBRXbuf[6]==0xF0&&RBRXbuf[7]==0x9F&&RBRXbuf[8]==0x99&&RBRXbuf[9]==0x83
+#define CONFIRM RBRXbuf[6]==0xF0&&RBRXbuf[7]==0x9F&&RBRXbuf[8]==0x91&&RBRXbuf[9]==0x8D
 
-#define BALLAST RBRXbuf[0]=='B'&&RBRXbuf[1]=='A'&&RBRXbuf[2]=='L'&&RBRXbuf[3]=='L'
-#define CUTDOWN RBRXbuf[0]=='C'&&RBRXbuf[1]=='U'&&RBRXbuf[2]=='T'&&RBRXbuf[3]=='D'
-#define REQUEST RBRXbuf[4]=='R'&&RBRXbuf[5]=='E'&&RBRXbuf[6]=='Q'&&RBRXbuf[7]=='U'
-#define CONFIRM RBRXbuf[4]=='C'&&RBRXbuf[5]=='O'&&RBRXbuf[6]=='N'&&RBRXbuf[7]=='F'
+//#define BALLAST RBRXbuf[0]=='B'&&RBRXbuf[1]=='A'&&RBRXbuf[2]=='L'&&RBRXbuf[3]=='L'
+//#define CUTDOWN RBRXbuf[0]=='C'&&RBRXbuf[1]=='U'&&RBRXbuf[2]=='T'&&RBRXbuf[3]=='D'
+//#define REQUEST RBRXbuf[4]=='R'&&RBRXbuf[5]=='E'&&RBRXbuf[6]=='Q'&&RBRXbuf[7]=='U'
+//#define CONFIRM RBRXbuf[4]=='C'&&RBRXbuf[5]=='O'&&RBRXbuf[6]=='N'&&RBRXbuf[7]=='F'
 
 
 typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT} rb_state_t;

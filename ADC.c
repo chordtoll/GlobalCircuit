@@ -11,8 +11,11 @@
 
 void InitPICADC() {
     AD1PCFGbits.PCFG0 = 0;//Enable analog on AN0
+    AD1PCFGbits.PCFG12 = 0;
+    AD1PCFGbits.PCFG13 = 0;
 
     TRISBbits.TRISB0 = 1; //AN0 is input
+
 
     AD1CHSbits.CH0SA = 0; //ADCA+=AN0
     AD1CHSbits.CH0NA = 0; //ADCA-=VR-
@@ -122,8 +125,8 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 }
 
 uint16_t ReadExtADC(uint8_t channel) {
-    WaitMS(20);
+    WaitMS(1);
     ReadExtADC_Aux(channel);
-    WaitMS(20);
+    WaitMS(1);
     return ReadExtADC_Aux(channel);
 }
