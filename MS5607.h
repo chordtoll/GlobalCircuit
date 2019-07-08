@@ -25,6 +25,20 @@
 #define ALT_OSR_2048  0x06  //resolution at 2048
 #define ALT_OSR_4096  0x08  //resolution at 4096
 
+#define ALT_C1_ADD 1
+#define ALT_C2_ADD 2
+#define ALT_C3_ADD 3
+#define ALT_C4_ADD 4
+#define ALT_C5_ADD 5
+#define ALT_C6_ADD 6
+
+uint16_t C1 = 0;
+uint16_t C2 = 0;
+uint16_t C3 = 0;
+uint16_t C4 = 0;
+uint16_t C5 = 0;
+uint16_t C6 = 0;
+int32_t dT = 0;
 
 //initialize altimeter
 uint8_t InitAltimeter(uint8_t addr);
@@ -40,6 +54,12 @@ uint8_t ReadAltimeter_ADC(uint8_t addr, uint32_t* val);
 
 //read a apecific location of PROM
 uint16_t ReadAltimeter_Param(uint8_t addr, uint8_t loc);
+
+//converts raw temperature reading to °K*100
+uint32_t ConvertAltimeter_Temp(uint32_t rawTemp);
+
+//converts raw pressure reading to mbar*100
+uint32_t ConvertAltimeter_Pressure(uint32_t rawPress);
 
 #endif	/* MS5607_H */
 

@@ -2,13 +2,24 @@
 #include "MS5607.h"
 
 //Initializes altimeter module
-uint8_t InitAltimeter(uint8_t addr) {
+uint8_t StartAltimeter(uint8_t addr) {
     uint8_t ack=0;
     StartI2C();                    //start I2C communication
     ack |= WriteI2C(addr << 1);    //reset the altimeter
     ack |= WriteI2C(ALT_CMD_RESET);
     StopI2C();                     //stop I2C communication
     return ack;                    //return acknowledge status
+}
+
+uint8_t InitAltimeter(uint8_t addr)
+{
+    StartAltimeter(addr);
+    C1 = ReadAltimeter_Param(addr, ALT_C1_ADD);
+    C2 = ReadAltimeter_Param(addr, ALT_C2_ADD);
+    C3 = ReadAltimeter_Param(addr, ALT_C3_ADD);
+    C4 = ReadAltimeter_Param(addr, ALT_C4_ADD);
+    C5 = ReadAltimeter_Param(addr, ALT_C5_ADD);
+    C6 = ReadAltimeter_Param(addr, ALT_C6_ADD);
 }
 
 //Begins altimeter pressure conversion
@@ -66,4 +77,18 @@ uint16_t ReadAltimeter_Param(uint8_t addr, uint8_t loc) {
     NAckI2C();                        //send a NAck
     StopI2C();                        //stop I2C communication
     return val;                       //return read in value
+}
+
+uint32_t ConvertAltimeter_Temp(uint32_t rawTemp)
+{
+    dT = rawTemp - C5 * (1 << 8);
+    return (2000+dT*C6/(1<<23))+27300;
+}
+
+uint32_t ConvertAltimeter_Pressure(uint32_t rawPress)
+{
+    int64_t off = C2*(1 << 17) + (C4*dT)/(1 << 6);
+    int64_t sens = C1*(1 << 16) + (C3*dT)/(1 << 7);
+    uint32_t press = (rawPress*sens/(1 << 21) - off)/(1<<15);
+    return press;
 }

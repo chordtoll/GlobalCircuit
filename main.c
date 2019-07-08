@@ -180,6 +180,7 @@ int main(void) {
                     break;
                 case 1:                                            //if 0.1s into packet
                     ReadAltimeter_ADC(ALT_ADDR, &supTemperature);  //read altimeter temperature
+                    supTemperature = ConvertAltimeter_Temp(supTemperature);
                     supIl1=ReadPICADC(8);                          //store current1 low value
                     break;
                 case 2:                                            //if 0.2s into packet
@@ -188,6 +189,7 @@ int main(void) {
                     break;
                 case 3:                                            //if 0.3s into packet
                     ReadAltimeter_ADC(ALT_ADDR, &supPressure);     //read altimeter pressure
+                    supPressure = ConvertAltimeter_Pressure(supPressure);
                     supIh0=ReadPICADC(5);                          //store current0 high value
                     break;
                 case 4:                                            //if 0.4s into packet
