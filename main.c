@@ -81,6 +81,8 @@ int main(void) {
 
     InitInterrupt();            //initialize interrupts
 
+    InitTiming();               //initialize timer for delays
+
     InitI2C();                  //initialize I2C
     InitMagneto(MAG_ADDR);      //initialize magnetometer
     InitAltimeter(ALT_ADDR);    //intialize altimeter
@@ -88,8 +90,6 @@ int main(void) {
     InitSPI1();                 //initialize SPI 1
 
     InitPICADC();               //initialize ADC
-
-    InitTiming();               //initialize timer for delays
 
     InitLoopDelay();            //initialize packet loop delays
 
@@ -158,17 +158,17 @@ int main(void) {
                 case 5:
                     if(statetimer == 5)                                      //if 0.5s into packet
                     {
-                        ReadGPS(&gTime, &gLat, &gLon, &gAlt);                //read GPS values
+                        ReadGPS(&gTime, &gLat, &gLon, &gAlt);                           //read GPS values
                         Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt);          //store GPS values into packet
                     }
                     break;
                 }                                                    //if 0.6s into interval
-            if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 5 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND) //if GPS is asleep and RB is idle
-            {
-                ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
-                Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
-                statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 2;
-            }
+            //if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 5 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND) //if GPS is asleep and RB is idle
+            //{
+                //ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
+                //Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
+                //statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 2;
+            //}
         }
         else                                                       //if on conductivity packet
         {
