@@ -101,7 +101,15 @@ void InitGPS(void) {
 #ifdef MOSFET_GPS_RESET
     //PORTDbits.RD9=0; //take GPS out of reset
 #endif
-
+    ResetWatchdog();
+    SleepGPS();
+    GPS_BAT_EN = 1;
+    WaitS(2);
+    WakeGPS();
+    GPS_BAT_EN = 0;
+    ResetWatchdog();
+    WaitS(6);
+    ResetWatchdog();
     for (i=0;i<16;i++) {            //send initialization string to GPS
         U2TXREG=InitString[i];
         while (U2STAbits.TRMT == 0);//wait for the full message to be sent
@@ -146,6 +154,8 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
 {
+    if(U2STAbits.OERR)
+        U2STAbits.OERR = 0;
     char receivedChar = U2RXREG; //get char from uart1rec line
     if (gpsbufi>=80) {
         gpsbufi=0;
@@ -157,13 +167,13 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         gpsbuf[gpsbufi++]=receivedChar;
         gpsbuf[gpsbufi++]=0;
         CheckPosFix(gpsbuf);
-        if(locked)
-        {
-                strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
-                GPSnew=1;
-                locked = 0;
+        strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
+        GPSnew=1;
+        locked = 0;
+        //if(locked)
+        //{
                 //SleepGPS();
-        }
+        //}
     } else {
         gpsbuf[gpsbufi++]=receivedChar;
     }

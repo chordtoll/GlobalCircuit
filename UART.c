@@ -53,8 +53,10 @@ void InitInterrupt()
 
 void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART1_ISR(void)
 {
+    if(U1STAbits.OERR)
+        U1STAbits.OERR = 0;
     char receivedChar = U1RXREG; //get char from uart1rec line
-    
+
     if (_rb_status==RB_BUSY) {
         if (_rb_idx>=340)
             _rb_idx=0;

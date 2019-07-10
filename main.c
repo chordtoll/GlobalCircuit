@@ -72,16 +72,15 @@ int main(void) {
     yikes.byte=0;               //clear error flags
     yikes.reset=1;              //set reset flag
 
+    InitUART();                 //initialize UART
+    InitInterrupt();            //initialize interrupts
+
     InitGPIO();                 //initialize GPIO
 
-    InitUART();                 //initialize UART
+    InitTiming();               //initialize timer for delays
 
     InitGPS();                  //initialize GPS
     InitRB();                   //initialize RockBlock
-
-    InitInterrupt();            //initialize interrupts
-
-    InitTiming();               //initialize timer for delays
 
     InitI2C();                  //initialize I2C
     InitMagneto(MAG_ADDR);      //initialize magnetometer
