@@ -162,12 +162,13 @@ int main(void) {
                     }
                     break;
                 }                                                    //if 0.6s into interval
-            //if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 5 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND) //if GPS is asleep and RB is idle
-            //{
-                //ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
-                //Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
-                //statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 2;
-            //}
+            //**************************SLEEP CODE**************************//
+            /*if(GPS_S_EN && _rb_state == RB_IDLE && statetimer%T_FASTSAM_INTERVAL > 5 && T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) > T_SECOND) //if GPS is asleep and RB is idle
+            {
+                ResetWatchdog();                                     //sleep for remainder of interval, update statetimer to match
+                Idle(((T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL)) - 1));
+                statetimer += T_FASTSAM_INTERVAL-(statetimer%T_FASTSAM_INTERVAL) - 2;
+            }*/
         }
         else                                                       //if on conductivity packet
         {

@@ -8,6 +8,8 @@
 #ifndef CUTDOWN_H
 #define	CUTDOWN_H
 
+#define CUT_ACK_TIMEOUT 10   //number of minutes that cutdown will wait for acknowledge before timing out
+
 char cutdown_rq = 0;         //flag for cutdown dealings
 
 //try a cutdown with the PIC16, returns 1 on success, 0 on failure

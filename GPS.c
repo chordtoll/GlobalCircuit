@@ -102,10 +102,10 @@ void InitGPS(void) {
     //PORTDbits.RD9=0; //take GPS out of reset
 #endif
     ResetWatchdog();
-    SleepGPS();
+    GPS_S_EN = 1;
     GPS_BAT_EN = 1;
     WaitS(2);
-    WakeGPS();
+    GPS_S_EN = 0;
     GPS_BAT_EN = 0;
     ResetWatchdog();
     WaitS(6);
@@ -118,12 +118,12 @@ void InitGPS(void) {
 
 void SleepGPS()
 {
-    GPS_S_EN = 1;
+    //GPS_S_EN = 1;
 }
 
 void WakeGPS()
 {
-    GPS_S_EN = 0;
+    //GPS_S_EN = 0;
 }
 
 void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
@@ -149,7 +149,7 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
     }
     else
         yikes.gpslock = 1;
-    //WakeGPS();
+    WakeGPS();
 }
 
 void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART2_ISR(void)
@@ -170,10 +170,10 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
         GPSnew=1;
         locked = 0;
-        //if(locked)
-        //{
-                //SleepGPS();
-        //}
+        if(locked)
+        {
+                SleepGPS();
+        }
     } else {
         gpsbuf[gpsbufi++]=receivedChar;
     }

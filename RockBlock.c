@@ -182,7 +182,7 @@ void TickRB() {
                     ballast_rq = 1;                            //set ballast_rq flag
                     _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(ballast_rq >= 3 && ballast_rq <= 7 && BALLAST && CONFIRM && ((RBRXbuf[8] >= '0' && RBRXbuf[8] <= '9') || (RBRXbuf[8] >= 'A' && RBRXbuf[8] <= 'F') || (RBRXbuf[8] >= 'a' && RBRXbuf[8] <= 'f'))) //if a ballast acknowledge is expected and was received
+                else if(ballast_rq >= 3 && ballast_rq <= BALL_ACK_TIMEOUT+2 && BALLAST && CONFIRM && ((RBRXbuf[8] >= '0' && RBRXbuf[8] <= '9') || (RBRXbuf[8] >= 'A' && RBRXbuf[8] <= 'F') || (RBRXbuf[8] >= 'a' && RBRXbuf[8] <= 'f'))) //if a ballast acknowledge is expected and was received
                 {
                     if(RBRXbuf[8] <= '9')
                         DeployBallast(RBRXbuf[8] - '0');                          //begin ballast deployment
@@ -198,7 +198,7 @@ void TickRB() {
                     cutdown_rq = 1;                            //set cutdown_rq flag
                     _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(cutdown_rq >= 3 && cutdown_rq <= 7 && CUTDOWN && CONFIRM) //if a cutdown acknowledge is expected as was received
+                else if(cutdown_rq >= 3 && cutdown_rq <= CUT_ACK_TIMEOUT+2 && CUTDOWN && CONFIRM) //if a cutdown acknowledge is expected as was received
                 {
                      InitiateCutdown();                        //initiate a cutdown sequence
                      cutdown_rq = 0;                           //clear the cutdown_rq flag

@@ -1,6 +1,6 @@
 #include "GPIO.h"
 #include "Cutdown.h"
-#include "Timing.c"
+#include "Timing.h"
 
 #define CDFLAG_SUCCESS 1     //cutdown was a success
 #define CDFLAG_INPROGRESS 2  //cutdown in progress
@@ -25,7 +25,7 @@ uint8_t GetCutdownStatus() {
     if(cutdown_rq)                               //if cutdown has been requested
     {
         ++cutdown_rq;                            //increment cutdown request counter
-        if(cutdown_rq == 8)                      //if the window for confirmation was missed
+        if(cutdown_rq == CUT_ACK_TIMEOUT+3)      //if the window for confirmation was missed
         {
             cutdown_rq = 0;                      //clear the cutdown request counter
             return 0;                            //clear the cutdown flag

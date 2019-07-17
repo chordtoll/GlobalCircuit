@@ -8,6 +8,8 @@
 #ifndef BALLAST_H
 #define	BALLAST_H
 
+#define BALL_ACK_TIMEOUT 10 //number of minutes that ballast will wait for acknowledge before timing out
+
 char ballast_rq = 0;    //flag for ballast dealings
 
 //runs through sequence of deploying the ballast with a passed address, updates flag based on success of deployment
