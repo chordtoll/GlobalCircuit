@@ -10,6 +10,17 @@
 
 #include <stdint.h>
 
+#define RB_BEGIN_AT "+++\r"
+#define RB_NO_FLOWC "AT&K0\r"
+#define RB_NO_DTR "AT%D0\r"
+#define RB_NO_RINGID "AT+SBDMTA=0\r"
+#define RB_CLEARBUFF "AT+SBDD0\r"
+#define RB_WRITE340 "AT+SBDWB=340\r"
+#define RB_SEND "AT+SBDIX\r"
+#define RB_RECEIVE "AT+SBDRB\r"
+#define RB_SAVE_CONFIG "AT&W0\r"
+#define RB_RESET "ATZ0"
+
 #define RB_IDLE_SOFT_TIMEOUT 3000
 #define RB_IDLE_FIRM_TIMEOUT 4500
 #define RB_IDLE_HARD_TIMEOUT 6000
