@@ -1,44 +1,32 @@
 #include <proc/p32mx360f512l.h>
 #include "Packet.h"
 
-void Pack_Supervision(packet_u *pack, uint16_t sequence)
+void Pack_Supervision(packet_u *pack)
 {
-    switch (sequence%10) {
-        case 0: //temperature
-            (*pack).norm.sup._1u32=supTemperature;
-            break;
-        case 1: //pressure
-            (*pack).norm.sup._1u32=supPressure;
-            break;
-        case 2: //PICADC channels 4 and 8
-            (*pack).norm.sup._2u16.a=supIl0;
-            (*pack).norm.sup._2u16.b=supIl1;
-            break;
-        case 3: //PICADC channels 10 and 5
-            (*pack).norm.sup._2u16.a=supIl2;
-            (*pack).norm.sup._2u16.b=supIh0;
-            break;
-        case 4: //PICADC channels 9 and 11
-            (*pack).norm.sup._2u16.a=supIh1;
-            (*pack).norm.sup._2u16.b=supIh2;
-            break;
-        case 5: //PICADC channels 0 and 1
-            (*pack).norm.sup._2u16.a=supT0;
-            (*pack).norm.sup._2u16.b=supT1;
-            break;
-        case 6: //PICADC channel 3
-            (*pack).norm.sup._2u16.a=supT2;
-            (*pack).norm.sup._2u16.b=supTmag;
-            break;
-        case 7:
-            (*pack).norm.sup._2u16.a=0; //TADC1
-            (*pack).norm.sup._2u16.b=0; //TADC2
-            break;
-        case 8:
-            (*pack).norm.sup._2u16.a=supText;
-            (*pack).norm.sup._2u16.b=supTRB;
-            break;
-    }
+            (*pack).norm.sup0._1u32=supTemperature;
+            
+            (*pack).norm.sup1._1u32=supPressure;
+            
+            (*pack).norm.sup2._2u16.a=supIl0;
+            (*pack).norm.sup2._2u16.b=supIl1;
+
+            (*pack).norm.sup3._2u16.a=supIl2;
+            (*pack).norm.sup3._2u16.b=supIh0;
+
+            (*pack).norm.sup4._2u16.a=supIh1;
+            (*pack).norm.sup4._2u16.b=supIh2;
+
+            (*pack).norm.sup5._2u16.a=supT0;
+            (*pack).norm.sup5._2u16.b=supT1;
+
+            (*pack).norm.sup6._2u16.a=supT2;
+            (*pack).norm.sup6._2u16.b=supTmag;
+
+            (*pack).norm.sup7._2u16.a=0; //TADC1
+            (*pack).norm.sup7._2u16.b=0; //TADC2
+
+            (*pack).norm.sup8._2u16.a=supText;
+            (*pack).norm.sup8._2u16.b=supTRB;
 }
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)

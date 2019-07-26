@@ -37,6 +37,7 @@ uint16_t supTRB;           //RockBlock temperature
 //     Conductivity values now sent in an interweaved pattern
 //4->5:Add Ctime field
 //     Add conpol yikes bit
+//5->6:Add fields for all supervision values
 #define PACKET_VERSION 5
 
 typedef union u_sup {
@@ -72,10 +73,18 @@ struct __attribute__((packed)) s_packet_norm {
     uint16_t compassZ[12];  //Magnetic field z component- raw compass value, 1 per 5 seconds
     uint16_t cVert1[15];    //Vertical probe 1 conductivity data- raw adc value
     uint16_t cVert2[15];    //Vertical probe 2 conductivity data- raw adc value,
-    sup_t sup;              //Supervision Field
     uint8_t ballast;        //Ballast status flags
     uint8_t cutdown;        //Cutdown status flags
     uint32_t Ctime;         //GPS time of conductivity measurement
+    sup_t sup0;
+    sup_t sup1;
+    sup_t sup2;
+    sup_t sup3;
+    sup_t sup4;
+    sup_t sup5;
+    sup_t sup6;
+    sup_t sup7;
+    sup_t sup8;
 };
 
 typedef union u_packet
