@@ -47,7 +47,7 @@ void TickRB() {
             break;
         case SENT_ATEo:                        //if in AT command mode,
             if (_rb_status==RB_OK) {           //if rockblock is receiving commands correctly
-                SendString_UART1("AT&K0\r");   //set no flow control
+                SendString_UART1(RB_NO_FLOWC);   //set no flow control
                 _rb_state=SENT_ATnKo;          //update state to SENT_ATnKo;
                 _rb_status=RB_BUSY;            //indicate that the rockblock is busy
             }
@@ -56,9 +56,20 @@ void TickRB() {
                 _rb_state=RB_INIT;             //reinitialize the communication
             }
             break;
-        case SENT_ATnKo:                           //if no flow control was set,
+        case SENT_ATnKo:
+            if (_rb_status==RB_OK) {           //if rockblock is receiving commands correctly
+                SendString_UART1(RB_NO_DTR);   //set no flow control
+                _rb_state=SENT_ATnDo;          //update state to SENT_ATnKo;
+                _rb_status=RB_BUSY;            //indicate that the rockblock is busy
+            }
+            if (_rb_status==RB_ERROR) {        //if rockblock received an error,
+                yikes.rberror=1;               //set the rberror yikes flag
+                _rb_state=RB_INIT;             //reinitialize the communication
+            }
+            break;
+        case SENT_ATnDo:                           //if no flow control was set,
             if (_rb_status==RB_OK) {               //if rockblock is recieving commands correctly,
-                SendString_UART1("AT+SBDMTA=0\r"); //disable ring identification
+                SendString_UART1(RB_NO_RINGID);    //disable ring identification
                 _rb_state=SENT_SBDMTA;             //update state to SENT_SBDMTA
                 _rb_status=RB_BUSY;                //indicate that the rockblock is busy
             }
@@ -69,7 +80,7 @@ void TickRB() {
             break;
         case SENT_SBDMTA:                       //if ring identification has been disabled,
             if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
-                SendString_UART1("AT+SBDD0\r"); //clear the message buffer
+                SendString_UART1(RB_CLEARBUFF); //clear the message buffer
                 _rb_state=SENT_SBDDo;           //update state to SEND_SBDDo
                 _rb_status=RB_BUSY;             //indicate that the rockblock is busy
             }
@@ -95,7 +106,7 @@ void TickRB() {
             }
             break;
         case BEGINSEND:                         //if it is time to send a message,
-            SendString_UART1("AT+SBDWB=340\r"); //prepare a message of 340 characters maximum
+            SendString_UART1(RB_WRITE340); //prepare a message of 340 characters maximum
             _rb_state=SENT_SBDWB;               //update state to SENT_SBDWB
             _rb_status=RB_BUSY;                 //indicate that the rockblock is busy
             break;
@@ -127,7 +138,7 @@ void TickRB() {
             break;
         case SENT_CSUM:                         //if the checksum has been sent,
             if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
-                SendString_UART1("AT+SBDIX\r"); //initiate an SBD session
+                SendString_UART1(RB_SEND);      //initiate an SBD session
                 _rb_state=SENT_SBDIX;           //update state to SENT_SBDIX
                 _rb_status=RB_BUSY;             //indicate that the rockblock is busy
             }
@@ -142,7 +153,7 @@ void TickRB() {
                 ParseSBDIX(_rb_cmdbuf,_rb_mos,_rb_mom,_rb_mts,_rb_mtm,_rb_mtl,_rb_mtq);
                 _rb_imtl=atoi(_rb_mtl);             //parse the message length parameter from ascii to integer
                 if (_rb_imtl>0) {                   //if the message has a length greater than 0
-                    SendString_UART1("AT+SBDRB\r"); //send the message
+                    SendString_UART1(RB_RECEIVE); //send the message
                     _rb_state=SENT_SBDRB;           //update state to SENT_SBDRB
                     _rb_status=RB_BUSY;             //indicate that the rockblock is busy
                 } else {                            //if there is no message

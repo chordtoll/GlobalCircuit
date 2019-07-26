@@ -12,7 +12,7 @@
 
 #define RB_BEGIN_AT "+++\r"
 #define RB_NO_FLOWC "AT&K0\r"
-#define RB_NO_DTR "AT%D0\r"
+#define RB_NO_DTR "AT&D0\r"
 #define RB_NO_RINGID "AT+SBDMTA=0\r"
 #define RB_CLEARBUFF "AT+SBDD0\r"
 #define RB_WRITE340 "AT+SBDWB=340\r"
@@ -36,7 +36,7 @@
 #define CONFIRM RBRXbuf[4]=='C'&&RBRXbuf[5]=='O'&&RBRXbuf[6]=='N'&&RBRXbuf[7]=='F'
 
 
-typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT} rb_state_t;
+typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT, SENT_ATnDo} rb_state_t;
 typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
 
 rb_state_t _rb_state;   //current rockblock state
