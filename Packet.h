@@ -95,7 +95,7 @@ typedef union u_packet
 
 
 //update SUP field of packet with supervision value, rotated based on sequence number
-void Pack_Supervision(packet_u *pack, uint16_t sequence);
+void Pack_Supervision(packet_u *pack);
 
 //update conductivity fields of packet with 1/10 of conductivity data, slice based on sequence
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2);

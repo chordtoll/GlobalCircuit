@@ -255,7 +255,7 @@ int main(void) {
         ++statetimer;
         //If it's time to send a packet,
         if (statetimer>T_SLOWSAM_INTERVAL) {
-            Pack_Supervision(&packet, sequence);                   //pack supervision values into the packet
+            Pack_Supervision(&packet);                             //pack supervision values into the packet
             Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
             packet.norm.cutdown = GetCutdownStatus();              //update cutdown status
             packet.norm.ballast = GetBallastStatus();              //update ballast status
