@@ -22,11 +22,8 @@ void Pack_Supervision(packet_u *pack)
             (*pack).norm.sup6._2u16.a=supT2;
             (*pack).norm.sup6._2u16.b=supTmag;
 
-            (*pack).norm.sup7._2u16.a=0; //TADC1
-            (*pack).norm.sup7._2u16.b=0; //TADC2
-
-            (*pack).norm.sup8._2u16.a=supText;
-            (*pack).norm.sup8._2u16.b=supTRB;
+            (*pack).norm.sup7._2u16.a=supText;
+            (*pack).norm.sup7._2u16.b=supTRB;
 }
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)

@@ -23,8 +23,6 @@ uint16_t supT0;            //PICADC channel 0
 uint16_t supT1;            //PICADC channel 1
 uint16_t supT2;            //PICADC channel 3
 uint8_t supTmag;           //magnetometer temperature
-uint16_t supTadc1;         //external ADC1 temperature
-uint16_t supTadc2;         //external ADC2 temperature
 uint16_t supText;          //external payload temperature
 uint16_t supTRB;           //RockBlock temperature
 
@@ -84,7 +82,6 @@ struct __attribute__((packed)) s_packet_norm {
     sup_t sup5;
     sup_t sup6;
     sup_t sup7;
-    sup_t sup8;
 };
 
 typedef union u_packet
