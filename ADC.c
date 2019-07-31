@@ -125,8 +125,7 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 }
 
 uint16_t ReadExtADC(uint8_t channel) {
-    WaitMS(20);
     ReadExtADC_Aux(channel);
-    WaitMS(20);
+    WaitMS(10);
     return ReadExtADC_Aux(channel);
 }
