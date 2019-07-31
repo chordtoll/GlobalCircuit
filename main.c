@@ -59,6 +59,7 @@ int main(void) {
     uint32_t gLat=0;
     uint32_t gLon=0;
     uint32_t gAlt=0;
+    uint8_t gSats=0;
 
     uint8_t conductivityDone=0; //flag indicating state of conductivity measurements
     uint16_t conductivityDir=0; //direction of probe charging for conductivity measurements, odd=up, even=down
@@ -157,8 +158,8 @@ int main(void) {
                 case 5:
                     if(statetimer == 5)                                      //if 0.5s into packet
                     {
-                        ReadGPS(&gTime, &gLat, &gLon, &gAlt);                           //read GPS values
-                        Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt);          //store GPS values into packet
+                        ReadGPS(&gTime, &gLat, &gLon, &gAlt, &gSats);                   //read GPS values
+                        Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt, gSats);   //store GPS values into packet
                     }
                     break;
                 case 6:                                            //if 0.6s into packet
@@ -242,6 +243,8 @@ int main(void) {
                     break;
                 case T_CON_CHG2_END:                               //if second charging cycle is complete (3s into packet)
                     ChargeProbe(NONE);                             //stop charging probes
+                    ReadGPS(&gTime, &gLat, &gLon, &gAlt, &gSats);                   //read GPS values
+                    Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt, gSats);   //store GPS values into packet
                     break;
                 }
             //While in conductivity measuring interval,

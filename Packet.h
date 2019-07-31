@@ -25,6 +25,8 @@ uint16_t supT2;            //PICADC channel 3
 uint8_t supTmag;           //magnetometer temperature
 uint16_t supText;          //external payload temperature
 uint16_t supTRB;           //RockBlock temperature
+uint16_t supTadc1;         //adc1 temperature
+uint16_t supTadc2;         //adc2 temperature
 
 //PACKET CHANGELOG:
 //1->2:Add rbtime field to yikes byte
@@ -36,6 +38,8 @@ uint16_t supTRB;           //RockBlock temperature
 //4->5:Add Ctime field
 //     Add conpol yikes bit
 //5->6:Add fields for all supervision values
+//     Add GPSSats field
+//     Add RBSig field
 #define PACKET_VERSION 5
 
 typedef union u_sup {
@@ -74,7 +78,9 @@ struct __attribute__((packed)) s_packet_norm {
     uint8_t ballast;        //Ballast status flags
     uint8_t cutdown;        //Cutdown status flags
     uint32_t Ctime;         //GPS time of conductivity measurement
-    sup_t sup0;
+    uint8_t GPSSats;        //number of sattelites the GPS is using
+    uint8_t RBSig;          //signal strength of Rockblock
+    sup_t sup0;             //supervision values
     sup_t sup1;
     sup_t sup2;
     sup_t sup3;
@@ -82,6 +88,8 @@ struct __attribute__((packed)) s_packet_norm {
     sup_t sup5;
     sup_t sup6;
     sup_t sup7;
+    sup_t sup8;
+
 };
 
 typedef union u_packet
@@ -98,7 +106,7 @@ void Pack_Supervision(packet_u *pack);
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2);
 
 //update GPS fields of packet with GPS data
-void Pack_GPS(packet_u *pack, uint32_t time, uint32_t Ctime, uint32_t lat, uint32_t lon, uint32_t alt);
+void Pack_GPS(packet_u *pack, uint32_t time, uint32_t Ctime, uint32_t lat, uint32_t lon, uint32_t alt, uint8_t gSats);
 
 //update vertical probe fields of packet with vertical probe data
 void Pack_Vert(packet_u *pack, uint16_t index, uint16_t vert1, uint16_t vert2, uint16_t vertD);

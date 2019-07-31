@@ -8,7 +8,7 @@ volatile char gpsbuf[84];
 volatile uint8_t gpsbufi;
 uint8_t locked = 0;
 
-void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti) {
+void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti, char *sats) {
     uint8_t field=0;          //selects which field is currently being updated
     uint16_t fieldstart=0;    //starting offset of each field
     uint16_t idx=0;           //data offset
@@ -23,6 +23,9 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
                     break;
                 case 4:
                     llon[idx-fieldstart]=0;
+                    break;
+                case 7:
+                    sats[idx-fieldstart]=0;
                     break;
                 case 9:
                     alti[idx-fieldstart]=0;
@@ -46,6 +49,9 @@ void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char 
                     break;
                 case 5:
                     *lond=data[idx];
+                    break;
+                case 7:
+                    sats[idx-fieldstart]=data[idx];
                     break;
                 case 9:
                     alti[idx-fieldstart]=data[idx];
@@ -126,17 +132,18 @@ void WakeGPS()
     //GPS_S_EN = 0;
 }
 
-void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
+void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_t* sats) {
     char nTime[20];
     char nLati[20];
     char nLong[20];
     char nAlti[20];
+    char nSats[10];
     char nLatD;
     char nLonD;
     if (GPSnew) {
         GPSnew=0;
     if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
-        ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti);
+        ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti, nSats);
         *time=atof(nTime);
         *lat=(atof(nLati)*10000);
         if (nLatD=='S')
@@ -144,6 +151,7 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt) {
         *lon=(atof(nLong)*10000);
         if (nLonD=='W')
             *lon|=0x80000000;
+        *sats=(atoi(nSats));
         *alt=(atof(nAlti)*10);
     }
     }

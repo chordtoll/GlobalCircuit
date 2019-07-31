@@ -15,12 +15,12 @@ volatile char GPSnew;
 volatile char GPSdata[84];
 
 //sorts data stored in the *data pointer into various other data pointers relevant to what the data represents
-void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti);
+void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti, char* sats);
 
-//start the GPS
+//start the GPS33
 void InitGPS(void);
 
-void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt);
+void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_t* sats);
 
 //put the GPS to sleep
 void SleepGPS();

@@ -22,8 +22,11 @@ void Pack_Supervision(packet_u *pack)
             (*pack).norm.sup6._2u16.a=supT2;
             (*pack).norm.sup6._2u16.b=supTmag;
 
-            (*pack).norm.sup7._2u16.a=supText;
-            (*pack).norm.sup7._2u16.b=supTRB;
+            (*pack).norm.sup7._2u16.a=supTadc1;
+            (*pack).norm.sup7._2u16.b=supTadc2;
+            
+            (*pack).norm.sup8._2u16.a=supText;
+            (*pack).norm.sup8._2u16.b=supTRB;
 }
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)
@@ -43,13 +46,14 @@ void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint
     }
 }
 
-void Pack_GPS(packet_u *pack, uint32_t time, uint32_t Ctime, uint32_t lat, uint32_t lon, uint32_t alt)
+void Pack_GPS(packet_u *pack, uint32_t time, uint32_t Ctime, uint32_t lat, uint32_t lon, uint32_t alt, uint8_t gSats)
 {
     (*pack).norm.time = time;
     (*pack).norm.Ctime = Ctime;
     (*pack).norm.lat = lat;
     (*pack).norm.lon = lon;
     (*pack).norm.alt = alt;
+    (*pack).norm.GPSSats = gSats;
 }
 
 void Pack_Vert(packet_u *pack, uint16_t index, uint16_t vert1, uint16_t vert2, uint16_t vertD)
