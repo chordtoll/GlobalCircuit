@@ -9,6 +9,7 @@ char _rb_reqsend;       //flag indicating that a request to send data was made
 uint16_t _rb_idletimer; //timer that keeps track of number of ticks RB has been busy consecutively
 
 void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq);
+uint8_t ParseCSQ(volatile char *cmdbuf);
 
 void InitRB() {
     _rb_state=RB_INIT;  //set rockblock to initialization state
@@ -102,11 +103,26 @@ void TickRB() {
             if (_rb_reqsend)         //if a request to send has been administered,
             {
                 _rb_reqsend=0;       //clear reqsend flag
-                _rb_state=BEGINSEND; //update state to begin sending
+                _rb_state=CHECK_SIG; //update state to check signal
+            }
+            break;
+        case CHECK_SIG:
+            SendString_UART1(RB_READSIG);
+            _rb_state=SENT_CSQ;
+            _rb_status=RB_BUSY;
+            break;
+        case SENT_CSQ:
+            if (_rb_status==RB_OK) {
+                //_rb_sig = ParseCSQ(_rb_cmdbuf);
+                _rb_state=BEGINSEND;
+            }
+            if (_rb_status==RB_ERROR) {
+                yikes.rberror=1;
+                _rb_state=RB_INIT;
             }
             break;
         case BEGINSEND:                         //if it is time to send a message,
-            SendString_UART1(RB_WRITE340); //prepare a message of 340 characters maximum
+            SendString_UART1(RB_WRITE340);      //prepare a message of 340 characters maximum
             _rb_state=SENT_SBDWB;               //update state to SENT_SBDWB
             _rb_status=RB_BUSY;                 //indicate that the rockblock is busy
             break;
@@ -433,6 +449,16 @@ void TickRB() {
 void SendString_RB(char *msg) {
     memcpy((void *)RBTXbuf,msg,340); //copy the message into the transmitting buffer
     _rb_reqsend=1;                   //request to send the message
+}
+
+uint8_t ParseCSQ(volatile char *cmdbuf)
+{
+    while(*cmdbuf!=':')
+        ++cmdbuf;
+    if(*cmdbuf >= '0' && *cmdbuf <= '9')
+        return atoi(*(++cmdbuf));
+    else
+        ++cmdbuf;
 }
 
 void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {

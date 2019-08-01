@@ -119,6 +119,7 @@ int main(void) {
     //=============================//
     while (1) {
         TickRB();                                                      //Advance RockBlock state machine
+        packet.norm.RBSig = _rb_sig;
         if(sequence%(SEQUENCE_CYCLE+1) || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)

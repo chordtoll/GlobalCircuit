@@ -40,7 +40,7 @@ uint16_t supTadc2;         //adc2 temperature
 //5->6:Add fields for all supervision values
 //     Add GPSSats field
 //     Add RBSig field
-#define PACKET_VERSION 5
+#define PACKET_VERSION 6
 
 typedef union u_sup {
     uint32_t _1u32;

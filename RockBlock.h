@@ -20,6 +20,7 @@
 #define RB_RECEIVE "AT+SBDRB\r"
 #define RB_SAVE_CONFIG "AT&W0\r"
 #define RB_RESET "ATZ0"
+#define RB_READSIG "AT+CSQ\r"
 
 #define RB_IDLE_SOFT_TIMEOUT 3000
 #define RB_IDLE_FIRM_TIMEOUT 4500
@@ -36,7 +37,7 @@
 #define CONFIRM RBRXbuf[4]=='C'&&RBRXbuf[5]=='O'&&RBRXbuf[6]=='N'&&RBRXbuf[7]=='F'
 
 
-typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT, SENT_ATnDo} rb_state_t;
+typedef enum rb_state  {RB_INIT,SENT_ATEo,SENT_ATnKo,SENT_SBDMTA,SENT_SBDDo,RB_IDLE,BEGINSEND,SENT_SBDWB,SENDING_TXBUF,SENT_TXBUF,SENT_CSUM,SENT_SBDIX,SENT_SBDRB,SENT_ACKAT, SENT_ATnDo, CHECK_SIG, SENT_CSQ} rb_state_t;
 typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
 
 rb_state_t _rb_state;   //current rockblock state
@@ -48,6 +49,8 @@ char _rb_mts[8];   //mobile terminated message status
 char _rb_mtm[8];   //mobile terminated message sequence number
 char _rb_mtl[8];   //mobile terminated message length
 char _rb_mtq[8];   //number of mobile terminated messaged queued
+
+uint8_t _rb_sig;   //integer parsed signal strength
 uint8_t _rb_imos;  //integer parsed mos
 uint16_t _rb_imom; //integer parsed mom
 uint8_t _rb_imts;  //integer parsed mts
