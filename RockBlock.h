@@ -67,5 +67,7 @@ void TickRB();
 //send a passed string over the rockblock
 void SendString_RB(char *msg);
 
+//update _rb_sig with current signal strength
+void CheckSig_RB();
 #endif	/* ROCKBLOCK_H */
 

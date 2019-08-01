@@ -52,42 +52,47 @@ void SetExtADC(uint8_t channel)
 	{
 		case 0:
                         CS1 = 0;
-			WriteSPI1(ADC1_V1_SET);         //start a conversion on ADC channel 0
+			WriteSPI1(ADC1_V1_READ);        //switch multiplexors to V1
 			while(!SPI1STATbits.SPIRBF);    //wait for a result
+			ReadSPI1();                     //read in the result
                         CS1 = 1;
 			break;
 		case 1:
                         CS1 = 0;
-			WriteSPI1(ADC1_VD_SET);         //start a conversion on ADC channel 1
-			while(!SPI1STATbits.SPIRBF);//wait for a result
+			WriteSPI1(ADC1_VD_READ);        //switch multiplexors to VD
+			while(!SPI1STATbits.SPIRBF);    //wait for a result
+			ReadSPI1();                     //read in the result
                         CS1 = 1;
 			break;
 		case 2:
                         CS1 = 0;
-			WriteSPI1(ADC1_H1_SET);         //start a conversion on ADC channel 2
-			while(!SPI1STATbits.SPIRBF);//wait for a result
+			WriteSPI1(ADC1_H1_READ);        //switch multiplexors to H1
+			while(!SPI1STATbits.SPIRBF);    //wait for a result
+			ReadSPI1();                     //read in the result
                         CS1 = 1;
 			break;
 		case 3:
                         CS2 = 0;
-			WriteSPI1(ADC2_HD_SET);         //start a conversion on ADC channel 3
-			while(!SPI1STATbits.SPIRBF);//wait for a result
+			WriteSPI1(ADC2_HD_READ);         //switch multiplexors to HD
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			ReadSPI1();                      //read in the result
                         CS2 = 1;
 			break;
 		case 4:
                         CS2 = 0;
-			WriteSPI1(ADC2_V2_SET);         //start a conversion on ADC channel 4
-			while(!SPI1STATbits.SPIRBF);//wait for a result
+			WriteSPI1(ADC2_V2_READ);         //switch multiplexors to V2
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			ReadSPI1();                      //read in the result
                         CS2 = 1;
 			break;
 		case 5:
                         CS2 = 0;
-			WriteSPI1(ADC2_H2_SET);         //start a conversion on ADC channel 5
-			while(!SPI1STATbits.SPIRBF);//wait for a result
+			WriteSPI1(ADC2_H2_READ);         //switch multiplexors to H2
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			ReadSPI1();                      //read in the result
                         CS2 = 1;
-			break;
+                        break;
 	}
-
         CS1 = 1;
         CS2 = 1;
 }
@@ -105,9 +110,9 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 	{
 		case 0:
                         CS1 = 0;
-			WriteSPI1(ADC1_V1_READ);         //start a conversion on ADC channel 0
-			while(!SPI1STATbits.SPIRBF);//wait for a result
-			bufferData = ReadSPI1();    //read in the result
+			WriteSPI1(ADC1_V1_READ);         //start a conversion for V1
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			bufferData = ReadSPI1();         //read in the result
                         CS1 = 1;
 			result = bufferData >> 16;
 			configReadBack = bufferData;
@@ -115,9 +120,9 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 			break;
 		case 1:
                         CS1 = 0;
-			WriteSPI1(ADC1_VD_READ);         //start a conversion on ADC channel 1
-			while(!SPI1STATbits.SPIRBF);//wait for a result
-			bufferData = ReadSPI1();    //read in the result
+			WriteSPI1(ADC1_VD_READ);         //start a conversion for VD
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			bufferData = ReadSPI1();         //read in the result
                         CS1 = 1;
 			result = bufferData >> 16;
 			configReadBack = bufferData;
@@ -125,9 +130,9 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 			break;
 		case 2:
                         CS1 = 0;
-			WriteSPI1(ADC1_H1_READ);         //start a conversion on ADC channel 2
-			while(!SPI1STATbits.SPIRBF);//wait for a result
-			bufferData = ReadSPI1();    //read in the result
+			WriteSPI1(ADC1_H1_READ);         //start a conversion for H1
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			bufferData = ReadSPI1();         //read in the result
                         CS1 = 1;
 			result = bufferData >> 16;
 			configReadBack = bufferData;
@@ -135,9 +140,9 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 			break;
 		case 3:
                         CS2 = 0;
-			WriteSPI1(ADC2_HD_READ);         //start a conversion on ADC channel 3
-			while(!SPI1STATbits.SPIRBF);//wait for a result
-			bufferData = ReadSPI1();    //read in the result
+			WriteSPI1(ADC2_HD_READ);         //start a conversion for HD
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			bufferData = ReadSPI1();         //read in the result
                         CS2 = 1;
 			result = bufferData >> 16;
 			configReadBack = bufferData;
@@ -145,9 +150,9 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 			break;
 		case 4:
                         CS2 = 0;
-			WriteSPI1(ADC2_V2_READ);         //start a conversion on ADC channel 4
-			while(!SPI1STATbits.SPIRBF);//wait for a result
-			bufferData = ReadSPI1();    //read in the result
+			WriteSPI1(ADC2_V2_READ);         //start a conversion for V2
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			bufferData = ReadSPI1();         //read in the result
                         CS2 = 1;
 			result = bufferData >> 16;
 			configReadBack = bufferData;
@@ -155,9 +160,9 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 			break;
 		case 5:
                         CS2 = 0;
-			WriteSPI1(ADC2_H2_READ);         //start a conversion on ADC channel 5
-			while(!SPI1STATbits.SPIRBF);//wait for a result
-			bufferData = ReadSPI1();    //read in the result
+			WriteSPI1(ADC2_H2_READ);         //start a conversion for H2
+			while(!SPI1STATbits.SPIRBF);     //wait for a result
+			bufferData = ReadSPI1();         //read in the result
                         CS2 = 1;
 			result = bufferData >> 16;
 			configReadBack = bufferData;
@@ -171,7 +176,7 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 }
 
 uint16_t ReadExtADC(uint8_t channel) {
-    ReadExtADC_Aux(channel);
-    WaitMS(10);
-    return ReadExtADC_Aux(channel);
+    SetExtADC(channel);             //set Multiplexors to passed channel
+    WaitMS(10);                     //wait to allow change to take place
+    return ReadExtADC_Aux(channel); //make conversion on passed channel
 }

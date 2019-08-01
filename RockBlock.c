@@ -5,8 +5,9 @@
 #include "Ballast.h"
 #include "Cutdown.h"
 
-char _rb_reqsend;       //flag indicating that a request to send data was made
-uint16_t _rb_idletimer; //timer that keeps track of number of ticks RB has been busy consecutively
+char _rb_reqsend;        //flag indicating that a request to send data was made
+uint8_t _rb_reqSigCheck; //flag indicating that a request to check signal strength was made
+uint16_t _rb_idletimer;  //timer that keeps track of number of ticks RB has been busy consecutively
 
 void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq);
 uint8_t ParseCSQ(volatile char *cmdbuf);
@@ -17,6 +18,7 @@ void InitRB() {
     _rb_status=RB_BUSY; //indicate that the rockblock is currently busy
     _rb_cmdbuf[340]=0;  //clear the rockblock command buffer
     _rb_reqsend=0;      //clear reqsend flag
+    _rb_reqSigCheck=0;  //clear signal check flag
     _rb_idletimer=0;    //reset idle timer
 }
 //#define MLCODE
@@ -40,7 +42,10 @@ void TickRB() {
     if (_rb_idletimer==RB_IDLE_HARD_TIMEOUT) { //if the rockblock has reached a hard timeout
         while(1);                              //wait until the watchdog resets the PIC
     }
-    switch (_rb_state){                        
+    switch (_rb_state){
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////INITIALIZATION//////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
         case RB_INIT:                          //if in initialization state,
             SendString_UART1("ATE0\r");        //begin AT command mode
             _rb_state=SENT_ATEo;               //update state to SENT_ATEo
@@ -99,13 +104,9 @@ void TickRB() {
                 _rb_state=RB_INIT;       //reinitialize communication
             }
             break;
-        case RB_IDLE:                //if the rockblock is idle,
-            if (_rb_reqsend)         //if a request to send has been administered,
-            {
-                _rb_reqsend=0;       //clear reqsend flag
-                _rb_state=CHECK_SIG; //update state to check signal
-            }
-            break;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////SIGNAL STRENGTH CHECK///////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
         case CHECK_SIG:
             SendString_UART1(RB_READSIG);
             _rb_state=SENT_CSQ;
@@ -113,14 +114,32 @@ void TickRB() {
             break;
         case SENT_CSQ:
             if (_rb_status==RB_OK) {
-                //_rb_sig = ParseCSQ(_rb_cmdbuf);
-                _rb_state=BEGINSEND;
+                _rb_state=RB_IDLE;
+                _rb_sig = ParseCSQ(_rb_cmdbuf);
             }
             if (_rb_status==RB_ERROR) {
                 yikes.rberror=1;
                 _rb_state=RB_INIT;
             }
             break;
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////IDLE////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
+        case RB_IDLE:                //if the rockblock is idle,
+            if (_rb_reqsend)         //if a request to send has been administered,
+            {
+                _rb_reqsend=0;       //clear reqsend flag
+                _rb_state=BEGINSEND; //update state to check signal
+            }
+            else if(_rb_reqSigCheck)
+            {
+                _rb_reqSigCheck=0;
+                _rb_state=CHECK_SIG;
+            }
+            break;
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////SENDING MESSAGE///////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////
         case BEGINSEND:                         //if it is time to send a message,
             SendString_UART1(RB_WRITE340);      //prepare a message of 340 characters maximum
             _rb_state=SENT_SBDWB;               //update state to SENT_SBDWB
@@ -169,7 +188,7 @@ void TickRB() {
                 ParseSBDIX(_rb_cmdbuf,_rb_mos,_rb_mom,_rb_mts,_rb_mtm,_rb_mtl,_rb_mtq);
                 _rb_imtl=atoi(_rb_mtl);             //parse the message length parameter from ascii to integer
                 if (_rb_imtl>0) {                   //if the message has a length greater than 0
-                    SendString_UART1(RB_RECEIVE); //send the message
+                    SendString_UART1(RB_RECEIVE);   //send the message
                     _rb_state=SENT_SBDRB;           //update state to SENT_SBDRB
                     _rb_status=RB_BUSY;             //indicate that the rockblock is busy
                 } else {                            //if there is no message
@@ -451,14 +470,21 @@ void SendString_RB(char *msg) {
     _rb_reqsend=1;                   //request to send the message
 }
 
+void CheckSig_RB() {
+    _rb_reqSigCheck=1;              //set the flag for signal check
+}
+
 uint8_t ParseCSQ(volatile char *cmdbuf)
 {
     while(*cmdbuf!=':')
+    {
         ++cmdbuf;
-    if(*cmdbuf >= '0' && *cmdbuf <= '9')
-        return atoi(*(++cmdbuf));
-    else
+    }
+    while(!(*cmdbuf >= '0' && *cmdbuf <= '9'))
+    {
         ++cmdbuf;
+    }
+        return (*cmdbuf) - '0';
 }
 
 void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {

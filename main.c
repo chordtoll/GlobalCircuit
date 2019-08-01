@@ -103,10 +103,9 @@ int main(void) {
 
 #ifdef TEST_LOOP
 //TEST CODE HERE
-    int i = 0;
     while(1)
     {
-        AddrBallast(i++);
+        SafeDebugString("YEP");
         WaitS(5);
         ResetWatchdog();
     }
@@ -119,7 +118,6 @@ int main(void) {
     //=============================//
     while (1) {
         TickRB();                                                      //Advance RockBlock state machine
-        packet.norm.RBSig = _rb_sig;
         if(sequence%(SEQUENCE_CYCLE+1) || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)
@@ -132,6 +130,8 @@ int main(void) {
                 uint16_t vertD;
                 case 0:                                                      //if 0s into interval
                     TriggerMagneto(MAG_ADDR);                                //trigger the magnetometor for reading
+                    if(statetimer == T_SECOND*45)
+                        CheckSig_RB();
                     break;
                 case 1:                                                      //if 0.1s into interval
                     ;
@@ -261,6 +261,7 @@ int main(void) {
         if (statetimer>T_SLOWSAM_INTERVAL) {
             Pack_Supervision(&packet);                             //pack supervision values into the packet
             Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
+            packet.norm.RBSig = _rb_sig;
             packet.norm.cutdown = GetCutdownStatus();              //update cutdown status
             packet.norm.ballast = GetBallastStatus();              //update ballast status
             packet.norm.version=PACKET_VERSION;                    //Write version ID
