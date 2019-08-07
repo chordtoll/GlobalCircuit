@@ -7,19 +7,19 @@ void Pack_Supervision(packet_u *pack)
             
             (*pack).norm.sup1._1u32=supPressure;
             
-            (*pack).norm.sup2._2u16.a=supIl0;
-            (*pack).norm.sup2._2u16.b=supIl1;
+            (*pack).norm.sup2._2u16.a=supVbatP;
+            (*pack).norm.sup2._2u16.b=supVbatN;
 
-            (*pack).norm.sup3._2u16.a=supIl2;
-            (*pack).norm.sup3._2u16.b=supIh0;
+            (*pack).norm.sup3._2u16.a=supVbat3V6;
+            (*pack).norm.sup3._2u16.b=supI1;
 
-            (*pack).norm.sup4._2u16.a=supIh1;
-            (*pack).norm.sup4._2u16.b=supIh2;
+            (*pack).norm.sup4._2u16.a=supI2;
+            (*pack).norm.sup4._2u16.b=REMOVEsupIh2;
 
-            (*pack).norm.sup5._2u16.a=supT0;
-            (*pack).norm.sup5._2u16.b=supT1;
+            (*pack).norm.sup5._2u16.a=supT1;
+            (*pack).norm.sup5._2u16.b=supT2;
 
-            (*pack).norm.sup6._2u16.a=supT2;
+            (*pack).norm.sup6._2u16.a=REMOVEsupT2;
             (*pack).norm.sup6._2u16.b=supTmag;
 
             (*pack).norm.sup7._2u16.a=supTadc1;

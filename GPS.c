@@ -2,6 +2,7 @@
 #include "GPS.h"
 #include "GPIO.h"
 #include "Yikes.h"
+#include "packet.h"
 #include <stdlib.h>
 
 volatile char gpsbuf[84];
@@ -131,6 +132,7 @@ void WakeGPS()
 {
     //GPS_S_EN = 0;
 }
+#define TIMEhhmmss
 
 void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_t* sats) {
     char nTime[20];
@@ -145,6 +147,9 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_
     if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
         ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti, nSats);
         *time=atof(nTime);
+#ifndef TIMEhhmmss
+    *time=
+#endif
         *lat=(atof(nLati)*10000);
         if (nLatD=='S')
             *lat|=0x80000000;
@@ -154,9 +159,10 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_
         *sats=(atoi(nSats));
         *alt=(atof(nAlti)*10);
     }
+        if(!locked)
+            yikes.gpslock = 1;
     }
-    else
-        yikes.gpslock = 1;
+    locked = 0;
     WakeGPS();
 }
 
@@ -177,11 +183,6 @@ void  __attribute__((vector(_UART_2_VECTOR), interrupt(IPL7SRS), nomips16)) UART
         CheckPosFix(gpsbuf);
         strcpy((char *)GPSdata,(const char *)gpsbuf); //From this context, these buffers are not volatile, so we can discard that qualifier
         GPSnew=1;
-        locked = 0;
-        if(locked)
-        {
-                SleepGPS();
-        }
     } else {
         gpsbuf[gpsbufi++]=receivedChar;
     }

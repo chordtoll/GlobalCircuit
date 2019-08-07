@@ -167,7 +167,7 @@ int main(void) {
                     if(statetimer == T_SECOND*35 + 6)
                     {
                         TriggerAltimeter_Temperature(ALT_ADDR);        //trigger altimeter for temperature reading
-                        supIl0=ReadPICADC(4);                          //store current0 low value
+                        supVbatP=ReadPICADC(4);                          //store current0 low value
                     }
                     break;
                 case 7:                                            //if 0.7s into packet
@@ -175,14 +175,14 @@ int main(void) {
                     {
                         ReadAltimeter_ADC(ALT_ADDR, &supTemperature);  //read altimeter temperature
                         supTemperature = ConvertAltimeter_Temp(supTemperature);
-                        supIl1=ReadPICADC(8);                          //store current1 low value
+                        supVbatN=ReadPICADC(8);                          //store current1 low value
                     }
                     break;
                 case 8:                                            //if 0.8s into packet
                     if(statetimer == T_SECOND*35 + 8)
                     {
                         TriggerAltimeter_Pressure(ALT_ADDR);           //trigger altimeter for pressure reading
-                        supIl2=ReadPICADC(10);                         //store current2 low value
+                        supVbat3V6=ReadPICADC(10);                         //store current2 low value
                     }
                     break;
                 case 9:                                            //if 0.9s into packet
@@ -190,27 +190,27 @@ int main(void) {
                     {
                         ReadAltimeter_ADC(ALT_ADDR, &supPressure);     //read altimeter pressure
                         supPressure = ConvertAltimeter_Pressure(supPressure);
-                        supIh0=ReadPICADC(5);                          //store current0 high value
+                        supI1=ReadPICADC(5);                          //store current0 high value
                     }
                     break;
                 case 10:                                            //if 1.0s into packet
                     if(statetimer == T_SECOND*35 + 10)
                     {
-                        supIh1=ReadPICADC(9);                          //store current1 high value
-                        supIh2=ReadPICADC(11);                         //store current2 high value
+                        supI2=ReadPICADC(9);                          //store current1 high value
+                        REMOVEsupIh2=ReadPICADC(11);                         //store current2 high value
                     }
                     break;
                 case 11:                                            //if 1.1s into packet
                     if(statetimer == T_SECOND*35 + 11)
                     {
-                        supT0=ReadPICADC(0);                           //store temperature0 value
-                        supT1=ReadPICADC(1);                           //store temperature1 value
+                        supT1=ReadPICADC(0);                           //store temperature0 value
+                        supT2=ReadPICADC(1);                           //store temperature1 value
                     }
                     break;
                 case 12:                                            //if 1.2s into packet
                     if(statetimer == T_SECOND*35 + 12)
                     {
-                        supT2=ReadPICADC(3);                           //store store temperature2 value
+                        REMOVEsupT2=ReadPICADC(3);                           //store store temperature2 value
                     }
                     break;
                 case 13:                                            //if 1.3s into packet

@@ -13,15 +13,15 @@
 //SUPERVISION VALUES
 uint32_t supTemperature=0; //temperature
 uint32_t supPressure=0;    //pressure
-uint16_t supIl0=0;         //PICADC channel 4
-uint16_t supIl1;           //PICADC channel 8
-uint16_t supIl2;           //PICADC channel 10
-uint16_t supIh0;           //PICADC channel 5
-uint16_t supIh1;           //PICADC channel 9
-uint16_t supIh2;           //PICADC channel 11
-uint16_t supT0;            //PICADC channel 0
-uint16_t supT1;            //PICADC channel 1
-uint16_t supT2;            //PICADC channel 3
+uint16_t supVbatP;         //PICADC channel 4
+uint16_t supVbatN;           //PICADC channel 8
+uint16_t supVbat3V6;           //PICADC channel 10
+uint16_t supI1;           //PICADC channel 5
+uint16_t supI2;           //PICADC channel 9
+uint16_t REMOVEsupIh2;           //PICADC channel 11
+uint16_t supT1;            //PICADC channel 0
+uint16_t supT2;            //PICADC channel 1
+uint16_t REMOVEsupT2;            //PICADC channel 3
 uint8_t supTmag;           //magnetometer temperature
 uint16_t supText;          //external payload temperature
 uint16_t supTRB;           //RockBlock temperature
@@ -42,7 +42,7 @@ uint16_t supTadc2;         //adc2 temperature
 //     Add RBSig field
 #define PACKET_VERSION 6
 #define PAYLOAD_ID 0
-
+#define DAYS_AT_START 0
 typedef union u_sup {
     uint32_t _1u32;
     struct __attribute__((packed)) {
