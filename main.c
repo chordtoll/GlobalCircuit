@@ -33,7 +33,7 @@
 #define T_SECOND (1000/T_TICK_MS)                     //ticks per second
 #define T_MINUTE (T_SECOND*60)                        //ticks per minute
 #define T_NORM_LEN (T_MINUTE*9)                       //ticks where normal measurements are taken
-#define T_CON_CHG_BEGIN  (0)                          //ticks to begin probe charging
+#define T_CON_CHG_BEGIN  (T_SECOND*15)                //ticks to begin probe charging
 #define T_CON_CHG1_END  (T_CON_CHG_BEGIN+T_SECOND*1)  //ticks to finish first charging stage
 #define T_CON_CHG2_END  (T_CON_CHG1_END+T_SECOND*1)   //ticks to finish second charging stage
 #define T_CON_MEAS_END (T_CON_CHG2_END+T_SECOND*13)   //ticks to finishing conductivity measurements
@@ -118,7 +118,7 @@ int main(void) {
     //=============================//
     while (1) {
         TickRB();                                                      //Advance RockBlock state machine
-        if(sequence%(SEQUENCE_CYCLE+1) || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
+        if(sequence%(SEQUENCE_CYCLE+1) || statetimer < T_CON_CHG_BEGIN || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)
             {
@@ -157,21 +157,21 @@ int main(void) {
 
                     break;
                 case 5:
-                    if(statetimer == T_SECOND*25 + 5)                                      //if 0.5s into packet
+                    if(statetimer == T_SECOND*35 + 5)                                      //if 0.5s into packet
                     {
                         ReadGPS(&gTime, &gLat, &gLon, &gAlt, &gSats);                   //read GPS values
                         Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt, gSats);   //store GPS values into packet
                     }
                     break;
                 case 6:                                            //if 0.6s into packet
-                    if(statetimer == T_SECOND*25 + 6)
+                    if(statetimer == T_SECOND*35 + 6)
                     {
                         TriggerAltimeter_Temperature(ALT_ADDR);        //trigger altimeter for temperature reading
                         supIl0=ReadPICADC(4);                          //store current0 low value
                     }
                     break;
                 case 7:                                            //if 0.7s into packet
-                    if(statetimer == T_SECOND*25 + 7)
+                    if(statetimer == T_SECOND*35 + 7)
                     {
                         ReadAltimeter_ADC(ALT_ADDR, &supTemperature);  //read altimeter temperature
                         supTemperature = ConvertAltimeter_Temp(supTemperature);
@@ -179,14 +179,14 @@ int main(void) {
                     }
                     break;
                 case 8:                                            //if 0.8s into packet
-                    if(statetimer == T_SECOND*25 + 8)
+                    if(statetimer == T_SECOND*35 + 8)
                     {
                         TriggerAltimeter_Pressure(ALT_ADDR);           //trigger altimeter for pressure reading
                         supIl2=ReadPICADC(10);                         //store current2 low value
                     }
                     break;
                 case 9:                                            //if 0.9s into packet
-                    if(statetimer == T_SECOND*25 + 9)
+                    if(statetimer == T_SECOND*35 + 9)
                     {
                         ReadAltimeter_ADC(ALT_ADDR, &supPressure);     //read altimeter pressure
                         supPressure = ConvertAltimeter_Pressure(supPressure);
@@ -194,46 +194,46 @@ int main(void) {
                     }
                     break;
                 case 10:                                            //if 1.0s into packet
-                    if(statetimer == T_SECOND*25 + 10)
+                    if(statetimer == T_SECOND*35 + 10)
                     {
                         supIh1=ReadPICADC(9);                          //store current1 high value
                         supIh2=ReadPICADC(11);                         //store current2 high value
                     }
                     break;
                 case 11:                                            //if 1.1s into packet
-                    if(statetimer == T_SECOND*25 + 11)
+                    if(statetimer == T_SECOND*35 + 11)
                     {
                         supT0=ReadPICADC(0);                           //store temperature0 value
                         supT1=ReadPICADC(1);                           //store temperature1 value
                     }
                     break;
                 case 12:                                            //if 1.2s into packet
-                    if(statetimer == T_SECOND*25 + 12)
+                    if(statetimer == T_SECOND*35 + 12)
                     {
                         supT2=ReadPICADC(3);                           //store store temperature2 value
                     }
                     break;
                 case 13:                                            //if 1.3s into packet
-                    if(statetimer == T_SECOND*25 + 13)
+                    if(statetimer == T_SECOND*35 + 13)
                     {
                         supText = ReadPICADC(12);                      //store external termperature value
                         supTRB = ReadPICADC(13);                       //store rockblock temperature value
                     }
                     break;
                 case 14:                                            //if 1.4s into packet
-                    if(statetimer == T_SECOND*25 + 14)
+                    if(statetimer == T_SECOND*35 + 14)
                     {
                         ReadMagTemp(MAG_ADDR, &supTmag);               //store magnetometer temperature
                         supTadc2=ReadExtADCTemp(1);
                     }
                     break;
                 case 15:                                            //if 1.4s into packet
-                    if(statetimer == T_SECOND*25 + 15)
+                    if(statetimer == T_SECOND*35 + 15)
                     {
                         supTadc1=ReadExtADCTemp(0);
                     }
                     break;
-                }                                                    //if 0.6s into interval
+                }                                                  //if 0.6s into interval
         }
         else                                                       //if on conductivity packet
         {
