@@ -41,6 +41,7 @@ uint16_t supTadc2;         //adc2 temperature
 //     Add GPSSats field
 //     Add RBSig field
 #define PACKET_VERSION 6
+#define PAYLOAD_ID 0
 
 typedef union u_sup {
     uint32_t _1u32;
