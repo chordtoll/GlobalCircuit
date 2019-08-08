@@ -38,13 +38,15 @@ uint16_t supTadc2;         //adc2 temperature
 //5->6:Add fields for all supervision values
 //     Add GPSSats field
 //     Add RBSig field
+//     Add epochdays field
+//     Add commcount field
 
 #define PACKET_VERSION 6
 
 #define PAYLOAD_ID 0
 #define EPOCH_TIME
 #define DAYS_SINCE_EPOCH 18110 //August 01, 2019
-#define TODAY 7
+#define TODAY 8
 
 typedef union u_sup {
     uint32_t _1u32;
@@ -85,6 +87,7 @@ struct __attribute__((packed)) s_packet_norm {
     uint32_t Ctime;         //GPS time of conductivity measurement
     uint8_t GPSSats;        //number of sattelites the GPS is using
     uint8_t RBSig;          //signal strength of Rockblock
+    uint8_t commcount;      //number of commands sent to the RockBLOCK
     sup_t sup0;             //supervision values
     sup_t sup1;
     sup_t sup2;

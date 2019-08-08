@@ -42,6 +42,7 @@ typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
 
 rb_state_t _rb_state;   //current rockblock state
 uint16_t _rb_buf_sindex;//rockblock string buffer index counter
+uint8_t command_count=0;
 
 char _rb_mos[8];   //mobile originated message status
 char _rb_mom[8];   //mobile originated message sequence number

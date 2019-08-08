@@ -213,6 +213,7 @@ void TickRB() {
             break;
         case SENT_SBDRB:                        //if a message was sent,
             if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
+                ++command_count;                //increment command counter
                 volatile char *rbuf=_rb_cmdbuf; //create an instance of the message buffer
                 uint16_t csumc=0;               //checksum
                 uint16_t msglen=*rbuf++<<8;     //pull the message length from the message buffer
