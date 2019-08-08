@@ -8,6 +8,8 @@
 volatile char gpsbuf[84];
 volatile uint8_t gpsbufi;
 uint8_t locked = 0;
+uint8_t days = 0;
+uint32_t lasttime = 0;
 
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti, char *sats) {
     uint8_t field=0;          //selects which field is currently being updated
@@ -132,7 +134,14 @@ void WakeGPS()
 {
     //GPS_S_EN = 0;
 }
-#define TIMEhhmmss
+
+uint32_t HMStoS(uint32_t time)
+{
+    uint32_t hours = time / 10000;
+    uint32_t minutes = (time - (hours*10000)) / 100;
+    uint32_t seconds = time - (hours*10000) - (minutes*100);
+    return hours*3600 + minutes*60 + seconds;
+}
 
 void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_t* sats) {
     char nTime[20];
@@ -147,8 +156,14 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_
     if (strncmp(GPSdata, "$GPGGA", 6) == 0) {
         ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti, nSats);
         *time=atof(nTime);
-#ifndef TIMEhhmmss
-    *time=
+#ifdef EPOCH_TIME
+        *time = HMStoS(*time) + (DAYS_SINCE_EPOCH + days)*86400;
+        if(*time < lasttime)
+        {
+            ++days;
+            *time = *time + 86400;
+        }
+        lasttime = *time;
 #endif
         *lat=(atof(nLati)*10000);
         if (nLatD=='S')
@@ -158,10 +173,11 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_
             *lon|=0x80000000;
         *sats=(atoi(nSats));
         *alt=(atof(nAlti)*10);
-    }
-        if(!locked)
+         if(!locked)
             yikes.gpslock = 1;
     }
+    }
+
     locked = 0;
     WakeGPS();
 }

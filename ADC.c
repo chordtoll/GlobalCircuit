@@ -211,7 +211,7 @@ uint16_t ReadExtADC_Aux(uint8_t channel)
 
 uint16_t ReadExtADC(uint8_t channel) {
     SetExtADC(channel);             //set multiplexors to passed channel
-    WaitMS(10);                     //wait to allow change to take place
+    WaitMS(20);                     //wait to allow change to take place
     return ReadExtADC_Aux(channel); //make conversion on passed channel
 }
 

@@ -14,14 +14,12 @@
 uint32_t supTemperature=0; //temperature
 uint32_t supPressure=0;    //pressure
 uint16_t supVbatP;         //PICADC channel 4
-uint16_t supVbatN;           //PICADC channel 8
-uint16_t supVbat3V6;           //PICADC channel 10
-uint16_t supI1;           //PICADC channel 5
-uint16_t supI2;           //PICADC channel 9
-uint16_t REMOVEsupIh2;           //PICADC channel 11
+uint16_t supVbatN;         //PICADC channel 8
+uint16_t supVbat3V6;       //PICADC channel 10
+uint16_t supI1;            //PICADC channel 5
+uint16_t supI2;            //PICADC channel 9
 uint16_t supT1;            //PICADC channel 0
 uint16_t supT2;            //PICADC channel 1
-uint16_t REMOVEsupT2;            //PICADC channel 3
 uint8_t supTmag;           //magnetometer temperature
 uint16_t supText;          //external payload temperature
 uint16_t supTRB;           //RockBlock temperature
@@ -40,9 +38,12 @@ uint16_t supTadc2;         //adc2 temperature
 //5->6:Add fields for all supervision values
 //     Add GPSSats field
 //     Add RBSig field
+
 #define PACKET_VERSION 6
+
 #define PAYLOAD_ID 0
-#define DAYS_AT_START 0
+#define EPOCH_TIME
+#define DAYS_SINCE_EPOCH 18110 //August 01, 2019
 typedef union u_sup {
     uint32_t _1u32;
     struct __attribute__((packed)) {
@@ -59,6 +60,7 @@ typedef union u_sup {
 
 struct __attribute__((packed)) s_packet_norm {
     uint8_t version;        //Increments with each change to packet structure
+    uint16_t epochdays;     //number of days since the Epoch defined as '0' for time
     uint8_t yikes;          //Error code bits
     uint16_t seq;           //Sequence ID- 0 on boot, increments each packet
     uint32_t time;          //GPS time
@@ -89,8 +91,6 @@ struct __attribute__((packed)) s_packet_norm {
     sup_t sup5;
     sup_t sup6;
     sup_t sup7;
-    sup_t sup8;
-
 };
 
 typedef union u_packet

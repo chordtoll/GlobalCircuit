@@ -14,19 +14,16 @@ void Pack_Supervision(packet_u *pack)
             (*pack).norm.sup3._2u16.b=supI1;
 
             (*pack).norm.sup4._2u16.a=supI2;
-            (*pack).norm.sup4._2u16.b=REMOVEsupIh2;
+            (*pack).norm.sup4._2u16.b=supT1;
 
-            (*pack).norm.sup5._2u16.a=supT1;
-            (*pack).norm.sup5._2u16.b=supT2;
+            (*pack).norm.sup5._2u16.a=supT2;
+            (*pack).norm.sup5._2u16.b=supTmag;
 
-            (*pack).norm.sup6._2u16.a=REMOVEsupT2;
-            (*pack).norm.sup6._2u16.b=supTmag;
-
-            (*pack).norm.sup7._2u16.a=supTadc1;
-            (*pack).norm.sup7._2u16.b=supTadc2;
+            (*pack).norm.sup6._2u16.a=supTadc1;
+            (*pack).norm.sup6._2u16.b=supTadc2;
             
-            (*pack).norm.sup8._2u16.a=supText;
-            (*pack).norm.sup8._2u16.b=supTRB;
+            (*pack).norm.sup7._2u16.a=supText;
+            (*pack).norm.sup7._2u16.b=supTRB;
 }
 
 void Pack_Conductivity(packet_u *pack, uint16_t sequence, uint16_t *cVert1, uint16_t *cVert2)
