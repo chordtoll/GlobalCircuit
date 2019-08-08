@@ -44,6 +44,8 @@ uint16_t supTadc2;         //adc2 temperature
 #define PAYLOAD_ID 0
 #define EPOCH_TIME
 #define DAYS_SINCE_EPOCH 18110 //August 01, 2019
+#define TODAY 7
+
 typedef union u_sup {
     uint32_t _1u32;
     struct __attribute__((packed)) {
