@@ -45,7 +45,7 @@ uint16_t supTadc2;         //adc2 temperature
 
 #define PAYLOAD_ID 0
 #define EPOCH_TIME
-#define DAYS_SINCE_EPOCH 18110 //August 01, 2019
+#define DAYS_SINCE_EPOCH 18109 //August 01, 2019
 #define TODAY 8
 
 typedef union u_sup {
@@ -64,7 +64,6 @@ typedef union u_sup {
 
 struct __attribute__((packed)) s_packet_norm {
     uint8_t version;        //Increments with each change to packet structure
-    uint16_t epochdays;     //number of days since the Epoch defined as '0' for time
     uint8_t yikes;          //Error code bits
     uint16_t seq;           //Sequence ID- 0 on boot, increments each packet
     uint32_t time;          //GPS time

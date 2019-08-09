@@ -265,7 +265,6 @@ int main(void) {
             packet.norm.cutdown = GetCutdownStatus();              //update cutdown status
             packet.norm.ballast = GetBallastStatus();              //update ballast status
             packet.norm.version=(PAYLOAD_ID<<4) | PACKET_VERSION;  //Write version ID
-            packet.norm.epochdays=DAYS_SINCE_EPOCH;                //write days since epoch
             packet.norm.commcount=command_count;                   //write number of commands sent
             yikes.condpol = (conductivityDir-1)%2;                 //write conductivity polarity
             packet.norm.yikes=yikes.byte;                          //Write error flags to packet
