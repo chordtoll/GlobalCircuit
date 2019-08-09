@@ -157,7 +157,7 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_
         ParseNMEA(GPSdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti, nSats);
         *time=atof(nTime);
 #ifdef EPOCH_TIME
-        *time = HMStoS(*time) + (DAYS_SINCE_EPOCH + TODAY + days - 1)*86400;
+        *time = (HMStoS(*time) + (DAYS_SINCE_EPOCH + TODAY + days - 1)*86400) - 35;
         if(*time < lasttime && locked)
         {
             ++days;
