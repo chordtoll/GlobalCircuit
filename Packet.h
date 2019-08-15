@@ -40,6 +40,7 @@ uint16_t supTadc2;         //adc2 temperature
 //     Add RBSig field
 //     Add epochdays field
 //     Add commcount field
+//     Add RBIMEI field
 
 #define PACKET_VERSION 6
 
@@ -93,6 +94,7 @@ struct __attribute__((packed)) s_packet_norm {
     sup_t sup5;
     sup_t sup6;
     sup_t sup7;
+    uint16_t RBIMEI;        //rockblock IMEI
 };
 
 typedef union u_packet

@@ -11,6 +11,7 @@ uint16_t _rb_idletimer;  //timer that keeps track of number of ticks RB has been
 
 void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq);
 uint8_t ParseCSQ(volatile char *cmdbuf);
+uint16_t ParseSN(volatile char *cmdbuf);
 
 void InitRB() {
     _rb_state=RB_INIT;  //set rockblock to initialization state
@@ -53,7 +54,7 @@ void TickRB() {
             break;
         case SENT_ATEo:                        //if in AT command mode,
             if (_rb_status==RB_OK) {           //if rockblock is receiving commands correctly
-                SendString_UART1(RB_NO_FLOWC);   //set no flow control
+                SendString_UART1(RB_NO_FLOWC); //set no flow control
                 _rb_state=SENT_ATnKo;          //update state to SENT_ATnKo;
                 _rb_status=RB_BUSY;            //indicate that the rockblock is busy
             }
@@ -73,15 +74,15 @@ void TickRB() {
                 _rb_state=RB_INIT;             //reinitialize the communication
             }
             break;
-        case SENT_ATnDo:                           //if no flow control was set,
-            if (_rb_status==RB_OK) {               //if rockblock is recieving commands correctly,
-                SendString_UART1(RB_NO_RINGID);    //disable ring identification
-                _rb_state=SENT_SBDMTA;             //update state to SENT_SBDMTA
-                _rb_status=RB_BUSY;                //indicate that the rockblock is busy
+        case SENT_ATnDo:                       //if no flow control was set,
+            if (_rb_status==RB_OK) {           //if rockblock is recieving commands correctly,
+                SendString_UART1(RB_NO_RINGID);//disable ring identification
+                _rb_state=SENT_SBDMTA;         //update state to SENT_SBDMTA
+                _rb_status=RB_BUSY;            //indicate that the rockblock is busy
             }
-            if (_rb_status==RB_ERROR) {            //if the rockblock received an error,
-                yikes.rberror=1;                   //set the rberror yikes flag
-                _rb_state=RB_INIT;                 //reinitialize the communication
+            if (_rb_status==RB_ERROR) {        //if the rockblock received an error,
+                yikes.rberror=1;               //set the rberror yikes flag
+                _rb_state=RB_INIT;             //reinitialize the communication
             }
             break;
         case SENT_SBDMTA:                       //if ring identification has been disabled,
@@ -95,31 +96,42 @@ void TickRB() {
                 _rb_state=RB_INIT;              //reinitialize the communication
             }
             break;
-        case SENT_SBDDo:                 //if the message buffer has been cleared,
-            if (_rb_status==RB_OK) {     //if the rockblock is receiving commands correctly,
-                _rb_state=RB_IDLE;       //set rockblock to idle state
+        case SENT_SBDDo:                        //if the message buffer has been cleared,
+            if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
+                SendString_UART1(RB_READIMEI);  //clear the message buffer
+                _rb_state=SENT_CGSN;
             }
-            if (_rb_status==RB_ERROR) {  //if the rockblock received an error,
-                yikes.rberror=1;         //set the rberror yikes flag
-                _rb_state=RB_INIT;       //reinitialize communication
+            if (_rb_status==RB_ERROR) {         //if the rockblock received an error,
+                yikes.rberror=1;                //set the rberror yikes flag
+                _rb_state=RB_INIT;              //reinitialize communication
+            }
+            break;
+        case SENT_CGSN:                         //if the IMEI has been requested
+            if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
+                _rb_imei = ParseSN(_rb_cmdbuf); //read and store the last 4 digits of the serial number
+                _rb_state=RB_IDLE;              //set rockblock to idle
+            }
+            if(_rb_status==RB_ERROR) {          //if the rockblock received an error,
+                yikes.rberror=1;                //set te rberror yikes flag
+                _rb_state=RB_INIT;              //reinitialize communication
             }
             break;
     //////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////SIGNAL STRENGTH CHECK///////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////
-        case CHECK_SIG:
-            SendString_UART1(RB_READSIG);
-            _rb_state=SENT_CSQ;
-            _rb_status=RB_BUSY;
+        case CHECK_SIG:                         //if checking rockblock signal
+            SendString_UART1(RB_READSIG);       //ask the rockblock for signal strength
+            _rb_state=SENT_CSQ;                 //set state to sent CSQ
+            _rb_status=RB_BUSY;                 //indicate that the rockblock is busy
             break;
-        case SENT_CSQ:
-            if (_rb_status==RB_OK) {
-                _rb_state=RB_IDLE;
-                _rb_sig = ParseCSQ(_rb_cmdbuf);
+        case SENT_CSQ:                          //if signal strength has been requested
+            if (_rb_status==RB_OK) {            //if rockblock is receiving commands correctly,
+                _rb_state=RB_IDLE;              //set rockblock to idle state
+                _rb_sig = ParseCSQ(_rb_cmdbuf); //parse the CSQ message and store the signal strength
             }
-            if (_rb_status==RB_ERROR) {
-                yikes.rberror=1;
-                _rb_state=RB_INIT;
+            if (_rb_status==RB_ERROR) {         //if the rockblock received an error,
+                yikes.rberror=1;                //set the rberror yikes flag
+                _rb_state=RB_INIT;              //reinitialize communication
             }
             break;
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -131,19 +143,19 @@ void TickRB() {
                 _rb_reqsend=0;       //clear reqsend flag
                 _rb_state=BEGINSEND; //update state to check signal
             }
-            else if(_rb_reqSigCheck)
+            else if(_rb_reqSigCheck) //if a request to check signal has been administered,
             {
-                _rb_reqSigCheck=0;
-                _rb_state=CHECK_SIG;
+                _rb_reqSigCheck=0;   //clear signal request flag
+                _rb_state=CHECK_SIG; //set rockblock state to check the signal
             }
             break;
     ///////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////SENDING MESSAGE///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
-        case BEGINSEND:                         //if it is time to send a message,
-            SendString_UART1(RB_WRITE340);      //prepare a message of 340 characters maximum
-            _rb_state=SENT_SBDWB;               //update state to SENT_SBDWB
-            _rb_status=RB_BUSY;                 //indicate that the rockblock is busy
+        case BEGINSEND:                   //if it is time to send a message,
+            SendString_UART1(RB_WRITE340);//prepare a message of 340 characters maximum
+            _rb_state=SENT_SBDWB;         //update state to SENT_SBDWB
+            _rb_status=RB_BUSY;           //indicate that the rockblock is busy
             break;
         case SENT_SBDWB:                  //if a message has been prepared,
             if (_rb_status==RB_READY) {   //if the rockblock is ready for the message,
@@ -477,15 +489,28 @@ void CheckSig_RB() {
 
 uint8_t ParseCSQ(volatile char *cmdbuf)
 {
-    while(*cmdbuf!=':')
-    {
+    while(*cmdbuf!=':')                        //move through the command buffer until a ':' is found
         ++cmdbuf;
-    }
-    while(!(*cmdbuf >= '0' && *cmdbuf <= '9'))
-    {
+    while(!(*cmdbuf >= '0' && *cmdbuf <= '9')) //move through the command buffer until a number is found
         ++cmdbuf;
+        return (*cmdbuf) - '0';                //return the signal strength
+}
+
+uint16_t ParseSN(volatile char *cmdbuf)
+{
+    uint8_t i;                               //looping variable
+    uint16_t scale = 1000;                   //scalar for adding to the SN
+    uint16_t sn = 0;                         //serial number reading
+    while(*cmdbuf<'0' || *cmdbuf>'9')        //loop through characters until a number is reached
+        ++cmdbuf;
+    for(i=0; i < 11; ++i)                    //loop through the next 11 characters
+        ++cmdbuf;
+    while(scale)                             //loop until 4 digits have been read
+    {
+        sn += (*cmdbuf++ - '0') * scale;
+        scale /= 10;
     }
-        return (*cmdbuf) - '0';
+    return sn;                               //return the last 4 digits of the serial number
 }
 
 void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {
