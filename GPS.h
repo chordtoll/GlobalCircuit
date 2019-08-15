@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 volatile char GPSnew;
-volatile char GPSdata[84];
+volatile char GPSGGAdata[84];
 
 //sorts data stored in the *data pointer into various other data pointers relevant to what the data represents
 void ParseNMEA(char *data, char* time, char *lati, char *latd, char *llon, char *lond, char *alti, char* sats);
