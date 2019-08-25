@@ -94,7 +94,7 @@ void CheckPosFix(char *data)
                 ++field;                //move to the next field
             ++index;                    //move to the next character
         }
-        if(data[index] == '1')          //check if GPS is locked
+        if(data[index] != '0')          //check if GPS is locked
             locked = 1;                 //set locked flag
     }
 }
@@ -200,8 +200,7 @@ void ReadGPS(uint32_t* time, uint32_t* lat, uint32_t* lon, uint32_t* alt, uint8_
         ParseNMEA(GPSGGAdata, nTime, nLati, &nLatD, nLong, &nLonD, nAlti, nSats); //parse the data
         *time=atof(nTime);                                                        //parse time to an integer
 #ifdef EPOCH_TIME
-        if(locked)                                                                //if the GPS is locked
-            *time = HMStoS(*time) + days*86400;                                   //set time to current Epoch time
+        *time = HMStoS(*time) + days*86400;                                   //set time to current Epoch time
 #endif
         *lat=(atof(nLati)*10000);                                                 //parse latitude
         if (nLatD=='S')

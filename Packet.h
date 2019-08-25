@@ -12,7 +12,7 @@
 
 //SUPERVISION VALUES
 uint32_t supTemperature=0; //temperature
-uint32_t supPressure=0;    //pressure
+int32_t supPressure=0;    //pressure
 uint16_t supVbatP;         //PICADC channel 4
 uint16_t supVbatN;         //PICADC channel 8
 uint16_t supVbat3V6;       //PICADC channel 10
@@ -44,7 +44,7 @@ uint16_t supTadc2;         //adc2 temperature
 
 #define PACKET_VERSION 6
 
-#define PAYLOAD_ID 0
+#define PAYLOAD_ID DEVCFG3bits.USERID
 #define EPOCH_TIME
 
 typedef union u_sup {

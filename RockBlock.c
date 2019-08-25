@@ -100,6 +100,7 @@ void TickRB() {
             if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
                 SendString_UART1(RB_READIMEI);  //clear the message buffer
                 _rb_state=SENT_CGSN;
+                _rb_status=RB_BUSY;
             }
             if (_rb_status==RB_ERROR) {         //if the rockblock received an error,
                 yikes.rberror=1;                //set the rberror yikes flag

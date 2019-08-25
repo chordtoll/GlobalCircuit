@@ -30,7 +30,7 @@ void DeployBallast(uint8_t addr) {
     AddrBallast(addr);                        //set ballast address
     StartKickTimer();
     while(PORTDbits.RD0 && !KICKED) {}        //wait for the correct signal, or break if waiting for too long
-    if(KICKED)                                //if waiing for signal timed out,
+    if(KICKED)                                //if waiting for signal timed out,
     {
         BALLAST_IDLE();                       //set ballast idle
         ba_flag = BAFLAG_NOACKADDR;           //set ballast flag to no acknowledge address

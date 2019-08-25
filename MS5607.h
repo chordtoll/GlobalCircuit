@@ -32,12 +32,12 @@
 #define ALT_C5_ADD 10
 #define ALT_C6_ADD 12
 
-uint64_t C1 = 0;
-uint64_t C2 = 0;
-uint64_t C3 = 0;
-uint64_t C4 = 0;
-uint64_t C5 = 0;
-uint64_t C6 = 0;
+int64_t C1 = 0;
+int64_t C2 = 0;
+int64_t C3 = 0;
+int64_t C4 = 0;
+int64_t C5 = 0;
+int64_t C6 = 0;
 int32_t dT = 0;
 
 //initialize altimeter
@@ -59,7 +59,7 @@ uint16_t ReadAltimeter_Param(uint8_t addr, uint8_t loc);
 uint32_t ConvertAltimeter_Temp(uint32_t rawTemp);
 
 //converts raw pressure reading to mbar*100
-uint32_t ConvertAltimeter_Pressure(uint32_t rawPress);
+int32_t ConvertAltimeter_Pressure(uint32_t rawPress);
 
 #endif	/* MS5607_H */
 

@@ -84,77 +84,13 @@ uint32_t ConvertAltimeter_Temp(uint32_t rawTemp)
 {
     dT = rawTemp - C5 * (1 << 8);
     int64_t temp = (2000+dT*C6/(1<<23))+27300;
-    /*SendChar_UART1('!');
-    SendString_UART1("rawTemp= ");
-    Send16_UART1(rawTemp >> 16);
-    Send16_UART1((rawTemp << 16) >>16);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("temp= ");
-    Send16_UART1(temp >> 16);
-    Send16_UART1((temp << 16) >>16);
-    SendChar_UART1('\r');*/
     return temp;
 }
 
-uint32_t ConvertAltimeter_Pressure(uint32_t rawPress)
+int32_t ConvertAltimeter_Pressure(uint32_t rawPress)
 {
-    /*SendChar_UART1('!');
-    SendString_UART1("C1= ");
-    Send16_UART1(C1);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("C2= ");
-    Send16_UART1(C2);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("C3= ");
-    Send16_UART1(C3);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("C4= ");
-    Send16_UART1(C4);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("C5= ");
-    Send16_UART1(C5);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("C6= ");
-    Send16_UART1(C6);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("dT= ");
-    Send16_UART1(dT >> 16);
-    Send16_UART1((dT << 16) >>16);
-    SendChar_UART1('\r');*/
     int64_t off = C2*(1 << 17) + (C4*dT)/(1 << 6);
-    /*SendChar_UART1('!');
-    SendString_UART1("off= ");
-    Send16_UART1(off >> 48);
-    Send16_UART1((off << 16) >>48);
-    Send16_UART1((off << 32) >> 48);
-    Send16_UART1((off << 48) >> 48);
-    SendChar_UART1('\r');*/
     int64_t sens = C1*(1 << 16) + (C3*dT)/(1 << 7);
-    /*SendChar_UART1('!');
-    SendString_UART1("sens= ");
-    Send16_UART1(sens >> 48);
-    Send16_UART1((sens << 16) >>48);
-    Send16_UART1((sens << 32) >> 48);
-    Send16_UART1((sens << 48) >> 48);
-
-    SendChar_UART1('\r');*/
-    int64_t press = (rawPress*sens/(1 << 21) - off)/(1<<15);
-    /*SendChar_UART1('!');
-    SendString_UART1("rawpress= ");
-    Send16_UART1(rawPress >> 16);
-    Send16_UART1((rawPress << 16) >>16);
-    SendChar_UART1('\r');
-    SendChar_UART1('!');
-    SendString_UART1("press= ");
-    Send16_UART1(press >> 16);
-    Send16_UART1((press << 16) >>16);
-    SendChar_UART1('\r');*/
+    int32_t press = (rawPress*sens/(1 << 21) - off)/(1<<15);
     return press;
 }

@@ -8,6 +8,7 @@
 #pragma config DEBUG = ON
 #pragma config WDTPS = PS8192  //8 second watchdog timeout
 #pragma config FWDTEN = OFF
+#pragma config USERID = 3
 
 #include <proc/p32mx360f512l.h>
 #include <math.h>
@@ -60,6 +61,7 @@ int main(void) {
     uint32_t gLon=0;
     uint32_t gAlt=0;
     uint8_t gSats=0;
+    uint32_t rawpress;
 
     uint8_t conductivityDone=0; //flag indicating state of conductivity measurements
     uint16_t conductivityDir=0; //direction of probe charging for conductivity measurements, odd=up, even=down
@@ -103,12 +105,6 @@ int main(void) {
 
 #ifdef TEST_LOOP
 //TEST CODE HERE
-    while(1)
-    {
-        SafeDebugString("YEP");
-        WaitS(5);
-        ResetWatchdog();
-    }
 #endif
 
 #ifndef TEST_LOOP
@@ -188,8 +184,8 @@ int main(void) {
                 case 9:                                             //if 35.9s into packet
                     if(statetimer == T_SECOND*35 + 9)
                     {
-                        ReadAltimeter_ADC(ALT_ADDR, &supPressure);  //read altimeter pressure
-                        supPressure = ConvertAltimeter_Pressure(supPressure);
+                        ReadAltimeter_ADC(ALT_ADDR, &rawpress);  //read altimeter pressure
+                        supPressure = ConvertAltimeter_Pressure(rawpress);
                     }
                     break;
                 case 10:                                            //if 36.0s into packet
