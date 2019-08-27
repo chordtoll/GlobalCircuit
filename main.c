@@ -8,7 +8,7 @@
 #pragma config DEBUG = ON
 #pragma config WDTPS = PS8192  //8 second watchdog timeout
 #pragma config FWDTEN = OFF
-#pragma config USERID = 3
+#pragma config USERID = 1
 
 #include <proc/p32mx360f512l.h>
 #include <math.h>
