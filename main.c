@@ -10,6 +10,10 @@
 #pragma config FWDTEN = OFF
 #pragma config USERID = 1
 
+///////////////////////////////////////
+//FLIGHT CODE AS OF AUGUST 28TH, 2019//
+///////////////////////////////////////
+
 #include <proc/p32mx360f512l.h>
 #include <math.h>
 #include <string.h>
