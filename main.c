@@ -262,8 +262,9 @@ int main(void) {
             Pack_Supervision(&packet);                             //pack supervision values into the packet
             Pack_Conductivity(&packet, sequence, cVert1, cVert2);  //pack conductivity values into the packet
             packet.norm.RBSig = _rb_sig;
-            packet.norm.cutdown = GetCutdownStatus();              //update cutdown status
-            packet.norm.ballast = GetBallastStatus();              //update ballast status
+            UpdateCutdownStatus();
+            packet.norm.cutdown = cut_state;                       //update cutdown status
+            packet.norm.ballast = ball_state;                      //update ballast status
             packet.norm.version=(PAYLOAD_ID<<4) | PACKET_VERSION;  //Write version ID
             packet.norm.commcount=command_count;                   //write number of commands sent
             packet.norm.RBIMEI = _rb_imei;                         //write rockblock IMEI

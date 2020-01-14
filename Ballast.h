@@ -10,13 +10,15 @@
 
 #define BALL_ACK_TIMEOUT 10 //number of minutes that ballast will wait for acknowledge before timing out
 
-char ballast_rq = 0;    //flag for ballast dealings
+typedef enum {BALL_DISARMED, BALL_ARMED, BALL_SUCCESS, BALL_ALREADY_DROPPED, BALL_NOACKARM, BALL_NOACKFIRE} ballast_state_t;
+ballast_state_t ball_state = BALL_DISARMED;
 
-//runs through sequence of deploying the ballast with a passed address, updates flag based on success of deployment
-//DOCUMENT MORE FULLY FUNCTION OF EACH PIN
-void DeployBallast(uint8_t addr);
+//Drops current addressed ballast
+void DeployBallast();
 
-//returns a flag corresponding to the current status of ballast, clears status flag
-uint8_t GetBallastStatus();
+//Sets active ballast to the given address
+//returns 1: Ballast exists
+//returns 0: Ballast doesn't exist (dropped already)
+uint8_t AddrBallast(uint8_t addr);
 
 #endif	/* BALLAST_H */

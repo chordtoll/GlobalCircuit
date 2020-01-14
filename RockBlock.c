@@ -238,32 +238,46 @@ void TickRB() {
                 RBRXbuf[msglen]=0;              //add a 0 terminator to the end of the message
                 uint16_t csumr=*rbuf++<<8;      //pull the checksum out of the message buffer
                 csumr|=*rbuf;
-                if(!ballast_rq && BALLAST && REQUEST)          //if a ballast request has come in
+                if(ball_state != BALL_ARMED && BALLAST && ARM && ((RBRXbuf[7] >= '0' && RBRXbuf[7] <= '9') || (RBRXbuf[7] >= 'A' && RBRXbuf[7] <= 'F') || (RBRXbuf[7] >= 'a' && RBRXbuf[7] <= 'f'))) //if a ballast arm request has come in
                 {
-                    ballast_rq = 1;                            //set ballast_rq flag
-                    _rb_state=RB_IDLE;                         //rockblock is now idle
-                }
-                else if(ballast_rq >= 3 && ballast_rq <= 12 && BALLAST && CONFIRM && ((RBRXbuf[8] >= '0' && RBRXbuf[8] <= '9') || (RBRXbuf[8] >= 'A' && RBRXbuf[8] <= 'F') || (RBRXbuf[8] >= 'a' && RBRXbuf[8] <= 'f'))) //if a ballast acknowledge is expected and was received
-                {
-                    if(RBRXbuf[8] <= '9')
-                        DeployBallast(RBRXbuf[8] - '0');                          //begin ballast deployment
-                    else if (RBRXbuf[8] <= 'F')
-                        DeployBallast(RBRXbuf[8] - 'A' + 10);
+                    uint8_t armres;
+                    ball_state = BALL_ARMED;                   //set ballast_rq flag
+                    if(RBRXbuf[7] <= '9')
+                        armres = AddrBallast(RBRXbuf[7] - '0');
+                    else if (RBRXbuf[7] <= 'F')
+                        armres = AddrBallast(RBRXbuf[7] - 'A' + 10);
                     else
-                        DeployBallast(RBRXbuf[8] - 'a' + 10);
-                    ballast_rq = 0;                            //clear ballast_rq flag
+                        armres = AddrBallast(RBRXbuf[7] - 'a' + 10);
+                    if(armres)
+                        ball_state = BALL_ARMED;
+                    else
+                        ball_state = BALL_ALREADY_DROPPED;
                     _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(!cutdown_rq && CUTDOWN && REQUEST)     //if a cutdown request has come in
+                else if(ball_state == BALL_ARMED && BALLAST && FIRE) //if a ballast acknowledge is expected and was received
                 {
-                    cutdown_rq = 1;                            //set cutdown_rq flag
+                    DeployBallast();
                     _rb_state=RB_IDLE;                         //rockblock is now idle
                 }
-                else if(cutdown_rq >= 3 && cutdown_rq <= 12 && CUTDOWN && CONFIRM) //if a cutdown acknowledge is expected as was received
+                else if(BALLAST && DISARM)
+                {
+                    ball_state = BALL_DISARMED;
+                    _rb_state = RB_IDLE;
+                }
+                else if(cut_state != CUT_ARMED && CUTDOWN && ARM)         //if a cutdown request has come in
+                {
+                    cut_state = CUT_ARMED;                     //set cutdown_rq flag
+                    _rb_state=RB_IDLE;                          //rockblock is now idle
+                }
+                else if(cut_state == CUT_ARMED && CUTDOWN && FIRE) //if a cutdown acknowledge is expected as was received
                 {
                      InitiateCutdown();                        //initiate a cutdown sequence
-                     cutdown_rq = 0;                           //clear the cutdown_rq flag
                      _rb_state=RB_IDLE;                        //rockblock is now idle
+                }
+                else if(CUTDOWN && DISARM)
+                {
+                    cut_state = CUT_DISARMED;
+                    _rb_state = RB_IDLE;
                 }
                 else {                        //if none of the above messages were received
                     SendString_UART1("AT\r"); //send an empty AT command
