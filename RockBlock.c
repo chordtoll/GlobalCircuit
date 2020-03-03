@@ -221,7 +221,6 @@ void TickRB() {
                     _rb_state=SENT_SBDRB;           //update state to SENT_SBDRB
                     _rb_status=RB_BUSY;             //indicate that the rockblock is busy
                 } else {                            //if there is no message
-                    SendString_UART1("AT\r");       //send an empty AT command
                     _rb_state=SENT_ACKAT;           //update state to SENT_ACKAT
                     _rb_status=RB_BUSY;             //indicate that the rockblock is busy
                 }
