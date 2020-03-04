@@ -131,7 +131,7 @@ void TickRB() {
             }
             if (_rb_status==RB_ERROR) {         //if the rockblock received an error,
                 yikes.rberror=1;                //set the rberror yikes flag
-                _rb_state=RB_INIT;              //reinitialize communication
+                _rb_state=RB_IDLE;              //reinitialize communication
             }
             break;
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -221,8 +221,9 @@ void TickRB() {
                     _rb_state=SENT_SBDRB;           //update state to SENT_SBDRB
                     _rb_status=RB_BUSY;             //indicate that the rockblock is busy
                 } else {                            //if there is no message
-                    _rb_state=SENT_ACKAT;           //update state to SENT_ACKAT
-                    _rb_status=RB_BUSY;             //indicate that the rockblock is busy
+                    SendString_UART1(RB_CLEARBUFF);
+                    _rb_state=S3;       //set the rockblock to idle status
+                    _rb_status=RB_BUSY;
                 }
             }
             if (_rb_status==RB_ERROR) {             //if the rockblock received an error,
