@@ -1,36 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Stubs.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/MS5607.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Stubs.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/MS5607.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/transmit.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Resets.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/I2C.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/PICADC.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Resets.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/MAG3310.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/MAG3310.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/transmit.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/PPS.c</file>
             <file>file:/C:/Users/Collin/Documents/GlobalCircuit/RockBlock.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Timing.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/PPS.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Watchdog.h</file>
             <file>file:/C:/Users/Collin/Documents/GlobalCircuit/main.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/I2C.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/PICADC.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/GPS.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Packet.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Watchdog.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/SPI.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Yikes.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/GPS.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/SPI.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/Timing.h</file>
             <file>file:/C:/Users/Collin/Documents/GlobalCircuit/RockBlock.h</file>
         </group>
     </open-files>

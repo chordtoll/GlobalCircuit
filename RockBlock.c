@@ -23,6 +23,112 @@ void InitRB() {
     _rb_idletimer=0;    //reset idle timer
 }
 
+void StartATRB()
+{
+    SendString_UART1("AT\r");
+}
+
+void FlowControlRB(uint8_t option)
+{
+    switch(option)
+    {
+        case 0:
+            SendString_UART1("AT&K0\r");
+            break;
+        case 3:
+            SendString_UART1("AT&K3\r");
+            break;
+        case 4:
+            SendString_UART1("AT&K4\r");
+            break;
+        case 6:
+            SendString_UART1("AT&K6\r");
+    }
+}
+
+void DtrRB(uint8_t option)
+{
+    switch(option)
+    {
+        case 0:
+            SendString_UART1("AT&D0\r");
+            break;
+        case 1:
+            SendString_UART1("AT&D1\r");
+            break;
+        case 2:
+            SendString_UART1("AT&D2\r");
+            break;
+        case 3:
+            SendString_UART1("AT&D3\r");
+    }
+}
+
+void RingIdRB(uint8_t option)
+{
+    switch(option)
+    {
+        case 0:
+            SendString_UART1("AT+SBDMTA=0\r");
+            break;
+        case 1:
+            SendString_UART1("AT+SBDMTA=1\r");
+            break;
+    }
+}
+
+void ClearBuffRB(uint8_t option)
+{
+    switch(option)
+    {
+        case 0:
+            SendString_UART1("AT+SBDD0\r");
+            break;
+        case 1:
+            SendString_UART1("AT+SBDD1\r");
+            break;
+        case 2:
+            SendString_UART1("AT+SBDD2\r");
+            break;
+    }
+}
+
+void PrepBuffRB()
+{
+    SendString_UART1("AT+SBDWB\r");
+}
+
+void WriteBuffRB()
+{
+    SendBuffer_UART1((char *)RBTXbuf,_rb_buf_sindex*34,_rb_buf_sindex*34+34);
+    ++_rb_buf_sindex;
+}
+
+void WriteCsRB()
+{
+    uint16_t csum = 0;
+    uint16_t i;
+    for(i=0;i<340;i++)
+        csum+=(uint8_t) RBTXbuf[i];
+    SendChar_UART1(csum>>8);
+    SendChar_UART1(csum&0xFF);
+}
+
+void TransactMessageRB()
+{
+    SendString_UART1("AT+SBDIX\r");
+}
+
+void TickRB()
+{
+    switch(_rb_state)
+    {
+        case :
+            
+        break;
+    }
+}
+
 void TickRB() {
     uint16_t csum=0; //checksum 
     uint16_t i;      //looping variable
