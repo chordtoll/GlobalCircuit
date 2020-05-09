@@ -1,26 +1,8 @@
-/* 
- * File:   RockBlock.h
- * Author: asent
- *
- * Created on August 1, 2018, 2:44 PM
- */
-
 #ifndef ROCKBLOCK_H
 #define	ROCKBLOCK_H
 
 #include <stdint.h>
-
-#define RB_BEGIN_AT "+++\r"
-#define RB_NO_FLOWC "AT&K0\r"
-#define RB_NO_DTR "AT&D0\r"
-#define RB_NO_RINGID "AT+SBDMTA=0\r"
-#define RB_CLEARBUFF "AT+SBDD0\r"
-#define RB_WRITE340 "AT+SBDWB=340\r"
-#define RB_SEND "AT+SBDIX\r"
-#define RB_RECEIVE "AT+SBDRB\r"
-#define RB_RESET "ATZ0\r"
-#define RB_READSIG "AT+CSQ\r"
-#define RB_READIMEI "AT+CGSN\r"
+#include <stddef.h>
 
 #define RB_IDLE_SOFT_TIMEOUT 600
 #define RB_IDLE_FIRM_TIMEOUT 1200
@@ -32,12 +14,18 @@
 #define CONFIRM RBRXbuf[4]=='C'&&RBRXbuf[5]=='O'&&RBRXbuf[6]=='N'&&RBRXbuf[7]=='F'
 
 
-typedef enum rb_state  {TX_REQUESTED, } rb_state_t;
-typedef enum rb_status {RB_BUSY,RB_OK,RB_ERROR,RB_READY} rb_status_t;
+typedef enum rb_status {RB_BUSY, RB_OK, RB_ERROR, RB_READY} rb_status_t;
+typedef enum rb_seq {RB_INIT, RB_TRANS, RB_UPLINK, RB_IDLE} rb_seq_t;
+typedef enum rb_command_resp {RB_COMMAND_NEXT, RB_COMMAND_RESET, RB_COMMAND_HOLD} rb_command_resp_t;
 
-rb_state_t _rb_state;   //current rockblock state
-uint16_t _rb_buf_sindex;//rockblock string buffer index counter
-uint8_t command_count=0;
+rb_command_resp_t (*_rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, NULL};
+rb_command_resp_t (*_rb_trans_funcs[])() = {RB_CheckSig, RB_PrepBuff, RB_WriteBuff, RB_Tx, RB_Rx, NULL};
+
+rb_seq_t _rb_seq;
+uint8_t _rb_command_ind;
+
+uint16_t _rb_buf_sindex=0;//rockblock string buffer index counter
+uint8_t uplink_count=0;
 uint16_t _rb_imei;
 
 char _rb_mos[8];   //mobile originated message status
@@ -55,45 +43,56 @@ uint16_t _rb_imtm; //integer parsed mtm
 uint16_t _rb_imtl; //integer parsed mtl
 uint16_t _rb_imtq; //integer parsed mtq
 
-//sends "AT" to RB
-void StartATRB();
+//get the RockBLOCK's serial number (AT+CGSN)
+void RB_GetSerial(); 
 
-/*sends "AT&Kn" to RB
-0 - Disable
-3 - Enable RTS/CTS
-4 - Enable XON/XOFF
-6 - Enable RTS/CTS and XON/OFF*/
-void FlowControlRB(uint8_t option);
+//characters are not echoed to the DTE (ATE0)
+void RB_Echo_Off();
 
-/*sends "AT&D0" to RB
-0 - DTR is ignored
-1 - DTR is used with a 10 second delay
-2 - DTR is used immediately
-3 - DTR is used immediately, and resets to AT command profile 0*/
-void DtrRB(uint8_t option);
+//characters are echoed to the DTE (ATE1)
+void RB_Echo_On();
 
-/*sends "AT+SBDMTA=n" to RB
-0 - disable ring ID
-1 - enable ring ID*/
-void RingIdRB(uint8_t option);
+//Disables flow control (AT&K0)
+void RB_FlowControl_Disable();
 
-/*sends "AT+SBDDn" to RB
-0 - Clear mobile originated (Tx) buffer
-1 - Clear mobile terminated (Rx) buffer
-2 - Clear both buffers*/
-void ClearBuffRB(uint8_t option);
+//Enables RTS/CTS flow control (AT&K3)
+void RB_FlowControl_Enable();
+
+//DTR is ignored (AT&D0)
+void RB_DTR_Ignore();
+
+//DTR is used with a 10 second delay (AT&D1)
+void RB_DTR_10Sec();
+
+//DTR is used immediately (AT&D2)
+void RB_DTR_Def();
+
+//DTR is used immediately, and resets to AT command profile 0 (AT&D3)
+void RB_DTR_Reset();
+
+//disable ring indication (AT+SBDMTA=0)
+void RB_Ring_Disable();
+
+//enable ring indication (AT+SBDMTA=1)
+void RB_Ring_Enable();
+
+//Clear mobile originated (Tx) buffer (AT+SBDD0)
+void RB_Clear_TxBuff();
+
+//Clear mobile terminated (Rx) buffer (AT+SBDD1)
+void RB_Clear_RxBuff();
+
+//Clear both buffers (AT+SBDD2)
+void RB_Clear_BothBuff();
 
 //Sends "AT+SBDWB=340" to RB
-void PrepBuffRB();
+void RB_PrepBuff();
 
 //Writes 34 characters of TXbuffer to RB
-void WriteBuffRB();
+void RB_WriteBuff();
 
-//Writes checksum to RB
-void WriteCsRB();
-
-//Sends "AT+SBDIX" to RB
-void TransactMessageRB();
+//Sends "AT+SBDI" to RB
+void RB_Tx();
 
 //initializes rockblock
 void InitRB();
@@ -105,6 +104,6 @@ void TickRB();
 void SendString_RB(char *msg);
 
 //update _rb_sig with current signal strength
-void CheckSig_RB();
+void RB_CheckSig();
 #endif	/* ROCKBLOCK_H */
 

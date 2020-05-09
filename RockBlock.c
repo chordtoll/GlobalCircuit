@@ -14,118 +14,442 @@ uint8_t ParseCSQ(volatile char *cmdbuf);
 uint16_t ParseSN(volatile char *cmdbuf);
 
 void InitRB() {
-    //_rb_state=RB_INIT;  //set rockblock to initialization state
-    _rb_idx=0;          //set rockblock character index to 0
-    //_rb_status=RB_BUSY; //indicate that the rockblock is currently busy
-    _rb_cmdbuf[340]=0;  //clear the rockblock command buffer
-    _rb_reqsend=0;      //clear reqsend flag
-    _rb_reqSigCheck=0;  //clear signal check flag
-    _rb_idletimer=0;    //reset idle timer
+    _rb_seq = RB_INIT;    //set rockblock to initialization state
+    _rb_status = RB_OK;
+    _rb_command_ind = 0;  
+    _rb_idx = 0;          //set rockblock character index to 0
+    _rb_cmdbuf[340]=0;    //clear the rockblock command buffer
+    _rb_reqsend=0;        //clear reqsend flag
+    _rb_reqSigCheck=0;    //clear signal check flag
+    _rb_idletimer=0;      //reset idle timer
 }
 
-void StartATRB()
+rb_command_resp_t RB_GetSerial()
 {
-    SendString_UART1("AT\r");
-}
-
-void FlowControlRB(uint8_t option)
-{
-    switch(option)
+    if(_rb_status == RB_OK)
     {
-        case 0:
-            SendString_UART1("AT&K0\r");
-            break;
-        case 3:
-            SendString_UART1("AT&K3\r");
-            break;
-        case 4:
-            SendString_UART1("AT&K4\r");
-            break;
-        case 6:
-            SendString_UART1("AT&K6\r");
+        SendString_UART1("AT+CGSN");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
     }
-}
-
-void DtrRB(uint8_t option)
-{
-    switch(option)
+    if(_rb_status == RB_ERROR)
     {
-        case 0:
-            SendString_UART1("AT&D0\r");
-            break;
-        case 1:
-            SendString_UART1("AT&D1\r");
-            break;
-        case 2:
-            SendString_UART1("AT&D2\r");
-            break;
-        case 3:
-            SendString_UART1("AT&D3\r");
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
     }
+    return RB_COMMAND_HOLD;
 }
 
-void RingIdRB(uint8_t option)
+rb_command_resp_t RB_Echo_Off()
 {
-    switch(option)
+    if(_rb_status == RB_OK)
     {
-        case 0:
-            SendString_UART1("AT+SBDMTA=0\r");
-            break;
-        case 1:
-            SendString_UART1("AT+SBDMTA=1\r");
-            break;
+        SendString_UART1("ATE0");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
     }
-}
-
-void ClearBuffRB(uint8_t option)
-{
-    switch(option)
+    if(_rb_status == RB_ERROR)
     {
-        case 0:
-            SendString_UART1("AT+SBDD0\r");
-            break;
-        case 1:
-            SendString_UART1("AT+SBDD1\r");
-            break;
-        case 2:
-            SendString_UART1("AT+SBDD2\r");
-            break;
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
     }
+    return RB_COMMAND_HOLD;
+    
 }
 
-void PrepBuffRB()
+rb_command_resp_t RB_Echo_On()
 {
-    SendString_UART1("AT+SBDWB\r");
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("ATE1");
+        _rb_status = RB_COMMAND_NEXT;
+        return 1;
+    }
+    else if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+    
 }
 
-void WriteBuffRB()
+rb_command_resp_t RB_FlowControl_Disable()
 {
-    SendBuffer_UART1((char *)RBTXbuf,_rb_buf_sindex*34,_rb_buf_sindex*34+34);
-    ++_rb_buf_sindex;
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT&K0\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
 }
 
-void WriteCsRB()
+rb_command_resp_t RB_FlowControl_Enable()
 {
-    uint16_t csum = 0;
-    uint16_t i;
-    for(i=0;i<340;i++)
-        csum+=(uint8_t) RBTXbuf[i];
-    SendChar_UART1(csum>>8);
-    SendChar_UART1(csum&0xFF);
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT&K3\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
 }
 
-void TransactMessageRB()
+rb_command_resp_t RB_DTR_Ignore()
 {
-    SendString_UART1("AT+SBDIX\r");
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT&D0\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+    
+}
+
+rb_command_resp_t RB_DTR_10Sec()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT&D1\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_DTR_Def()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT&D2\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_DTR_Reset()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT&D3\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Ring_Disable()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDMTA=0\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Ring_Enable()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDMTA=1\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Clear_TxBuff()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDD0\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Clear_RxBuff()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDD1\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Clear_BothBuff()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDD2\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_CheckSig() 
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+CSQ\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Rx()
+{
+    if(_rb_status == RB_OK)
+    {
+        ParseSBDIX(_rb_cmdbuf,_rb_mos,_rb_mom,_rb_mts,_rb_mtm,_rb_mtl,_rb_mtq);
+        _rb_imtl=atoi(_rb_mtl);
+        if (_rb_imtl>0) 
+        {
+            SendString_UART1("AT+SBDRB\r");
+            _rb_status = RB_BUSY;
+            _rb_seq = RB_UPLINK;
+        }
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror = 1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_WriteBuff()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDWB=340\r");
+        _rb_status = RB_BUSY;
+    }
+    else if(_rb_status == RB_READY)
+    {
+        uint16_t csum = 0;
+        uint16_t i;
+        SendBuffer_UART1((char *)RBTXbuf, 0, 340);
+        for(i=0;i<340;i++)
+            csum+=(uint8_t) RBTXbuf[i];
+        SendChar_UART1(csum>>8);
+        SendChar_UART1(csum&0xFF);
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    else if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror = 1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_Tx()
+{
+    if(_rb_status == RB_OK)
+    {
+        SendString_UART1("AT+SBDI\r");
+        _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_ParseUplink()
+{
+    if(_rb_status == RB_OK)
+    {
+        volatile char *rbuf=_rb_cmdbuf; //create an instance of the message buffer
+        uint16_t msglen=*rbuf++<<8;     //pull the message length from the message buffer
+        msglen|=*rbuf++;
+        uint16_t i;
+        for (i=0;i<msglen;i++) {        //loop through the message
+            RBRXbuf[i]=*rbuf++;         //retrieve the message from the message buffer
+        }
+        RBRXbuf[msglen]=0;              //add a 0 terminator to the end of the message
+        if(!ballast_rq && BALLAST && REQUEST)          //if a ballast request has come in
+        {
+            ballast_rq = 1;                            //set ballast_rq flag
+        }
+        else if(ballast_rq >= 3 && ballast_rq <= 12 && BALLAST && CONFIRM && ((RBRXbuf[8] >= '0' && RBRXbuf[8] <= '9') || (RBRXbuf[8] >= 'A' && RBRXbuf[8] <= 'F') || (RBRXbuf[8] >= 'a' && RBRXbuf[8] <= 'f'))) //if a ballast acknowledge is expected and was received
+        {
+            if(RBRXbuf[8] <= '9')
+                DeployBallast(RBRXbuf[8] - '0');                          //begin ballast deployment
+            else if (RBRXbuf[8] <= 'F')
+                DeployBallast(RBRXbuf[8] - 'A' + 10);
+            else
+                DeployBallast(RBRXbuf[8] - 'a' + 10);
+            ballast_rq = 0;                            //clear ballast_rq flag
+        }
+        else if(!cutdown_rq && CUTDOWN && REQUEST)     //if a cutdown request has come in
+        {
+            cutdown_rq = 1;                            //set cutdown_rq flag
+        }
+        else if(cutdown_rq >= 3 && cutdown_rq <= 12 && CUTDOWN && CONFIRM) //if a cutdown acknowledge is expected as was received
+        {
+             InitiateCutdown();                        //initiate a cutdown sequence
+             cutdown_rq = 0;                           //clear the cutdown_rq flag
+        }
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror = 1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
 }
 
 void TickRB()
 {
-    switch(_rb_state)
+    switch(_rb_seq)
     {
-        case :
+        case RB_INIT:
+            if(_rb_init_funcs[_rb_command_ind])
+            {
+                switch((*_rb_init_funcs[_rb_command_ind])())
+                {
+                    case RB_COMMAND_NEXT:
+                        ++_rb_command_ind;
+                        break;
+                        
+                    case RB_COMMAND_RESET:
+                        _rb_command_ind = 0;
+                        break;
+                        
+                    case RB_COMMAND_HOLD:
+                        break;
+                }
+            }
+            else
+            {
+                _rb_command_ind = 0;
+                _rb_seq = RB_IDLE;
+            }
+            break;
             
-        break;
+        case RB_TRANS:
+            if(_rb_trans_funcs[_rb_command_ind])
+            {
+                switch((*_rb_trans_funcs[_rb_command_ind])())
+                {
+                    case RB_COMMAND_NEXT:
+                        ++_rb_command_ind;
+                        break;
+                        
+                    case RB_COMMAND_RESET:
+                        // while(1); RESET whole system?
+                        _rb_command_ind = 0;
+                        break;
+                        
+                    case RB_COMMAND_HOLD:
+                        break;
+                }
+            }
+            else
+            {
+                _rb_command_ind = 0;
+                _rb_seq = RB_IDLE;
+            }
+            break;
+            
+        case RB_UPLINK:
+            switch(RB_ParseUplink())
+            {
+                case RB_COMMAND_NEXT:
+                    _rb_command_ind = 0;
+                    _rb_seq = RB_IDLE;
+                    break;
+                    
+                case RB_COMMAND_RESET:
+                    _rb_command_ind = 0;
+                    _rb_seq = RB_IDLE;
+                    break;
+                    
+                case RB_COMMAND_HOLD:
+                    break;
+            }
+            break;
+            
+        case RB_IDLE:
+            break;
     }
 }
 
@@ -361,16 +685,12 @@ void TickRB() {
             if (_rb_status==RB_OK) {            //if the rockblock is receiving commands correctly,
                 ++command_count;                //increment command counter
                 volatile char *rbuf=_rb_cmdbuf; //create an instance of the message buffer
-                uint16_t csumc=0;               //checksum
                 uint16_t msglen=*rbuf++<<8;     //pull the message length from the message buffer
                 msglen|=*rbuf++;
                 for (i=0;i<msglen;i++) {        //loop through the message
                     RBRXbuf[i]=*rbuf++;         //retrieve the message from the message buffer
-                    csumc+=RBRXbuf[i];          //calculate checksum
                 }
                 RBRXbuf[msglen]=0;              //add a 0 terminator to the end of the message
-                uint16_t csumr=*rbuf++<<8;      //pull the checksum out of the message buffer
-                csumr|=*rbuf;
                 if(!ballast_rq && BALLAST && REQUEST)          //if a ballast request has come in
                 {
                     ballast_rq = 1;                            //set ballast_rq flag
@@ -415,10 +735,6 @@ void TickRB() {
 void SendString_RB(char *msg) {
     memcpy((void *)RBTXbuf,msg,340); //copy the message into the transmitting buffer
     _rb_reqsend=1;                   //request to send the message
-}
-
-void CheckSig_RB() {
-    _rb_reqSigCheck=1;              //set the flag for signal check
 }
 
 uint8_t ParseCSQ(volatile char *cmdbuf)
