@@ -145,7 +145,7 @@ char rbstrcmp(volatile char *s1,uint16_t s1i,const char *s2) {
 
 void SafeDebugString(unsigned char* string)
 {
-    if(_rb_state == RB_IDLE)
+    if(_rb_seq == RB_IDLE)
     {
         SendChar_UART1('!');
         while(*string != 0)
