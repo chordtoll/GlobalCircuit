@@ -40,8 +40,11 @@ uint16_t _rb_imtm; //integer parsed mtm
 uint16_t _rb_imtl; //integer parsed mtl
 uint16_t _rb_imtq; //integer parsed mtq
 
-//get the RockBLOCK's serial number (AT+CGSN)
+//get the RockBLOCK's serial number (AT+CGSN) MUST USE RB_ReadSerial AFTER THIS
 rb_command_resp_t RB_GetSerial(); 
+
+//parse the return of AT+CGSN, MUST BE USED AFTER RB_GETSERIAL
+rb_command_resp_t RB_ReadSerial();
 
 //characters are not echoed to the DTE (ATE0)
 rb_command_resp_t RB_Echo_Off();
@@ -108,7 +111,7 @@ rb_command_resp_t RB_CheckSig();
 //reads AT+CSQ response from rockblock MUST USE AFTER RB_CheckSig
 rb_command_resp_t RB_ReadSig();
 
-rb_command_resp_t (*_rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, NULL};
+rb_command_resp_t (*_rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
 rb_command_resp_t (*_rb_trans_funcs[])() = {RB_WriteBuff, RB_Tx, RB_Rx, NULL};
 rb_command_resp_t (*_rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
 

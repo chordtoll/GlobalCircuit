@@ -28,6 +28,7 @@ void CheckSig_RB()
 {
     if(_rb_seq == RB_IDLE)
     {
+        _rb_command_ind = 0;
         _rb_seq = RB_SIG;
     }
 }
@@ -38,6 +39,21 @@ rb_command_resp_t RB_GetSerial()
     {
         SendString_UART1("AT+CGSN\r");
         _rb_status = RB_BUSY;
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror=1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
+rb_command_resp_t RB_ReadSerial()
+{
+    if(_rb_status == RB_OK)
+    {
+        _rb_imei = ParseSN(_rb_cmdbuf);
         return RB_COMMAND_NEXT;
     }
     if(_rb_status == RB_ERROR)
