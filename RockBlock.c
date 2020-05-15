@@ -24,11 +24,19 @@ void InitRB() {
     _rb_idletimer=0;      //reset idle timer
 }
 
+void CheckSig_RB()
+{
+    if(_rb_seq == RB_IDLE)
+    {
+        _rb_seq = RB_SIG;
+    }
+}
+
 rb_command_resp_t RB_GetSerial()
 {
     if(_rb_status == RB_OK)
     {
-        SendString_UART1("AT+CGSN");
+        SendString_UART1("AT+CGSN\r");
         _rb_status = RB_BUSY;
         return RB_COMMAND_NEXT;
     }
@@ -44,7 +52,7 @@ rb_command_resp_t RB_Echo_Off()
 {
     if(_rb_status == RB_OK)
     {
-        SendString_UART1("ATE0");
+        SendString_UART1("ATE0\r");
         _rb_status = RB_BUSY;
         return RB_COMMAND_NEXT;
     }
@@ -61,7 +69,7 @@ rb_command_resp_t RB_Echo_On()
 {
     if(_rb_status == RB_OK)
     {
-        SendString_UART1("ATE1");
+        SendString_UART1("ATE1\r");
         _rb_status = RB_COMMAND_NEXT;
         return 1;
     }
@@ -267,6 +275,21 @@ rb_command_resp_t RB_CheckSig()
     return RB_COMMAND_HOLD;
 }
 
+rb_command_resp_t RB_ReadSig()
+{
+    if(_rb_status == RB_OK)
+    {
+        _rb_sig = ParseCSQ(_rb_cmdbuf);
+        return RB_COMMAND_NEXT;
+    }
+    if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror = 1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
 rb_command_resp_t RB_Rx()
 {
     if(_rb_status == RB_OK)
@@ -447,7 +470,31 @@ void TickRB()
                     break;
             }
             break;
-            
+
+        case RB_SIG:
+            if(_rb_sig_funcs[_rb_command_ind])
+            {
+                switch((*_rb_sig_funcs[_rb_command_ind])())
+                {
+                    case RB_COMMAND_NEXT:
+                        ++_rb_command_ind;
+                        break;
+
+                    case RB_COMMAND_RESET:
+                        _rb_command_ind = 0;
+                        break;
+
+                    case RB_COMMAND_HOLD:
+                        break;
+                }
+                break;
+            }
+            else
+            {
+                _rb_command_ind = 0;
+                _rb_seq = RB_IDLE;
+            }
+
         case RB_IDLE:
             if(_rb_status == RB_ERROR)
             {

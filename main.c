@@ -8,7 +8,7 @@
 #pragma config DEBUG = ON
 #pragma config WDTPS = PS8192  //8 second watchdog timeout
 #pragma config FWDTEN = OFF
-#pragma config USERID = 1
+#pragma config USERID = 2
 
 ///////////////////////////////////////
 //FLIGHT CODE AS OF AUGUST 28TH, 2019//
@@ -130,8 +130,10 @@ int main(void) {
                 uint16_t vertD;
                 case 0:                                                      //if 0s into interval
                     TriggerMagneto(MAG_ADDR);                                //trigger the magnetometor for reading
-                    if(statetimer == T_SECOND*45)
+                    if (statetimer == T_SECOND*45)
+                    {
                         CheckSig_RB();
+                    }
                     break;
                 case 1:                                                      //if 0.1s into interval
                     ;

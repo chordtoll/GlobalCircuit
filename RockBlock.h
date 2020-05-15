@@ -15,7 +15,7 @@
 
 
 typedef enum rb_status {RB_BUSY, RB_OK, RB_ERROR, RB_READY} rb_status_t;
-typedef enum rb_seq {RB_INIT, RB_TRANS, RB_UPLINK, RB_IDLE} rb_seq_t;
+typedef enum rb_seq {RB_INIT, RB_TRANS, RB_UPLINK, RB_SIG, RB_IDLE} rb_seq_t;
 typedef enum rb_command_resp {RB_COMMAND_NEXT, RB_COMMAND_RESET, RB_COMMAND_HOLD} rb_command_resp_t;
 
 rb_seq_t _rb_seq;
@@ -82,10 +82,7 @@ rb_command_resp_t RB_Clear_RxBuff();
 //Clear both buffers (AT+SBDD2)
 rb_command_resp_t RB_Clear_BothBuff();
 
-//Sends "AT+SBDWB=340" to RB
-rb_command_resp_t RB_PrepBuff();
-
-//Writes 34 characters of TXbuffer to RB
+//Writes message to rockblock
 rb_command_resp_t RB_WriteBuff();
 
 //Sends "AT+SBDI" to RB
@@ -99,14 +96,21 @@ void InitRB();
 //advance the rockblock state machine
 void TickRB();
 
+//triggers a signal check for the RockBLOCK
+void CheckSig_RB();
+
 //send a passed string over the rockblock
 void SendString_RB(char *msg);
 
-//update _rb_sig with current signal strength
+//Sends "AT+CSQ" to rockblock, USE RB_ReadSig AFTER THIS CALL
 rb_command_resp_t RB_CheckSig();
 
+//reads AT+CSQ response from rockblock MUST USE AFTER RB_CheckSig
+rb_command_resp_t RB_ReadSig();
+
 rb_command_resp_t (*_rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, NULL};
-rb_command_resp_t (*_rb_trans_funcs[])() = {RB_CheckSig, RB_PrepBuff, RB_WriteBuff, RB_Tx, RB_Rx, NULL};
+rb_command_resp_t (*_rb_trans_funcs[])() = {RB_WriteBuff, RB_Tx, RB_Rx, NULL};
+rb_command_resp_t (*_rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
 
 #endif	/* ROCKBLOCK_H */
 
