@@ -111,9 +111,9 @@ rb_command_resp_t RB_CheckSig();
 //reads AT+CSQ response from rockblock MUST USE AFTER RB_CheckSig
 rb_command_resp_t RB_ReadSig();
 
-rb_command_resp_t (*_rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
-rb_command_resp_t (*_rb_trans_funcs[])() = {RB_WriteBuff, RB_Tx, RB_Rx, NULL};
-rb_command_resp_t (*_rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
+rb_command_resp_t (* const _rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
+rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff, RB_Tx, RB_Rx, NULL};
+rb_command_resp_t (* const _rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
 
 #endif	/* ROCKBLOCK_H */
 
