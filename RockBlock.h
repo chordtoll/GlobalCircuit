@@ -4,9 +4,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define RB_IDLE_SOFT_TIMEOUT 600
-#define RB_IDLE_FIRM_TIMEOUT 1200
-#define RB_IDLE_HARD_TIMEOUT 1800
+#define ERROR_LIMIT 3
+#define BUSY_TICK_MAX 300
 
 #define BALLAST RBRXbuf[0]=='B'&&RBRXbuf[1]=='A'&&RBRXbuf[2]=='L'&&RBRXbuf[3]=='L'
 #define CUTDOWN RBRXbuf[0]=='C'&&RBRXbuf[1]=='U'&&RBRXbuf[2]=='T'&&RBRXbuf[3]=='D'
@@ -20,6 +19,8 @@ typedef enum rb_command_resp {RB_COMMAND_NEXT, RB_COMMAND_RESET, RB_COMMAND_HOLD
 
 rb_seq_t _rb_seq;
 uint8_t _rb_command_ind;
+uint8_t _rb_errors = 0;
+uint16_t _rb_busy_ticks = 0;
 
 uint16_t _rb_buf_sindex=0;//rockblock string buffer index counter
 uint8_t uplink_count=0;

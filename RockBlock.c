@@ -9,7 +9,7 @@ char _rb_reqsend;        //flag indicating that a request to send data was made
 uint8_t _rb_reqSigCheck; //flag indicating that a request to check signal strength was made
 uint16_t _rb_idletimer;  //timer that keeps track of number of ticks RB has been busy consecutively
 
-void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq);
+void ParseSBDI(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq);
 uint8_t ParseCSQ(volatile char *cmdbuf);
 uint16_t ParseSN(volatile char *cmdbuf);
 
@@ -310,7 +310,7 @@ rb_command_resp_t RB_Rx()
 {
     if(_rb_status == RB_OK)
     {
-        ParseSBDIX(_rb_cmdbuf,_rb_mos,_rb_mom,_rb_mts,_rb_mtm,_rb_mtl,_rb_mtq);
+        ParseSBDI(_rb_cmdbuf,_rb_mos,_rb_mom,_rb_mts,_rb_mtm,_rb_mtl,_rb_mtq);
         _rb_imtl=atoi(_rb_mtl);
         if (_rb_imtl>0) 
         {
@@ -431,6 +431,10 @@ void TickRB()
                         
                     case RB_COMMAND_RESET:
                         _rb_command_ind = 0;
+                        if(++_rb_errors == ERROR_LIMIT)
+                        {
+                            while(1);
+                        }
                         break;
                         
                     case RB_COMMAND_HOLD:
@@ -454,8 +458,11 @@ void TickRB()
                         break;
                         
                     case RB_COMMAND_RESET:
-                        // while(1); RESET whole system?
                         _rb_command_ind = 0;
+                        if(++_rb_errors == ERROR_LIMIT)
+                        {
+                            while(1);
+                        }
                         break;
                         
                     case RB_COMMAND_HOLD:
@@ -479,7 +486,10 @@ void TickRB()
                     
                 case RB_COMMAND_RESET:
                     _rb_command_ind = 0;
-                    _rb_seq = RB_IDLE;
+                    if(++_rb_errors == ERROR_LIMIT)
+                    {
+                        while(1);
+                    }
                     break;
                     
                 case RB_COMMAND_HOLD:
@@ -498,6 +508,10 @@ void TickRB()
 
                     case RB_COMMAND_RESET:
                         _rb_command_ind = 0;
+                        if(++_rb_errors == ERROR_LIMIT)
+                        {
+                            while(1);
+                        }
                         break;
 
                     case RB_COMMAND_HOLD:
@@ -512,11 +526,19 @@ void TickRB()
             }
 
         case RB_IDLE:
+            _rb_errors = 0;
+            _rb_busy_ticks = 0;
             if(_rb_status == RB_ERROR)
             {
+                _rb_seq = RB_INIT;
+                _rb_command_ind = 0;
                 yikes.rberror = 1;
             }
             break;
+    }
+    if(++_rb_busy_ticks == BUSY_TICK_MAX)
+    {
+        while(1);
     }
 }
 
@@ -551,7 +573,7 @@ uint16_t ParseSN(volatile char *cmdbuf)
     return sn;                               //return the last 4 digits of the serial number
 }
 
-void ParseSBDIX(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {
+void ParseSBDI(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,char *mtl,char *mtq) {
     uint8_t field=0;       //counter for which field is currently being read in
     uint16_t fieldstart=0; //starting index of current field
     uint16_t idx=0;        //current index
