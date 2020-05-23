@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include "RockBlock.h"
 #include "UART.h"
 #include "Yikes.h"
@@ -22,6 +24,22 @@ void InitRB() {
     _rb_reqsend=0;        //clear reqsend flag
     _rb_reqSigCheck=0;    //clear signal check flag
     _rb_idletimer=0;      //reset idle timer
+
+    uint8_t i;
+    for(i = 0; i < PACKET_BUFFER_SIZE; ++i)
+    {
+    }
+}
+
+void ShiftPacketBuffer()
+{
+    uint8_t i;
+    free(packet_buffer[0]);
+    --num_stored_packets;
+    for(i = 1; i < PACKET_BUFFER_SIZE; ++i)
+    {
+        packet_buffer[i-1] = packet_buffer[i];
+    }
 }
 
 void CheckSig_RB()
@@ -312,6 +330,11 @@ rb_command_resp_t RB_Rx()
     {
         ParseSBDI(_rb_cmdbuf,_rb_mos,_rb_mom,_rb_mts,_rb_mtm,_rb_mtl,_rb_mtq);
         _rb_imtl=atoi(_rb_mtl);
+        _rb_imos = atoi(_rb_mos);
+        if(_rb_imos == 1)
+        {
+            ShiftPacketBuffer();
+        }
         if (_rb_imtl>0) 
         {
             SendString_UART1("AT+SBDRB\r");
@@ -339,9 +362,9 @@ rb_command_resp_t RB_WriteBuff()
     {
         uint16_t csum = 0;
         uint16_t i;
-        SendBuffer_UART1((char *)RBTXbuf, 0, 340);
+        SendBuffer_UART1(packet_buffer[0], 0, 340);
         for(i=0;i<340;i++)
-            csum+=(uint8_t) RBTXbuf[i];
+            csum+=(uint8_t) packet_buffer[0][i];
         SendChar_UART1(csum>>8);
         SendChar_UART1(csum&0xFF);
         _rb_status = RB_BUSY;
@@ -542,9 +565,11 @@ void TickRB()
     }
 }
 
-void SendString_RB(char *msg) {
-    memcpy((void *)RBTXbuf,msg,340); //copy the message into the transmitting buffer
-    _rb_seq = RB_TRANS;                   //request to send the message
+void SendPacket_RB() {
+    if(num_stored_packets > 0)
+    {
+        _rb_seq = RB_TRANS;                   //request to send the message
+    }
 }
 
 uint8_t ParseCSQ(volatile char *cmdbuf)
@@ -627,4 +652,21 @@ void ParseSBDI(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,cha
         }
         idx++; //move to the next character
     }
+}
+
+void InsertPacketBuffer(char* msg)
+{
+    uint8_t i;
+    char* new = malloc(340);                       //allocate space for new packet
+    memcpy(new, msg, 340);                         //move message into new space
+    if(num_stored_packets == PACKET_BUFFER_SIZE)   //if packet buffer is full,
+    {
+        ShiftPacketBuffer();                       //insert new packet
+        packet_buffer[num_stored_packets - 1] = new;
+    }
+    else
+    {                                              //insert new packet
+        packet_buffer[num_stored_packets] = new;
+    }
+    ++num_stored_packets;
 }

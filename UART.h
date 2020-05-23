@@ -14,7 +14,6 @@
 
 volatile char _rb_cmdbuf[340];
 volatile char RBRXbuf[270];
-volatile char RBTXbuf[340];
 volatile rb_status_t _rb_status;
 volatile uint16_t _rb_idx;
 

@@ -3,9 +3,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "Packet.h"
 
 #define ERROR_LIMIT 3
 #define BUSY_TICK_MAX 300
+#define PACKET_BUFFER_SIZE 3
 
 #define BALLAST RBRXbuf[0]=='B'&&RBRXbuf[1]=='A'&&RBRXbuf[2]=='L'&&RBRXbuf[3]=='L'
 #define CUTDOWN RBRXbuf[0]=='C'&&RBRXbuf[1]=='U'&&RBRXbuf[2]=='T'&&RBRXbuf[3]=='D'
@@ -16,6 +18,10 @@
 typedef enum rb_status {RB_BUSY, RB_OK, RB_ERROR, RB_READY} rb_status_t;
 typedef enum rb_seq {RB_INIT, RB_TRANS, RB_UPLINK, RB_SIG, RB_IDLE} rb_seq_t;
 typedef enum rb_command_resp {RB_COMMAND_NEXT, RB_COMMAND_RESET, RB_COMMAND_HOLD} rb_command_resp_t;
+
+char* packet_buffer[3];
+
+uint8_t num_stored_packets = 0;
 
 rb_seq_t _rb_seq;
 uint8_t _rb_command_ind;
@@ -94,6 +100,12 @@ rb_command_resp_t RB_Tx();
 
 rb_command_resp_t RB_Rx();
 
+//Sends "AT+CSQ" to rockblock, USE RB_ReadSig AFTER THIS CALL
+rb_command_resp_t RB_CheckSig();
+
+//reads AT+CSQ response from rockblock MUST USE AFTER RB_CheckSig
+rb_command_resp_t RB_ReadSig();
+
 //initializes rockblock
 void InitRB();
 
@@ -103,14 +115,11 @@ void TickRB();
 //triggers a signal check for the RockBLOCK
 void CheckSig_RB();
 
-//send a passed string over the rockblock
-void SendString_RB(char *msg);
+//send the oldest packet in the packet buffer to the RockBLOCK
+void SendPacket_RB();
 
-//Sends "AT+CSQ" to rockblock, USE RB_ReadSig AFTER THIS CALL
-rb_command_resp_t RB_CheckSig();
-
-//reads AT+CSQ response from rockblock MUST USE AFTER RB_CheckSig
-rb_command_resp_t RB_ReadSig();
+//insert a packet into the message buffer for sending later.
+void InsertPacketBuffer(char* msg);
 
 rb_command_resp_t (* const _rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
 rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff, RB_Tx, RB_Rx, NULL};

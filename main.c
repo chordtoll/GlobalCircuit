@@ -130,7 +130,11 @@ int main(void) {
                 uint16_t vertD;
                 case 0:                                                      //if 0s into interval
                     TriggerMagneto(MAG_ADDR);                                //trigger the magnetometor for reading
-                    if (statetimer == T_SECOND*45)
+                    if(statetimer == T_SECOND*30)
+                    {
+                        SendPacket_RB();
+                    }
+                    else if (statetimer == T_SECOND*45)
                     {
                         CheckSig_RB();
                     }
@@ -274,7 +278,8 @@ int main(void) {
             yikes.byte=0;                                          //Clear error flags
             packet.norm.seq=sequence;                              //Write sequence ID
             ++sequence;                                            //update sequence counter
-            SendString_RB(packet.bytes);                           //Send packet
+            InsertPacketBuffer(packet.bytes);                      //Send packet
+            SendPacket_RB();
             clearPacket(&packet);                                  //Clear packet buffer
             statetimer=0;                                          //Reset state timer for start of next packet
             conductivityDone=0;                                    //reset conductivity flag
