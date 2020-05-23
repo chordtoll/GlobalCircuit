@@ -656,17 +656,11 @@ void ParseSBDI(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,cha
 
 void InsertPacketBuffer(char* msg)
 {
-    uint8_t i;
     char* new = malloc(340);                       //allocate space for new packet
     memcpy(new, msg, 340);                         //move message into new space
     if(num_stored_packets == PACKET_BUFFER_SIZE)   //if packet buffer is full,
     {
-        ShiftPacketBuffer();                       //insert new packet
-        packet_buffer[num_stored_packets - 1] = new;
+        ShiftPacketBuffer();                       //drop oldest packet
     }
-    else
-    {                                              //insert new packet
-        packet_buffer[num_stored_packets] = new;
-    }
-    ++num_stored_packets;
+    packet_buffer[num_stored_packets++] = new;     //add new packet to end of buffer
 }

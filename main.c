@@ -276,8 +276,7 @@ int main(void) {
             yikes.condpol = (conductivityDir-1)%2;                 //write conductivity polarity
             packet.norm.yikes=yikes.byte;                          //Write error flags to packet
             yikes.byte=0;                                          //Clear error flags
-            packet.norm.seq=sequence;                              //Write sequence ID
-            ++sequence;                                            //update sequence counter
+            packet.norm.seq=sequence++;                            //Write sequence ID
             InsertPacketBuffer(packet.bytes);                      //Send packet
             SendPacket_RB();
             clearPacket(&packet);                                  //Clear packet buffer
