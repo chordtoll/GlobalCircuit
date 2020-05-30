@@ -6,7 +6,7 @@
 #include "Packet.h"
 
 #define ERROR_LIMIT 3
-#define BUSY_TICK_MAX 300
+#define BUSY_TICK_MAX 600
 #define PACKET_BUFFER_SIZE 3
 
 #define BALLAST RBRXbuf[0]=='B'&&RBRXbuf[1]=='A'&&RBRXbuf[2]=='L'&&RBRXbuf[3]=='L'

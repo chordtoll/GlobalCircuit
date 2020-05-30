@@ -481,11 +481,14 @@ void TickRB()
                         break;
                         
                     case RB_COMMAND_RESET:
-                        _rb_command_ind = 0;
                         if(++_rb_errors == ERROR_LIMIT)
                         {
                             while(1);
                         }
+                        if(num_stored_packets > 0)
+                            _rb_command_ind = 0;
+                        else
+                            _rb_seq = RB_IDLE;
                         break;
                         
                     case RB_COMMAND_HOLD:
