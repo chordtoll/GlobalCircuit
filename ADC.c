@@ -19,13 +19,13 @@ void InitPICADC() {
 
     AD1CHSbits.CH0SA = 0; //ADCA+=AN0
     AD1CHSbits.CH0NA = 0; //ADCA-=VR-
-
+    
     AD1CON1bits.FORM = 0; //UINT32 output
 
     AD1CON1bits.SSRC = 7; //Clocked conversion
     AD1CON3bits.SAMC = 31;//31 clocks of sampling
 
-    AD1CON2bits.VCFG = 0; //AVDD/AVSS reference
+    AD1CON2bits.VCFG = 3; //Vref+/Vref- reference
 
     AD1CON2bits.CSCNA = 0;//Auto scan disable
 

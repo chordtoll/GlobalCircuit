@@ -1,15 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/UART.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/SPI.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/RockBlock.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/SPI.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/main.c</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/UART.h</file>
-            <file>file:/C:/Users/Collin/Documents/GlobalCircuit/RockBlock.h</file>
+            <file>file:/C:/Users/thesq/Documents/GlobalCircuit/RockBlock.c</file>
+            <file>file:/C:/Users/thesq/Documents/GlobalCircuit/main.c</file>
+            <file>file:/C:/Users/thesq/Documents/GlobalCircuit/Timing.c</file>
+            <file>file:/C:/Users/thesq/Documents/GlobalCircuit/ADC.c</file>
+            <file>file:/C:/Users/thesq/Documents/GlobalCircuit/GPIO.c</file>
         </group>
     </open-files>
 </project-private>

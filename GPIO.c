@@ -36,10 +36,13 @@ void InitGPIO() {
     PORTDCLR=0xC0;      //set a LOW value on RD2-3
     TRISDbits.TRISD9=0; //set port D pin 9 to output
     PORTDbits.RD9=0;    //set a LOW value on RD9
-
+    
+    //Set RA9/10 (VREF-/+) to input
+    TRISASET = 0x300;
+    
     //UNUSED PINS
-    TRISACLR = 0xC6FF; //RA0,1,2,3,4,5,6,9,10,14,15
-    PORTACLR = 0xC6FF;
+    TRISACLR = 0xC0FF; //RA0,1,2,3,4,5,6,7,14,15
+    PORTACLR = 0xC0FF;
     TRISBCLR = 0xC000; //RB14,15
     PORTBCLR = 0xC000;
     TRISCCLR = 0xE000; //RC13,14,15
