@@ -38,8 +38,8 @@ pin17 | RA2  <-  pin18  | RE8   - PIC16_SLEEP
 #define GPS_S_EN PORTDbits.RD9      //pin to wake/sleep GPS
 #define GPS_BAT_EN PORTDbits.RD8    //pin controlling GPS battery power
 
-typedef enum chgst {NONE,GND,UP,DOWN} chgst_t;
-
+typedef enum chgst {GND,UP,DOWN} chgst_t;
+typedef enum swst  {OPEN, CLOSE} swst_t;
 //initialize GPIO settings
 void InitGPIO();
 
@@ -53,5 +53,10 @@ void SendString_GPIO(char *s);
 
 //charge probes to the specified state
 void ChargeProbe(chgst_t state);
+
+/*open/close conductivity switch
+ * state = 0: open
+ *      != 0: closed*/
+void SetSwitch(swst_t state);
 
 #endif	/* GPIO_H */

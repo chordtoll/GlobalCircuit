@@ -112,25 +112,27 @@ void SendString_GPIO(char *s) {
 
 void ChargeProbe(chgst_t state) {
     switch (state) {
-        case NONE:
-            PORTGbits.RG6=0;
-            PORTGbits.RG7=0;
-            PORTGbits.RG8=1;
-            break;
         case UP:
             PORTGbits.RG6=1;
             PORTGbits.RG7=0;
-            PORTGbits.RG8=0;
             break;
         case DOWN:
             PORTGbits.RG6=0;
             PORTGbits.RG7=1;
-            PORTGbits.RG8=0;
             break;
         case GND:
             PORTGbits.RG6=0;
             PORTGbits.RG7=0;
-            PORTGbits.RG8=0;
             break;
     }
+}
+void SetSwitch(swst_t state) {
+  if(state == CLOSE)   //close switch
+  {
+    PORTGbits.RG8 = 0;
+  }
+  else                 //open switch
+  {
+    PORTGbits.RG8 = 1;
+  }
 }
