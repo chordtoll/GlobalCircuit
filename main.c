@@ -10,10 +10,6 @@
 #pragma config FWDTEN = OFF
 #pragma config USERID = 2
 
-///////////////////////////////////////
-//FLIGHT CODE AS OF AUGUST 28TH, 2019//
-///////////////////////////////////////
-
 #include <proc/p32mx360f512l.h>
 #include <math.h>
 #include <string.h>
@@ -38,11 +34,13 @@
 #define T_SECOND (1000/T_TICK_MS)                     //ticks per second
 #define T_MINUTE (T_SECOND*60)                        //ticks per minute
 #define T_NORM_LEN (T_MINUTE*9)                       //ticks where normal measurements are taken
-#define T_CON_CHG_BEGIN  (T_SECOND*15)                //ticks to begin probe charging
-#define T_CON_CHG1_END  (T_CON_CHG_BEGIN+T_SECOND*1)  //ticks to finish first charging stage
-#define T_CON_CHG2_END  (T_CON_CHG1_END+T_SECOND*1)   //ticks to finish second charging stage
-#define T_CON_MEAS_END (T_CON_CHG2_END+T_SECOND*13)   //ticks to finishing conductivity measurements
-#define T_CON_LEN (T_CON_MEAS_END - T_CON_CHG_BEGIN)  //ticks where conductivity measurements are taken
+#define T_CON_CLOSESW   (T_SECOND*15)                 //ticks to open switch
+#define T_CON_CHG_BEGIN (T_CON_CLOSESW+1)             //ticks to begin probe charging 
+#define T_CON_CHG1_END  (T_CON_CLOSESW+T_SECOND*1)    //ticks to finish first charging stage
+#define T_CON_OPENSW    (T_CON_CHG1_END+T_SECOND*1)   //ticks to close switch
+#define T_CON_CHG2_END  (T_CON_OPENSW+1)              //ticks to finish seco1nd charging stage
+#define T_CON_MEAS_END  (T_CON_OPENSW+T_SECOND*13)    //ticks to finishing conductivity measurements
+#define T_CON_LEN (T_CON_MEAS_END - T_CON_CLOSESW)  //ticks where conductivity measurements are taken
 
 
 #define T_FASTSAM_INTERVAL (T_SECOND*5)               //ticks in one interval of normal measurements
@@ -118,7 +116,7 @@ int main(void) {
     //=============================//
     while (1) {
         TickRB();                                                      //Advance RockBlock state machine
-        if(sequence%(SEQUENCE_CYCLE+1) || statetimer < T_CON_CHG_BEGIN || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
+        if(sequence%(SEQUENCE_CYCLE+1) || statetimer < T_CON_CLOSESW || conductivityDone)            //if not on conductivity packet, or conductivity readings have been finished
         {
             switch(statetimer % T_FASTSAM_INTERVAL)                          //rotate readings based on statetimer (every 5 seconds)
             {
@@ -238,24 +236,34 @@ int main(void) {
         {
             switch (statetimer)                                    //alternate readings based on statetimer
             {
+                case T_CON_CLOSESW:
+                    gCondTime = gtime;
+                    SetSwitch(CLOSE);
+                    break;
+                    
                 case T_CON_CHG_BEGIN:                              //if time to start conductivity charging (15s into packet)
-                    gCondTime = gTime;
                     ChargeProbe(GND);                              //charge probes to ground
                     break;
+                    
                 case T_CON_CHG1_END:                               //if first charging cycle is complete (16s into packet)
                     if(conductivityDir++ % 2)                      //if on an odd interval,
                         ChargeProbe(DOWN);                         //charge probes down
                     else                                           //if on an even interval,
                         ChargeProbe(UP);                           //charge probes up
                     break;
-                case T_CON_CHG2_END:                               //if second charging cycle is complete (17s into packet)
-                    ChargeProbe(NONE);                             //stop charging probes
+                    
+                case T_CON_OPENSW:
+                    SetSwitch(OPEN);
+                    break;
+                    
+                case T_CON_CHG2_END:                                                //if second charging cycle is complete (17s into packet)
+                    ChargeProbe(GND);                                               //stop charging probes
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt, &gSats);                   //read GPS values
                     Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt, gSats);   //store GPS values into packet
                     break;
                 }
             //While in conductivity measuring interval,
-            if (statetimer>=T_CON_CHG_BEGIN && statetimer < T_CON_MEAS_END) {
+            if (statetimer>=T_CON_CLOSESW && statetimer < T_CON_MEAS_END) {
                 cVert1[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(0); //Store vertical probe values over course of conductivity charging, 150 samples total
                 cVert2[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(4);
             }
