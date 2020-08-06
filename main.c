@@ -98,8 +98,8 @@ int main(void) {
     InitLoopDelay();            //initialize packet loop delays
 
     InitWatchdog();             //initialize watchdog timer
-
-    ChargeProbe(NONE);      //discharge probes
+    SetSwitch(OPEN);
+    ChargeProbe(GND);      //discharge probes
 
     clearPacket(&packet);   //Clear packet buffer
 
@@ -237,7 +237,7 @@ int main(void) {
             switch (statetimer)                                    //alternate readings based on statetimer
             {
                 case T_CON_CLOSESW:
-                    gCondTime = gtime;
+                    gCondTime = gTime;
                     SetSwitch(CLOSE);
                     break;
                     
