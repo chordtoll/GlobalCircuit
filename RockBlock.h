@@ -95,6 +95,9 @@ rb_command_resp_t RB_Clear_BothBuff();
 //Writes message to rockblock
 rb_command_resp_t RB_WriteBuff();
 
+//Checks status response after MO buffer is written to
+rb_command_resp_t RB_CheckWriteStatus();
+
 //Sends "AT+SBDI" to RB
 rb_command_resp_t RB_Tx();
 
@@ -122,7 +125,7 @@ void SendPacket_RB();
 void InsertPacketBuffer(char* msg);
 
 rb_command_resp_t (* const _rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
-rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff, RB_Tx, RB_Rx, NULL};
+rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff, RB_CheckWriteStatus, RB_Tx, RB_Rx, NULL};
 rb_command_resp_t (* const _rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
 
 #endif	/* ROCKBLOCK_H */

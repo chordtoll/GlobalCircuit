@@ -378,6 +378,32 @@ rb_command_resp_t RB_WriteBuff()
     return RB_COMMAND_HOLD;
 }
 
+rb_command_resp_t RB_CheckWriteStatus()
+{
+    if(_rb_status == RB_OK)
+    {
+        volatile char *rbuf = _rb_cmdbuf;
+        while(*rbuf == '\r' || *rbuf == '\n')
+            ++rbuf;
+        char boop = *rbuf;
+        if(*rbuf == '0')
+        {
+            return RB_COMMAND_NEXT;
+        }
+        else
+        {
+            yikes.rberror = 1;
+            return RB_COMMAND_RESET;
+        }
+    }
+    else if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror = 1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
+}
+
 rb_command_resp_t RB_Tx()
 {
     if(_rb_status == RB_OK)
@@ -398,9 +424,8 @@ rb_command_resp_t RB_ParseUplink()
 {
     if(_rb_status == RB_OK)
     {
-        volatile char *rbuf=_rb_cmdbuf; //create an instance of the message buffer
-        uint16_t msglen=*rbuf++<<8;     //pull the message length from the message buffer
-        msglen|=*rbuf++;
+        volatile char *rbuf=_rb_cmdbuf + 2; //create an instance of the message buffer
+        uint16_t msglen =_rb_imtl;     //pull the message length from the message buffer
         uint16_t i;
         for (i=0;i<msglen;i++) {        //loop through the message
             RBRXbuf[i]=*rbuf++;         //retrieve the message from the message buffer
