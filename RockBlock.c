@@ -427,6 +427,7 @@ rb_command_resp_t RB_ParseUplink()
         volatile char *rbuf=_rb_cmdbuf + 2; //create an instance of the message buffer
         uint16_t msglen =_rb_imtl;     //pull the message length from the message buffer
         uint16_t i;
+        ++uplink_count;
         for (i=0;i<msglen;i++) {        //loop through the message
             RBRXbuf[i]=*rbuf++;         //retrieve the message from the message buffer
         }

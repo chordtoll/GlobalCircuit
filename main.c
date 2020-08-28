@@ -132,10 +132,6 @@ int main(void) {
                     {
                         SendPacket_RB();
                     }
-                    else if (statetimer == T_SECOND*45)
-                    {
-                        CheckSig_RB();
-                    }
                     break;
                 case 1:                                                      //if 0.1s into interval
                     ;
@@ -237,7 +233,6 @@ int main(void) {
             switch (statetimer)                                    //alternate readings based on statetimer
             {
                 case T_CON_CLOSESW:
-                    gCondTime = gTime;
                     SetSwitch(CLOSE);
                     break;
                     
@@ -259,13 +254,14 @@ int main(void) {
                 case T_CON_CHG2_END:                                                //if second charging cycle is complete (17s into packet)
                     ChargeProbe(GND);                                               //stop charging probes
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt, &gSats);                   //read GPS values
+                    gCondTime = gTime;
                     Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt, gSats);   //store GPS values into packet
                     break;
                 }
             //While in conductivity measuring interval,
             if (statetimer>=T_CON_CLOSESW && statetimer < T_CON_MEAS_END) {
-                cVert1[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(0); //Store vertical probe values over course of conductivity charging, 150 samples total
-                cVert2[statetimer-T_CON_CHG_BEGIN]=ReadExtADC(4);
+                cVert1[statetimer-T_CON_CLOSESW]=ReadExtADC(0); //Store vertical probe values over course of conductivity charging, 150 samples total
+                cVert2[statetimer-T_CON_CLOSESW]=ReadExtADC(4);
             }
             else if(statetimer == T_CON_MEAS_END)
                 conductivityDone = 1;
