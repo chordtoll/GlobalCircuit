@@ -351,7 +351,7 @@ rb_command_resp_t RB_Rx()
     return RB_COMMAND_HOLD;
 }
 
-rb_command_resp_t RB_WriteBuff()
+rb_command_resp_t RB_WriteBuff1()
 {
     if(_rb_status == RB_OK)
     {
@@ -360,13 +360,7 @@ rb_command_resp_t RB_WriteBuff()
     }
     else if(_rb_status == RB_READY)
     {
-        uint16_t csum = 0;
-        uint16_t i;
-        SendBuffer_UART1(packet_buffer[0], 0, 340);
-        for(i=0;i<340;i++)
-            csum+=(uint8_t) packet_buffer[0][i];
-        SendChar_UART1(csum>>8);
-        SendChar_UART1(csum&0xFF);
+        SendBuffer_UART1(packet_buffer[0], 0, 112);
         _rb_status = RB_BUSY;
         return RB_COMMAND_NEXT;
     }
@@ -378,6 +372,23 @@ rb_command_resp_t RB_WriteBuff()
     return RB_COMMAND_HOLD;
 }
 
+rb_command_resp_t RB_WriteBuff2()
+{
+    SendBuffer_UART1(packet_buffer[0], 112, 116);
+    return RB_COMMAND_NEXT;
+}
+
+rb_command_resp_t RB_WriteBuff3()
+{
+    uint16_t csum = 0;
+    uint16_t i;
+    SendBuffer_UART1(packet_buffer[0], 228, 112);
+    for(i=0;i<340;i++)
+        csum+=(uint8_t) packet_buffer[0][i];
+    SendChar_UART1(csum>>8);
+    SendChar_UART1(csum&0xFF);
+    return RB_COMMAND_NEXT;
+}
 rb_command_resp_t RB_CheckWriteStatus()
 {
     if(_rb_status == RB_OK)
@@ -385,7 +396,6 @@ rb_command_resp_t RB_CheckWriteStatus()
         volatile char *rbuf = _rb_cmdbuf;
         while(*rbuf == '\r' || *rbuf == '\n')
             ++rbuf;
-        char boop = *rbuf;
         if(*rbuf == '0')
         {
             return RB_COMMAND_NEXT;
@@ -480,10 +490,7 @@ void TickRB()
                         
                     case RB_COMMAND_RESET:
                         _rb_command_ind = 0;
-                        if(++_rb_errors == ERROR_LIMIT)
-                        {
-                            while(1);
-                        }
+                        _rb_status = RB_OK;
                         break;
                         
                     case RB_COMMAND_HOLD:
@@ -507,14 +514,9 @@ void TickRB()
                         break;
                         
                     case RB_COMMAND_RESET:
-                        if(++_rb_errors == ERROR_LIMIT)
-                        {
-                            while(1);
-                        }
-                        if(num_stored_packets > 0)
                             _rb_command_ind = 0;
-                        else
-                            _rb_seq = RB_IDLE;
+                            _rb_status = RB_OK;
+                            _rb_seq = RB_INIT;
                         break;
                         
                     case RB_COMMAND_HOLD:
@@ -538,10 +540,8 @@ void TickRB()
                     
                 case RB_COMMAND_RESET:
                     _rb_command_ind = 0;
-                    if(++_rb_errors == ERROR_LIMIT)
-                    {
-                        while(1);
-                    }
+                    _rb_status = RB_OK;
+                    _rb_seq = RB_INIT;
                     break;
                     
                 case RB_COMMAND_HOLD:
@@ -560,25 +560,22 @@ void TickRB()
 
                     case RB_COMMAND_RESET:
                         _rb_command_ind = 0;
-                        if(++_rb_errors == ERROR_LIMIT)
-                        {
-                            while(1);
-                        }
+                        _rb_status = RB_OK;
+                        _rb_seq = RB_INIT;
                         break;
 
                     case RB_COMMAND_HOLD:
                         break;
                 }
-                break;
             }
             else
             {
                 _rb_command_ind = 0;
                 _rb_seq = RB_IDLE;
             }
+            break;
 
         case RB_IDLE:
-            _rb_errors = 0;
             _rb_busy_ticks = 0;
             if(_rb_status == RB_ERROR)
             {
@@ -590,12 +587,15 @@ void TickRB()
     }
     if(++_rb_busy_ticks == BUSY_TICK_MAX)
     {
-        while(1);
+        _rb_busy_ticks = 0;
+        _rb_command_ind = 0;
+        _rb_status = RB_OK;
+        _rb_seq = RB_INIT;
     }
 }
 
 void SendPacket_RB() {
-    if(num_stored_packets > 0)
+    if(num_stored_packets > 0 && _rb_seq == RB_IDLE)
     {
         _rb_seq = RB_TRANS;                   //request to send the message
     }

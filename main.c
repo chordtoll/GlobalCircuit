@@ -255,7 +255,6 @@ int main(void) {
                     ChargeProbe(GND);                                               //stop charging probes
                     ReadGPS(&gTime, &gLat, &gLon, &gAlt, &gSats);                   //read GPS values
                     gCondTime = gTime;
-                    Pack_GPS(&packet, gTime, gCondTime, gLat, gLon, gAlt, gSats);   //store GPS values into packet
                     break;
                 }
             //While in conductivity measuring interval,

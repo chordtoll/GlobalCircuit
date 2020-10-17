@@ -89,7 +89,7 @@ void SendString_UART1(unsigned char* string)
 
 void SendBuffer_UART1(char *buf, uint16_t start, uint16_t len) {
     uint16_t i;
-    for (i=start;i<len;i++) {
+    for (i=start;i<start+len;i++) {
         SendChar_UART1(buf[i]);
     }
 }

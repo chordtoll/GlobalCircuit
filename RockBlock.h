@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include "Packet.h"
 
-#define ERROR_LIMIT 3
 #define BUSY_TICK_MAX 600
 #define PACKET_BUFFER_SIZE 3
 
@@ -25,7 +24,6 @@ uint8_t num_stored_packets = 0;
 
 rb_seq_t _rb_seq;
 uint8_t _rb_command_ind;
-uint8_t _rb_errors = 0;
 uint16_t _rb_busy_ticks = 0;
 
 uint16_t _rb_buf_sindex=0;//rockblock string buffer index counter
@@ -92,8 +90,14 @@ rb_command_resp_t RB_Clear_RxBuff();
 //Clear both buffers (AT+SBDD2)
 rb_command_resp_t RB_Clear_BothBuff();
 
-//Writes message to rockblock
-rb_command_resp_t RB_WriteBuff();
+//Writes first third of message to rockblock
+rb_command_resp_t RB_WriteBuff1();
+
+//Writes second third of message to rockblock
+rb_command_resp_t RB_WriteBuff2();
+
+//Writes third third of message to rockblock
+rb_command_resp_t RB_WriteBuff3();
 
 //Checks status response after MO buffer is written to
 rb_command_resp_t RB_CheckWriteStatus();
@@ -125,7 +129,7 @@ void SendPacket_RB();
 void InsertPacketBuffer(char* msg);
 
 rb_command_resp_t (* const _rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
-rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff, RB_CheckWriteStatus, RB_Tx, RB_Rx, NULL};
+rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff1, RB_WriteBuff2, RB_WriteBuff3, RB_CheckWriteStatus, RB_Tx, RB_Rx, NULL};
 rb_command_resp_t (* const _rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
 
 #endif	/* ROCKBLOCK_H */
