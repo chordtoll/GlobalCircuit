@@ -6,7 +6,7 @@ Other Global Electric Circuit project repositories can be found at:
 
 | Repository                                                                  | Description         |
 |:--------------------------------------------------------------------------- |:------------------  |
-| [GlobalCircuit](https://github.com/keleuk/GlobalCircuit)                    | PIC32 code          |
-| [GECaux](https://github.com/keleuk/GECaux)                                  | PIC16 code          |
-| [GECutils](https://github.com/keleuk/GECutils)                              | Python scripts      |
-| [LocalElectricCircuit](https://github.com/CodyAnderson/LocalElectricCircuit)| Circuit board files |
+| [GlobalCircuit](https://github.com/chordtoll/GlobalCircuit)                 | PIC32 code          |
+| [GECaux](https://github.com/chordtoll/GECaux)                               | PIC16 code          |
+| [GECutils](https://github.com/chordtoll/GECutils)                           | Python scripts      |
+| [LocalElectricCircuit](https://github.com/CodyAnderson/LocalElectricCircuit)| Circuit board files  |
