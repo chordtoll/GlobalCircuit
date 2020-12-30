@@ -15,7 +15,8 @@ void ParseSBDI(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,cha
 uint8_t ParseCSQ(volatile char *cmdbuf);
 uint16_t ParseSN(volatile char *cmdbuf);
 
-void InitRB() {
+void InitRB() 
+{
     _rb_seq = RB_INIT;    //set rockblock to initialization state
     _rb_status = RB_OK;
     _rb_command_ind = 0;  
@@ -24,22 +25,11 @@ void InitRB() {
     _rb_reqsend=0;        //clear reqsend flag
     _rb_reqSigCheck=0;    //clear signal check flag
     _rb_idletimer=0;      //reset idle timer
-
-    uint8_t i;
-    for(i = 0; i < PACKET_BUFFER_SIZE; ++i)
-    {
-    }
 }
 
 void ShiftPacketBuffer()
 {
-    uint8_t i;
-    free(packet_buffer[0]);
-    --num_stored_packets;
-    for(i = 1; i < PACKET_BUFFER_SIZE; ++i)
-    {
-        packet_buffer[i-1] = packet_buffer[i];
-    }
+  
 }
 
 void CheckSig_RB()
@@ -333,7 +323,8 @@ rb_command_resp_t RB_Rx()
         _rb_imos = atoi(_rb_mos);
         if(_rb_imos == 1)
         {
-            ShiftPacketBuffer();
+            active_packet_index = (active_packet_index + 1) % PACKET_BUFFER_SIZE;
+            --num_stored_packets;
         }
         if (_rb_imtl>0) 
         {
@@ -360,7 +351,7 @@ rb_command_resp_t RB_WriteBuff1()
     }
     else if(_rb_status == RB_READY)
     {
-        SendBuffer_UART1(packet_buffer[0], 0, 112);
+        SendBuffer_UART1(packet_buffer[active_packet_index], 0, 112);
         _rb_status = RB_BUSY;
         return RB_COMMAND_NEXT;
     }
@@ -374,7 +365,7 @@ rb_command_resp_t RB_WriteBuff1()
 
 rb_command_resp_t RB_WriteBuff2()
 {
-    SendBuffer_UART1(packet_buffer[0], 112, 116);
+    SendBuffer_UART1(packet_buffer[active_packet_index], 112, 116);
     return RB_COMMAND_NEXT;
 }
 
@@ -382,9 +373,9 @@ rb_command_resp_t RB_WriteBuff3()
 {
     uint16_t csum = 0;
     uint16_t i;
-    SendBuffer_UART1(packet_buffer[0], 228, 112);
-    for(i=0;i<340;i++)
-        csum+=(uint8_t) packet_buffer[0][i];
+    SendBuffer_UART1(packet_buffer[active_packet_index], 228, 112);
+    for(i=0;i<PACKET_SIZE;i++)
+        csum+=(uint8_t) packet_buffer[active_packet_index][i];
     SendChar_UART1(csum>>8);
     SendChar_UART1(csum&0xFF);
     return RB_COMMAND_NEXT;
@@ -685,11 +676,11 @@ void ParseSBDI(volatile char *cmdbuf,char *mos,char *mom,char *mts,char *mtm,cha
 
 void InsertPacketBuffer(char* msg)
 {
-    char* new = malloc(340);                       //allocate space for new packet
-    memcpy(new, msg, 340);                         //move message into new space
-    if(num_stored_packets == PACKET_BUFFER_SIZE)   //if packet buffer is full,
-    {
-        ShiftPacketBuffer();                       //drop oldest packet
+    if(num_stored_packets == PACKET_BUFFER_SIZE)
+    {  
+        memcpy(packet_buffer[active_packet_index], msg, PACKET_SIZE);
+        active_packet_index = (active_packet_index + 1) % PACKET_BUFFER_SIZE;
     }
-    packet_buffer[num_stored_packets++] = new;     //add new packet to end of buffer
+    else
+        memcpy(packet_buffer[(active_packet_index + num_stored_packets++) % PACKET_BUFFER_SIZE], msg, PACKET_SIZE);
 }

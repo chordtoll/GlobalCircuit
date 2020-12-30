@@ -7,6 +7,7 @@
 
 #define BUSY_TICK_MAX 600
 #define PACKET_BUFFER_SIZE 3
+#define PACKET_SIZE 340
 
 #define BALLAST RBRXbuf[0]=='B'&&RBRXbuf[1]=='A'&&RBRXbuf[2]=='L'&&RBRXbuf[3]=='L'
 #define CUTDOWN RBRXbuf[0]=='C'&&RBRXbuf[1]=='U'&&RBRXbuf[2]=='T'&&RBRXbuf[3]=='D'
@@ -18,9 +19,10 @@ typedef enum rb_status {RB_BUSY, RB_OK, RB_ERROR, RB_READY} rb_status_t;
 typedef enum rb_seq {RB_INIT, RB_TRANS, RB_UPLINK, RB_SIG, RB_IDLE} rb_seq_t;
 typedef enum rb_command_resp {RB_COMMAND_NEXT, RB_COMMAND_RESET, RB_COMMAND_HOLD} rb_command_resp_t;
 
-char* packet_buffer[3];
+char packet_buffer[PACKET_BUFFER_SIZE][PACKET_SIZE];
 
 uint8_t num_stored_packets = 0;
+uint8_t active_packet_index = 0;
 
 rb_seq_t _rb_seq;
 uint8_t _rb_command_ind;
