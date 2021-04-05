@@ -55,25 +55,28 @@ void  __attribute__((vector(_UART_1_VECTOR), interrupt(IPL7SRS), nomips16)) UART
 {
     if(U1STAbits.OERR)
         U1STAbits.OERR = 0;
-    char receivedChar = U1RXREG; //get char from uart1rec line
+    while(U1STAbits.URXDA)
+    {
+        char receivedChar = U1RXREG; //get char from uart1rec line
 
-    if (_rb_status==RB_BUSY) {
-        if (_rb_idx>=340)
-            _rb_idx=0;
-        _rb_cmdbuf[_rb_idx]=receivedChar;
-        _rb_idx++;
-        _rb_cmdbuf[_rb_idx]=0;
-        if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rKO"))   { //Check if response is OK
-            _rb_status=RB_OK;
-            _rb_idx=0;
-        }
-        if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rYDAER")){ //Check if response is READY
-            _rb_status=RB_READY;
-            _rb_idx=0;
-        }
-        if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rRORRE")){ //Check if response is ERROR
-            _rb_status=RB_ERROR;
-            _rb_idx=0;
+        if (_rb_status==RB_BUSY) {
+            if (_rb_idx>=340)
+                _rb_idx=0;
+            _rb_cmdbuf[_rb_idx]=receivedChar;
+            _rb_idx++;
+            _rb_cmdbuf[_rb_idx]=0;
+            if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rKO"))   { //Check if response is OK
+                _rb_status=RB_OK;
+                _rb_idx=0;
+            }
+            if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rYDAER")){ //Check if response is READY
+                _rb_status=RB_READY;
+                _rb_idx=0;
+            }
+            if (rbstrcmp(_rb_cmdbuf,_rb_idx,"\n\rRORRE")){ //Check if response is ERROR
+                _rb_status=RB_ERROR;
+                _rb_idx=0;
+            }
         }
     }
     IFS0bits.U1RXIF = 0; //clear interrupt flag status for UART1 receive
