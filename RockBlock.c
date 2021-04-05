@@ -7,6 +7,8 @@
 #include "Ballast.h"
 #include "Cutdown.h"
 
+#define PACKET_CHUNKS 10
+
 char _rb_reqsend;        //flag indicating that a request to send data was made
 uint8_t _rb_reqSigCheck; //flag indicating that a request to check signal strength was made
 uint16_t _rb_idletimer;  //timer that keeps track of number of ticks RB has been busy consecutively
@@ -342,16 +344,11 @@ rb_command_resp_t RB_Rx()
     return RB_COMMAND_HOLD;
 }
 
-rb_command_resp_t RB_WriteBuff1()
+rb_command_resp_t RB_StartWrite()
 {
     if(_rb_status == RB_OK)
     {
         SendString_UART1("AT+SBDWB=340\r");
-        _rb_status = RB_BUSY;
-    }
-    else if(_rb_status == RB_READY)
-    {
-        SendBuffer_UART1(packet_buffer[active_packet_index], 0, 112);
         _rb_status = RB_BUSY;
         return RB_COMMAND_NEXT;
     }
@@ -363,23 +360,38 @@ rb_command_resp_t RB_WriteBuff1()
     return RB_COMMAND_HOLD;
 }
 
-rb_command_resp_t RB_WriteBuff2()
+rb_command_resp_t RB_WriteBuff()
 {
-    SendBuffer_UART1(packet_buffer[active_packet_index], 112, 116);
-    return RB_COMMAND_NEXT;
+    static uint8_t chunk = 0;
+    if(_rb_status == RB_READY)
+    {
+        if(chunk < PACKET_CHUNKS)
+        {
+            SendBuffer_UART1(packet_buffer[active_packet_index], chunk*(340/PACKET_CHUNKS), 340/PACKET_CHUNKS);
+            ++chunk;
+            return RB_COMMAND_HOLD;
+        }
+        else
+        {
+            uint16_t csum = 0;
+            uint16_t i;
+            for(i=0;i<PACKET_SIZE;i++)
+                csum+=(uint8_t) packet_buffer[active_packet_index][i];
+            SendChar_UART1(csum>>8);
+            SendChar_UART1(csum&0xFF);
+            _rb_status = RB_BUSY;
+            chunk = 0;
+            return RB_COMMAND_NEXT;
+        }
+    }
+    else if(_rb_status == RB_ERROR)
+    {
+        yikes.rberror = 1;
+        return RB_COMMAND_RESET;
+    }
+    return RB_COMMAND_HOLD;
 }
 
-rb_command_resp_t RB_WriteBuff3()
-{
-    uint16_t csum = 0;
-    uint16_t i;
-    SendBuffer_UART1(packet_buffer[active_packet_index], 228, 112);
-    for(i=0;i<PACKET_SIZE;i++)
-        csum+=(uint8_t) packet_buffer[active_packet_index][i];
-    SendChar_UART1(csum>>8);
-    SendChar_UART1(csum&0xFF);
-    return RB_COMMAND_NEXT;
-}
 rb_command_resp_t RB_CheckWriteStatus()
 {
     if(_rb_status == RB_OK)

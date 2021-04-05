@@ -92,14 +92,11 @@ rb_command_resp_t RB_Clear_RxBuff();
 //Clear both buffers (AT+SBDD2)
 rb_command_resp_t RB_Clear_BothBuff();
 
-//Writes first third of message to rockblock
-rb_command_resp_t RB_WriteBuff1();
+//start a message write
+rb_command_resp_t RB_StartWrite();
 
-//Writes second third of message to rockblock
-rb_command_resp_t RB_WriteBuff2();
-
-//Writes third third of message to rockblock
-rb_command_resp_t RB_WriteBuff3();
+//Write packet to RockBLOCK
+rb_command_resp_t RB_WriteBuff();
 
 //Checks status response after MO buffer is written to
 rb_command_resp_t RB_CheckWriteStatus();
@@ -131,7 +128,7 @@ void SendPacket_RB();
 void InsertPacketBuffer(char* msg);
 
 rb_command_resp_t (* const _rb_init_funcs[])() = {RB_Echo_Off, RB_FlowControl_Disable, RB_DTR_Ignore, RB_Ring_Disable, RB_GetSerial, RB_ReadSerial, NULL};
-rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_WriteBuff1, RB_WriteBuff2, RB_WriteBuff3, RB_CheckWriteStatus, RB_Tx, RB_Rx, NULL};
+rb_command_resp_t (* const _rb_trans_funcs[])() = {RB_StartWrite, RB_WriteBuff, RB_CheckWriteStatus, RB_Tx, RB_Rx, NULL};
 rb_command_resp_t (* const _rb_sig_funcs[])() = {RB_CheckSig, RB_ReadSig, NULL};
 
 #endif	/* ROCKBLOCK_H */
